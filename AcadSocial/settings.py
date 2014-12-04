@@ -3,8 +3,8 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Sistema: 0.0.1a01
-Versão do Código: 01v01a
+Versão do Sistema: 0.0.1a002
+Versão do Código: 01v001a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -110,5 +110,6 @@ AUTH_USER_MODEL = 'contas.UsuarioModel'
 
 # DEBUG - Email config
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/emails_ativacao/')
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/emails_ativacao/')

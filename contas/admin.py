@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v01a
+Versão do Código: 01v001a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -43,7 +43,7 @@ class PerfilAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (_('User info'), {'fields': ('usuario',)}),
-        (_('Personal info'), {'fields': ('universidade', 'campus', 'curso', 'data_nascimento')}),
+        (_('Personal info'), {'fields': ('universidade', 'campus', 'curso', 'foto', 'data_nascimento')}),
     )
 
     list_display = ('usuario', 'universidade', 'campus', 'curso')

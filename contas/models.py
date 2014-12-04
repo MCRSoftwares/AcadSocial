@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v02a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -106,7 +106,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 class PerfilModel(models.Model):
 
     usuario = models.OneToOneField(UsuarioModel)
-    foto = models.ImageField(_('picture'), upload_to='imagens/perfil/', default='images/perfil/default.jpg')
+    foto = models.ImageField(_('picture'), upload_to='imagens/perfil/', default='imagens/perfil/default.jpg')
     data_nascimento = models.DateField(_('birth date'))
     universidade = models.CharField(_('university'), max_length=128, blank=False)
     campus = models.CharField(_('campus'), max_length=128, blank=False)

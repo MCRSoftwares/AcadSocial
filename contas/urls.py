@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v01a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -20,6 +20,7 @@ from contas import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.view_pagina_inicial, name='index'),
-                       url(r'^cadastro/', views.view_cadastrar_usuario, name='cadastro'),
+                       url(r'^cadastro/$', views.view_cadastrar_usuario, name='cadastro'),
+                       url(r'^perfil/ativar/(?P<chave>\w+)/', views.view_confirmar_usuario, name='confirmar'),
                        url(r'^login/', views.view_login_usuario, name='login'),
                        )

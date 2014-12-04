@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v02a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -81,6 +81,8 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"]
+
+        # Checa se o e-mail já existe.
 
         try:
             UsuarioModel.object.get(email=email)
