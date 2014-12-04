@@ -75,7 +75,7 @@ class UsuarioCadastroForm(forms.ModelForm):
         password_conf = self.cleaned_data.get('password_conf')
 
         if password != password_conf:
-            raise forms.ValidationError(errors.erro_senhas_diferentes)
+            raise forms.ValidationError(errors.erro_senhas_diferentes, 'cadastro_e01')
 
         return self.cleaned_data
 
@@ -90,7 +90,7 @@ class UsuarioCadastroForm(forms.ModelForm):
         except UsuarioModel.DoesNotExist:
             return email
 
-        raise forms.ValidationError(errors.erro_email_ja_existe)
+        raise forms.ValidationError(errors.erro_email_ja_existe, 'cadastro_e02')
 
     class Meta:
         model = UsuarioModel
@@ -122,7 +122,7 @@ class PerfilCadastroForm(forms.ModelForm):
     mes = forms.ChoiceField(choices=mes_list)
     ano = forms.ChoiceField(choices=ano_list)
 
-    # TODO alterar os campos abaixo para ChoiceField, após criação do banco de cursos/campus da UFPE
+    # TODO alterar os campos abaixo para ModelChoiceField, após criação do banco de cursos/campus da UFPE
 
     universidade = forms.CharField(max_length=256, widget=forms.TextInput(attrs=universidade_attrs))
     campus = forms.CharField(max_length=256, widget=forms.TextInput(attrs=campus_attrs))
@@ -141,7 +141,7 @@ class PerfilCadastroForm(forms.ModelForm):
         try:
             datetime.strptime(nasc_str, '%d-%m-%Y')
         except ValueError:
-            raise forms.ValidationError(errors.erro_data_incorreta)
+            raise forms.ValidationError(errors.erro_data_incorreta, 'cadastro_e03')
 
     class Meta:
         model = PerfilModel

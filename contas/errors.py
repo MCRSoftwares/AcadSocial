@@ -17,8 +17,8 @@ Descrição:
 
 # Erros relacionados ao forms.py: Cadastro
 
-erro_senhas_diferentes = ('As senhas estão diferentes!', 'cadastro_e01')
+erro_senhas_diferentes = 'As senhas estão diferentes!'
 
-erro_email_ja_existe = ('Esse e-mail já está cadastrado!', 'cadastro_e02')
+erro_email_ja_existe = 'Esse e-mail já está cadastrado!'
 
-erro_data_incorreta = ('Essa data não existe!', 'cadastro_e03')
+erro_data_incorreta = 'Essa data não existe!'
