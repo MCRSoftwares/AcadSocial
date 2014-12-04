@@ -22,7 +22,7 @@ from django.utils.http import urlquote
 from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from universidades.models import UniversidadeModel, CursoModel
 
 class UsuarioManager(BaseUserManager):
 
@@ -108,9 +108,8 @@ class PerfilModel(models.Model):
     usuario = models.OneToOneField(UsuarioModel)
     foto = models.ImageField(_('picture'), upload_to='imagens/perfil/', default='imagens/perfil/default.jpg')
     data_nascimento = models.DateField(_('birth date'))
-    universidade = models.CharField(_('university'), max_length=128, blank=False)
-    campus = models.CharField(_('campus'), max_length=128, blank=False)
-    curso = models.CharField(_('course'), max_length=128, blank=False)
+    universidade = models.ForeignKey(UniversidadeModel)
+    curso = models.ForeignKey(CursoModel)
     chave_ativacao = models.CharField(_('activation key'), max_length=40, blank=True)
 
     def __unicode__(self):

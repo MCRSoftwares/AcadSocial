@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0001_initial'),
+        ('universidades', '__first__'),
     ]
 
     operations = [
@@ -39,12 +40,11 @@ class Migration(migrations.Migration):
             name='PerfilModel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('foto', models.ImageField(default=b'images/perfil/default.jpg', upload_to=b'imagens/perfil/', verbose_name='picture')),
+                ('foto', models.ImageField(default=b'imagens/perfil/default.jpg', upload_to=b'imagens/perfil/', verbose_name='picture')),
                 ('data_nascimento', models.DateField(verbose_name='birth date')),
-                ('universidade', models.CharField(max_length=128, verbose_name='university')),
-                ('campus', models.CharField(max_length=128, verbose_name='campus')),
-                ('curso', models.CharField(max_length=128, verbose_name='course')),
                 ('chave_ativacao', models.CharField(max_length=40, verbose_name='activation key', blank=True)),
+                ('curso', models.ForeignKey(to='universidades.CursoModel')),
+                ('universidade', models.ForeignKey(to='universidades.UniversidadeModel')),
                 ('usuario', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={

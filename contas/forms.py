@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -20,6 +20,7 @@ from contas.models import UsuarioModel, PerfilModel
 from django import forms
 from datetime import datetime
 from contas import errors
+from universidades.models import UniversidadeModel, CursoModel
 
 # Forms relacionados à página do admin
 
@@ -46,7 +47,7 @@ class UsuarioChangeForm(UserChangeForm):
         fields = ()
 
 
-# Forms relacionados à views.py
+# Forms relacionados à contas/views
 
 
 class UsuarioCadastroForm(forms.ModelForm):
@@ -122,11 +123,8 @@ class PerfilCadastroForm(forms.ModelForm):
     mes = forms.ChoiceField(choices=mes_list)
     ano = forms.ChoiceField(choices=ano_list)
 
-    # TODO alterar os campos abaixo para ModelChoiceField, após criação do banco de cursos/campus da UFPE
-
-    universidade = forms.CharField(max_length=256, widget=forms.TextInput(attrs=universidade_attrs))
-    campus = forms.CharField(max_length=256, widget=forms.TextInput(attrs=campus_attrs))
-    curso = forms.CharField(max_length=256, widget=forms.TextInput(attrs=curso_attrs))
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
 
     def clean(self):
 
@@ -145,4 +143,4 @@ class PerfilCadastroForm(forms.ModelForm):
 
     class Meta:
         model = PerfilModel
-        fields = ('dia', 'mes', 'ano', 'universidade', 'curso', 'campus', 'foto')
+        fields = ('dia', 'mes', 'ano', 'universidade', 'curso', 'foto')
