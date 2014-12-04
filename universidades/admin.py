@@ -18,5 +18,25 @@ Descrição:
 from django.contrib import admin
 from universidades.models import UniversidadeModel, CursoModel
 
-admin.site.register(UniversidadeModel)
-admin.site.register(CursoModel)
+class UniversidadeAdmin(UserAdmin):
+
+    fieldsets = (
+        (_('Info'), {'fields': ('sigla', 'nome')}),
+    )
+    
+    list_display = ('sigla', 'nome')
+    search_fields = ('sigla', 'nome')
+    ordering = ('sigla',)
+    
+class CursoAdmin(UserAdmin):
+
+    fieldsets = (
+        (_('Info'), {'fields': ('nome', 'universidade')}),
+    )
+    
+    list_display = ('nome', 'universidade')
+    search_fields = ('nome', 'universidade')
+    ordering = ('nome',)
+
+admin.site.register(UniversidadeModel, UniversidadeAdmin)
+admin.site.register(CursoModel, CursoAdmin)
