@@ -103,7 +103,6 @@ class PerfilCadastroForm(forms.ModelForm):
     # Criação dos atributos dos campos
 
     universidade_attrs = {'placeholder': 'Universidade'}
-    campus_attrs = {'placeholder': 'Campus'}
     curso_attrs = {'placeholder': 'Curso'}
 
     # Criação das listas de dia, mês e ano
@@ -123,8 +122,8 @@ class PerfilCadastroForm(forms.ModelForm):
     mes = forms.ChoiceField(choices=mes_list)
     ano = forms.ChoiceField(choices=ano_list)
 
-    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
-    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade', widget=forms.Select(attrs=universidade_attrs))
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', widget=forms.Select(attrs=curso_attrs))
 
     def clean(self):
 
