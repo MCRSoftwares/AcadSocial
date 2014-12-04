@@ -45,6 +45,7 @@ class UsuarioChangeForm(UserChangeForm):
         model = UsuarioModel
         fields = ()
 
+
 # Forms relacionados à views.py
 
 
@@ -74,23 +75,20 @@ class UsuarioCadastroForm(forms.ModelForm):
         password_conf = self.cleaned_data.get('password_conf')
 
         if password != password_conf:
-
-            # TODO criar um erro para adicionar abaixo
-
-            raise forms.ValidationError('')
+            raise forms.ValidationError(errors.erro_senhas_diferentes)
 
         return self.cleaned_data
 
     def clean_email(self):
         email = self.cleaned_data["email"]
+
         try:
             UsuarioModel.object.get(email=email)
+
         except UsuarioModel.DoesNotExist:
             return email
 
-        # TODO criar um erro para adicionar abaixo
-
-        raise forms.ValidationError('erro-email')
+        raise forms.ValidationError(errors.erro_email_ja_existe)
 
     class Meta:
         model = UsuarioModel
@@ -141,8 +139,7 @@ class PerfilCadastroForm(forms.ModelForm):
         try:
             datetime.strptime(nasc_str, '%d-%m-%Y')
         except ValueError:
-            # TODO criar um erro para adicionar abaixo
-            raise forms.ValidationError('erro-data')
+            raise forms.ValidationError(errors.erro_data_incorreta)
 
     class Meta:
         model = PerfilModel
