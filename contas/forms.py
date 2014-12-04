@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v01a
+Versão do Código: 01v02a
 
 Responsável: Victor Ferraz
 Auxiliar: -
