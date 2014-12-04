@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<form method="post" action="." enctype="multipart/form-data">
+         {% csrf_token %}
+         {{ usuario_form.first_name.errors }}
+         {{ usuario_form.first_name}}
+        <br>
+         {{ usuario_form.last_name.errors }}
+         {{ usuario_form.last_name}}
+        <br><br>
+         {{ usuario_form.email.errors }}
+         {{ usuario_form.email}}
+        <br><br>
+         {{ usuario_form.password.errors }}
+         {{ usuario_form.password }}
+        <br>
+         {{ usuario_form.password_conf.errors }}
+         {{ usuario_form.password_conf }}
+         <br><br>
+         {{ perfil_form.foto.errors }}
+         {{ perfil_form.foto }}
+         <br><br>
+         {{ perfil_form.universidade.errors }}
+         {{ perfil_form.universidade }}
+         <br>
+         {{ perfil_form.campus.errors }}
+         {{ perfil_form.campus }}
+         <br>
+         {{ perfil_form.curso.errors }}
+         {{ perfil_form.curso }}
+         <br><br>
+         {{ perfil_form.dia }}
+         {{ perfil_form.mes }}
+         {{ perfil_form.ano }}
+         <br><br>
+         {{ usuario_form.non_field_errors }}
+         {{ perfil_form.non_field_errors }}
+         <button type="submit" name="submit">Enviar</button>
+        </form>
+{% endblock %}

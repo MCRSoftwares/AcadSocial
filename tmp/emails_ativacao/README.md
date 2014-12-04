@@ -1,0 +1,1 @@
+Esta pasta inclui todos os e-mails de ativação que são criados durante a fase de desenvolvimento (DEBUG) do sistema.
