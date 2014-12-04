@@ -82,7 +82,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 
     def get_absolute_url(self):
         # TODO definir uma URL real para este método
-        return "/users/%s" % urlquote(self.id)
+        return "/users/%s" % urlquote(self.uid)
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
