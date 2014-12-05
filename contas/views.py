@@ -119,8 +119,7 @@ def view_pagina_inicial(request):
         args['login_form'] = login_form
 
     else:
-        # TODO definir view caso o usuário já esteja logado
-        pass
+        print 'hey'
 
     return render(request, 'contas/index.html', args)
 

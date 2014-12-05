@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v004a
+Versão do Código: 01v005a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -106,6 +106,7 @@ class PerfilCadastroForm(forms.ModelForm):
     universidade_attrs = {'placeholder': 'Universidade'}
     campus_attrs = {'placeholder': 'Campus'}
     curso_attrs = {'placeholder': 'Curso'}
+    foto_attrs = {}
 
     # Criação das listas de dia, mês e ano
 
@@ -126,6 +127,7 @@ class PerfilCadastroForm(forms.ModelForm):
 
     universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
     curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
+    foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs))
 
     def clean(self):
 
