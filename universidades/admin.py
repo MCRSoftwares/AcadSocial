@@ -17,6 +17,9 @@ Descrição:
 
 from django.contrib import admin
 from universidades.models import UniversidadeModel, CursoModel
+from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import ugettext_lazy as _
+
 
 class UniversidadeAdmin(UserAdmin):
 
