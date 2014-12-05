@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -17,6 +17,7 @@ Descrição:
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from contas.models import UsuarioModel, PerfilModel
+from django.contrib.auth import authenticate
 from django import forms
 from datetime import datetime
 from contas import errors
@@ -76,12 +77,12 @@ class UsuarioCadastroForm(forms.ModelForm):
         password_conf = self.cleaned_data.get('password_conf')
 
         if password != password_conf:
-            raise forms.ValidationError(errors.erro_senhas_diferentes, 'cadastro_e01')
+            raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e01')
 
         return self.cleaned_data
 
     def clean_email(self):
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data['email']
 
         # Checa se o e-mail já existe.
 
@@ -91,7 +92,7 @@ class UsuarioCadastroForm(forms.ModelForm):
         except UsuarioModel.DoesNotExist:
             return email
 
-        raise forms.ValidationError(errors.erro_email_ja_existe, 'cadastro_e02')
+        raise forms.ValidationError(errors.erro_cadastro['email_ja_existente'], code='cadastro_e02')
 
     class Meta:
         model = UsuarioModel
@@ -103,6 +104,7 @@ class PerfilCadastroForm(forms.ModelForm):
     # Criação dos atributos dos campos
 
     universidade_attrs = {'placeholder': 'Universidade'}
+    campus_attrs = {'placeholder': 'Campus'}
     curso_attrs = {'placeholder': 'Curso'}
 
     # Criação das listas de dia, mês e ano
@@ -122,8 +124,8 @@ class PerfilCadastroForm(forms.ModelForm):
     mes = forms.ChoiceField(choices=mes_list)
     ano = forms.ChoiceField(choices=ano_list)
 
-    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade', widget=forms.Select(attrs=universidade_attrs))
-    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', widget=forms.Select(attrs=curso_attrs))
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
 
     def clean(self):
 
@@ -138,8 +140,52 @@ class PerfilCadastroForm(forms.ModelForm):
         try:
             datetime.strptime(nasc_str, '%d-%m-%Y')
         except ValueError:
-            raise forms.ValidationError(errors.erro_data_incorreta, 'cadastro_e03')
+            raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e03')
 
     class Meta:
         model = PerfilModel
         fields = ('dia', 'mes', 'ano', 'universidade', 'curso', 'foto')
+
+
+class UsuarioLoginForm(forms.ModelForm):
+
+    # Criação dos atributos dos campos
+
+    email_attrs = {'placeholder': 'E-mail'}
+    password_attrs = {'placeholder': 'Senha'}
+
+    # Criação dos campos
+
+    email = forms.EmailField(max_length=128, widget=forms.EmailInput(attrs=email_attrs))
+    password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_attrs))
+
+    def __init__(self, request=None, *args, **kwargs):
+        self.request = request
+        self.usuario = None
+        super(UsuarioLoginForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+
+        if email and password:
+            self.usuario = authenticate(username=email, password=password)
+
+            if not self.usuario:
+                # Se o usuário for nulo, então o email ou a senha está(ão) incorreto(s).
+
+                raise forms.ValidationError(errors.erro_login['login_invalido'], code='login_e01')
+
+            elif not self.usuario.is_active:
+                # Caso o login esteja correto, mas o usuário não esteja ativado (conta cancelada / conta não confirmada)
+
+                raise forms.ValidationError(errors.erro_login['email_inativo'], code='login_e02')
+
+        return self.cleaned_data
+
+    def get_usuario(self):
+        return self.usuario
+
+    class Meta:
+        model = UsuarioModel
+        fields = ('email', 'password',)

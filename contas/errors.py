@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -15,10 +15,15 @@ Descrição:
     Definição das mensagens de erro relacionados à aplicação de contas (cadastro/login).
 """
 
-# Erros relacionados ao forms.py: Cadastro
+# Erros relacionados ao forms.py
 
-erro_senhas_diferentes = 'As senhas estão diferentes!'
+erro_cadastro = {
+    'senhas_diferentes': 'As senhas estão diferentes!',
+    'email_ja_existente': 'Esse e-mail já está cadastrado!',
+    'data_incorreta': 'Essa data não existe!',
+}
 
-erro_email_ja_existe = 'Esse e-mail já está cadastrado!'
-
-erro_data_incorreta = 'Essa data não existe!'
+erro_login = {
+    'login_invalido': 'E-mail ou senha incorretos!',
+    'email_inativo': 'Esse e-mail não está ativado!',
+}

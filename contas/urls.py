@@ -23,4 +23,5 @@ urlpatterns = patterns('',
                        url(r'^cadastro/$', views.view_cadastrar_usuario, name='cadastro'),
                        url(r'^perfil/ativar/(?P<chave>\w+)/', views.view_confirmar_usuario, name='confirmar'),
                        url(r'^login/', views.view_login_usuario, name='login'),
+                       url(r'^logout/', views.view_logout_usuario, name='logout'),
                        )

@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -15,10 +15,11 @@ Descrição:
     Definição das views relacionadas à aplicação de contas (cadastro/login).
 """
 
-from contas.forms import UsuarioCadastroForm, PerfilCadastroForm
+from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import login, logout
 from datetime import datetime
 from contas.models import PerfilModel
 import contas.methods as methods
@@ -86,7 +87,10 @@ def view_cadastrar_usuario(request):
 
             send_mail(email_assunto, email_conteudo, None, [email], fail_silently=False)
 
-            cadastrado = True
+            args['cadastrado'] = True
+
+            # TODO criar template para confirmação de cadastro
+            return render(request, 'contas/index.html', args)
     else:
         usuario_form = UsuarioCadastroForm()
         perfil_form = PerfilCadastroForm()
@@ -101,15 +105,44 @@ def view_cadastrar_usuario(request):
 def view_pagina_inicial(request):
     args = {}
 
-    # TODO criar view para a página inicial
+    if not request.user.is_authenticated():
+        if request.method == 'POST':
+            login_form = UsuarioLoginForm(data=request.POST)
+
+            if login_form.is_valid():
+                login(request, login_form.get_usuario())
+                return HttpResponseRedirect('/')
+
+        else:
+            login_form = UsuarioLoginForm(request)
+
+        args['login_form'] = login_form
+
+    else:
+        print 'hey'
+
     return render(request, 'contas/index.html', args)
 
 
 def view_login_usuario(request):
-    args = {}
 
-    # TODO criar view para a página de login
+    if request.method == 'POST':
+        login_form = UsuarioLoginForm(data=request.POST)
+
+        if login_form.is_valid():
+            login(request, login_form.get_usuario())
+            return HttpResponseRedirect('/')
+    else:
+        login_form = UsuarioLoginForm(request)
+    args = {'login_form': login_form}
+
     return render(request, 'contas/login.html', args)
+
+
+def view_logout_usuario(request):
+    logout(request)
+
+    return HttpResponseRedirect('/')
 
 
 def view_confirmar_usuario(request, chave):

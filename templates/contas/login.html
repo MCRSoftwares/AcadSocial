@@ -6,5 +6,19 @@
 {% endblock %}
 
 {% block body %}
-Hey Ho! Login
+{% if user.is_authenticated %}
+Você já está logado!
+{% else %}
+<form method="post" action="" enctype="multipart/form-data">
+         {% csrf_token %}
+         {{ login_form.email }}
+         {{ login_form.email.errors }}
+         <br>
+         {{ login_form.password }}
+         {{ login_form.password.errors }}
+        {{ login_form.non_field_errors }}
+         <br>
+         <button type="submit" name="submit">Enviar</button>
+</form>
+{% endif %}
 {% endblock %}

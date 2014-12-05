@@ -6,6 +6,9 @@
 {% endblock %}
 
 {% block body %}
+{% if user.is_authenticated %}
+Você já está logado!
+{% else %}
 <form method="post" action="." enctype="multipart/form-data">
          {% csrf_token %}
          {{ usuario_form.first_name.errors }}
@@ -40,4 +43,5 @@
          {{ perfil_form.non_field_errors }}
          <button type="submit" name="submit">Enviar</button>
         </form>
+{% endif %}
 {% endblock %}
