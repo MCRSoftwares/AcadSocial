@@ -127,7 +127,7 @@ class PerfilCadastroForm(forms.ModelForm):
 
     universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
     curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
-    foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs))
+    foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs), required=False)
 
     def clean(self):
 

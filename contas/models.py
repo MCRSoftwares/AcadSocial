@@ -23,7 +23,8 @@ from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, PermissionsMixin
 from universidades.models import UniversidadeModel, CursoModel
-
+from django.template.defaultfilters import slugify
+from contas import methods
 
 class UsuarioManager(BaseUserManager):
 
@@ -71,6 +72,8 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=128, blank=True)
     last_name = models.CharField(_('last name'), max_length=128, blank=True)
 
+    perfil_link = models.CharField(_('profile link'), max_length=200)
+
     is_active = models.BooleanField(_('active'), default=False, help_text=active_help_text)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=staff_help_text)
 
@@ -81,10 +84,6 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 
     object = UsuarioManager()
 
-    def get_absolute_url(self):
-        # TODO definir uma URL real para este método
-        return "/users/%s" % urlquote(self.uid)
-
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
 
@@ -93,11 +92,21 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
 
+    def get_short_email(self):
+        return methods.selecionar_inicio_email(self.email)
+
     def email_user(self, subject, message, from_email=None):
         send_mail(subject, message, from_email, [self.email])
 
     def __unicode__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        self.perfil_link = slugify(self.get_short_email())
+        super(UsuarioModel, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return "/perfil/%s/%s" % (urlquote(self.uid), urlquote(self.perfil_link))
 
     class Meta:
         verbose_name = _('usuario')

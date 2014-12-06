@@ -21,8 +21,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout
 from datetime import datetime
-from contas.models import PerfilModel
+from contas.models import PerfilModel, UsuarioModel
 import contas.methods as methods
+from django.contrib.auth.decorators import login_required
 import hashlib
 import random
 
@@ -83,7 +84,7 @@ def view_cadastrar_usuario(request):
 
             email_conteudo = 'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
                              'Clique no link abaixo para confirmar o seu e-mail e utilizar nossa rede!' \
-                             '\nhttp://127.0.0.1:8000/perfil/ativar/%s' % (nome, sobrenome, chave)
+                             '\nhttp://127.0.0.1:8000/contas/ativar/%s' % (nome, sobrenome, chave)
 
             send_mail(email_assunto, email_conteudo, None, [email], fail_silently=False)
 
@@ -106,12 +107,14 @@ def view_pagina_inicial(request):
     args = {}
 
     if not request.user.is_authenticated():
+
         if request.method == 'POST':
             login_form = UsuarioLoginForm(data=request.POST)
 
             if login_form.is_valid():
                 login(request, login_form.get_usuario())
-                return HttpResponseRedirect('/')
+
+                return view_pagina_inicial_logada(request)
 
         else:
             login_form = UsuarioLoginForm(request)
@@ -119,9 +122,15 @@ def view_pagina_inicial(request):
         args['login_form'] = login_form
 
     else:
-        print 'hey'
+        return view_pagina_inicial_logada(request)
 
     return render(request, 'contas/index.html', args)
+
+
+def view_pagina_inicial_logada(request):
+    args = {}
+
+    return render(request, 'contas/home.html', args)
 
 
 def view_login_usuario(request):
@@ -162,3 +171,23 @@ def view_confirmar_usuario(request, chave):
 
     # TODO criar template para a ativação da conta
     return HttpResponse('Sua conta foi ativada!')
+
+
+@login_required
+def view_perfil_usuario(request, uid, perfil_link):
+    args = {}
+
+    usuario = get_object_or_404(UsuarioModel, uid=uid, perfil_link=perfil_link)
+
+    if not usuario.is_active:
+        # TODO criar template de usuario inativo
+        return HttpResponseRedirect('/')
+
+    perfil = get_object_or_404(PerfilModel, usuario=usuario)
+
+    args['usuario'] = usuario
+    args['perfil'] = perfil
+    args['idade'] = methods.calcular_idade(perfil.data_nascimento)
+    args['aniversario'] = methods.calcular_aniversario(perfil.data_nascimento)
+
+    return render(request, 'contas/perfil.html', args)
