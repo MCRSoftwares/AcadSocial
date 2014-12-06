@@ -113,6 +113,12 @@ AUTH_USER_MODEL = 'contas.UsuarioModel'
 
 LOGIN_URL = '/'
 
+VALID_EMAILS = (
+    '@cin.ufpe.br',
+    '@ufpe.br',
+)
+
+
 # DEBUG - Email config
 
 if DEBUG:

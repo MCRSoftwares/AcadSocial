@@ -22,6 +22,7 @@ from django import forms
 from datetime import datetime
 from contas import errors
 from universidades.models import UniversidadeModel, CursoModel
+from AcadSocial import settings
 
 # Forms relacionados à página do admin
 
@@ -61,11 +62,17 @@ class UsuarioCadastroForm(forms.ModelForm):
     password_attrs = {'placeholder': 'Senha'}
     password_conf_attrs = {'placeholder': 'Confirme a senha'}
 
+    # Criação dos emails disponíveis para cadastro
+
+    email_list = {(emails, emails) for emails in settings.VALID_EMAILS}
+
     # Criação dos campos
 
     first_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=first_name_attrs))
     last_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=last_name_attrs))
-    email = forms.EmailField(max_length=128, widget=forms.TextInput(attrs=email_attrs))
+    email_front = forms.CharField(max_length=128, widget=forms.TextInput(attrs=email_attrs))
+    email_back = forms.ChoiceField(choices=email_list)
+    email = forms.EmailField(widget=forms.HiddenInput(), required=False)
     password = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_attrs))
     password_conf = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_conf_attrs))
 
@@ -82,7 +89,10 @@ class UsuarioCadastroForm(forms.ModelForm):
         return self.cleaned_data
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email_front = self.cleaned_data['email_front']
+        email_back = self.cleaned_data['email_back']
+
+        email = email_front + email_back
 
         # Checa se o e-mail já existe.
 
@@ -96,7 +106,7 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     class Meta:
         model = UsuarioModel
-        fields = ('first_name', 'last_name', 'email', 'password', 'password_conf')
+        fields = ('first_name', 'last_name', 'email_front', 'email_back', 'password', 'password_conf')
 
 
 class PerfilCadastroForm(forms.ModelForm):
@@ -158,13 +168,16 @@ class UsuarioLoginForm(forms.ModelForm):
 
     # Criação dos campos
 
-    email = forms.EmailField(max_length=128, widget=forms.EmailInput(attrs=email_attrs))
-    password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_attrs))
+    email = forms.EmailField(max_length=128, widget=forms.EmailInput(attrs=email_attrs), label='e-mail')
+    password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_attrs), label='senha')
 
     def __init__(self, request=None, *args, **kwargs):
+        super(UsuarioLoginForm, self).__init__(*args, **kwargs)
         self.request = request
         self.usuario = None
-        super(UsuarioLoginForm, self).__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.error_messages = {'required': 'O campo \'%s\' campo é obrigatório' % field.label}
 
     def clean(self):
         email = self.cleaned_data.get('email')

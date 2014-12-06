@@ -18,6 +18,7 @@ Descrição:
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout
 from datetime import datetime
@@ -30,7 +31,9 @@ import random
 
 def view_cadastrar_usuario(request):
     args = {}
-    cadastrado = False
+
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/')
 
     if request.method == 'POST':
         usuario_form = UsuarioCadastroForm(data=request.POST)
@@ -39,18 +42,18 @@ def view_cadastrar_usuario(request):
         if usuario_form.is_valid() and perfil_form.is_valid():
 
             # Passando as informações do formuário para seus respectivos modelos.
-
             usuario = usuario_form.save()
-            perfil = perfil_form.save(commit=False)
+            usuario.email = usuario_form.cleaned_data['email']
 
             usuario.set_password(usuario.password)
             usuario.save()
 
+            perfil = perfil_form.save(commit=False)
             perfil.usuario = usuario
 
             # Geração da chave de ativação do usuário.
 
-            email = usuario_form.cleaned_data['email']
+            email = usuario.email
             nome = usuario_form.cleaned_data['first_name']
             sobrenome = usuario_form.cleaned_data['last_name']
 
@@ -84,66 +87,70 @@ def view_cadastrar_usuario(request):
 
             email_conteudo = 'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
                              'Clique no link abaixo para confirmar o seu e-mail e utilizar nossa rede!' \
-                             '\nhttp://127.0.0.1:8000/contas/ativar/%s' % (nome, sobrenome, chave)
+                             '\nhttp://127.0.0.1:8000/perfil/ativar/%s' % (nome, sobrenome, chave)
 
             send_mail(email_assunto, email_conteudo, None, [email], fail_silently=False)
 
-            args['cadastrado'] = True
+            args['usuario'] = usuario
 
             # TODO criar template para confirmação de cadastro
-            return render(request, 'contas/index.html', args)
+            return render(request, 'contas/cadastro_sucesso.html', args)
     else:
         usuario_form = UsuarioCadastroForm()
         perfil_form = PerfilCadastroForm()
+        args['usuario'] = None
 
     args['usuario_form'] = usuario_form
     args['perfil_form'] = perfil_form
-    args['cadastrado'] = cadastrado
 
     return render(request, 'contas/cadastro.html', args)
 
 
 def view_pagina_inicial(request):
-    args = {}
+
+    # Checa se o usuário já está logado
 
     if not request.user.is_authenticated():
+        return view_login_usuario(request)
 
-        if request.method == 'POST':
-            login_form = UsuarioLoginForm(data=request.POST)
-
-            if login_form.is_valid():
-                login(request, login_form.get_usuario())
-
-                return view_pagina_inicial_logada(request)
-
-        else:
-            login_form = UsuarioLoginForm(request)
-
-        args['login_form'] = login_form
-
-    else:
-        return view_pagina_inicial_logada(request)
-
-    return render(request, 'contas/index.html', args)
+    return view_pagina_inicial_logada(request)
 
 
 def view_pagina_inicial_logada(request):
     args = {}
 
-    return render(request, 'contas/home.html', args)
+    return render(request, 'contas/index.html', args)
 
 
 def view_login_usuario(request):
+    args = {}
+
+    # Checa se o usuário já está logado
+
+    if request.user.is_authenticated():
+        return view_pagina_inicial_logada(request)
 
     if request.method == 'POST':
         login_form = UsuarioLoginForm(data=request.POST)
 
+        # Caso o login ocorra de forma correta (campos corretos)
+
         if login_form.is_valid():
             login(request, login_form.get_usuario())
-            return HttpResponseRedirect('/')
+
+            # Se o usuário for um superuser, este será redirecionado para a página de admin
+
+            if request.user.is_superuser:
+                return HttpResponseRedirect('/admin')
+
+            # Se for um usuário normal, ele será mandado para a view da página principal
+
+            return redirect(methods.redirect_to_next(request.get_full_path()))
+
     else:
         login_form = UsuarioLoginForm(request)
-    args = {'login_form': login_form}
+
+    args['login_form'] = login_form
 
     return render(request, 'contas/login.html', args)
 
@@ -158,6 +165,7 @@ def view_confirmar_usuario(request, chave):
 
     if request.user.is_authenticated():
         # Se o usuário já estiver logado, ele será redirecionado para a página inicial.
+
         return HttpResponseRedirect('/')
 
     # Confere se existe algum perfil que possui a chave dada. Caso não exista, o sistema retorna 404.

@@ -26,14 +26,11 @@ from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
 from contas import methods
 
+
 class UsuarioManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, is_active, **extra_fields):
         now = timezone.now()
-
-        if not email:
-            # TODO criar mensagem de erro para caso o e-mail não seja definido
-            raise ValueError('')
 
         email = self.normalize_email(email)
         user = self.model(email=email, is_staff=is_staff, is_superuser=is_superuser, is_active=is_active,
@@ -92,17 +89,19 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
 
-    def get_short_email(self):
-        return methods.selecionar_inicio_email(self.email)
-
     def email_user(self, subject, message, from_email=None):
         send_mail(subject, message, from_email, [self.email])
+
+    def get_short_email(self):
+        return methods.selecionar_inicio_email(self.email)
 
     def __unicode__(self):
         return self.email
 
     def save(self, *args, **kwargs):
-        self.perfil_link = slugify(self.get_short_email())
+        if self.email:
+            self.perfil_link = slugify(self.get_short_email())
+
         super(UsuarioModel, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -124,6 +123,23 @@ class PerfilModel(models.Model):
 
     def __unicode__(self):
         return self.usuario.email
+
+    def get_foto_name(self):
+        return 'imagens/perfil/' + methods.gerar_nome_imagem(self.usuario.uid)
+
+    def save(self, *args, **kwargs):
+        try:
+            foto = PerfilModel.objects.get(usuario=self.usuario).foto
+
+            if not self.foto:
+                self.foto = 'imagens/perfil/default.jpg'
+            elif self.foto != foto:
+                self.foto.name = self.get_foto_name()
+
+        except PerfilModel.DoesNotExist:
+            pass
+
+        super(PerfilModel, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('perfil')

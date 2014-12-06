@@ -20,6 +20,12 @@ import hashlib
 
 
 def gerar_nome_imagem(random_id):
+
+    """
+    Gera um nome para a foto utilizando a hora/data em que fora postada,
+    junto do id do usuário que a postou e um hash aleatório baseado na data da postagem.
+    """
+
     data = datetime.today()
     data_f = data.strftime('%Y%m%d%H%M%S')
 
@@ -29,12 +35,22 @@ def gerar_nome_imagem(random_id):
 
 
 def calcular_idade(data):
+
+    """
+    Calcula a idade do usuário através de sua data de nascimento e da data atual.
+    """
+
     hoje = datetime.today()
 
     return hoje.year - data.year - ((hoje.month, hoje.day) < (data.month, data.day))
 
 
 def calcular_aniversario(data):
+
+    """
+    Recupera somente o mês e o dia do aniversário do usuário
+    """
+
     dia = str(data.day)
     mes = str(data.month)
 
@@ -48,7 +64,27 @@ def calcular_aniversario(data):
 
 
 def selecionar_inicio_email(email):
+
+    """
+    Separa o e-mail em duas partes pelo @,
+    utilizado para criação do link do perfil do usuário
+    """
+
     divisao = str(email).index('@')
     inicio = str(email)[0:divisao]
 
     return inicio
+
+
+def redirect_to_next(path):
+
+    """
+    Checa se há um redirecionamento requisitado após o login do usuário.
+    """
+
+    if '?next=/' in path:
+        path = path[7:]
+
+        return path
+
+    return '/'

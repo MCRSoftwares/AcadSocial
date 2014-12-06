@@ -21,7 +21,7 @@ from contas import views
 urlpatterns = patterns('',
                        url(r'^$', views.view_pagina_inicial, name='index'),
                        url(r'^cadastro/$', views.view_cadastrar_usuario, name='cadastro'),
-                       url(r'^conta/ativar/(?P<chave>\w+)/', views.view_confirmar_usuario, name='confirmar'),
+                       url(r'^perfil/ativar/(?P<chave>\w+)/', views.view_confirmar_usuario, name='confirmar'),
                        url(r'^perfil/(?P<uid>\w+)/(?P<perfil_link>[\w\-]+)/',
                            views.view_perfil_usuario, name='perfil'),
                        url(r'^login/', views.view_login_usuario, name='login'),
