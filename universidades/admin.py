@@ -17,11 +17,10 @@ Descrição:
 
 from django.contrib import admin
 from universidades.models import UniversidadeModel, CursoModel
-from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
 
-class UniversidadeAdmin(UserAdmin):
+class UniversidadeAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (_('Info'), {'fields': ('sigla', 'nome')}),
@@ -30,8 +29,9 @@ class UniversidadeAdmin(UserAdmin):
     list_display = ('sigla', 'nome')
     search_fields = ('sigla', 'nome')
     ordering = ('sigla',)
-    
-class CursoAdmin(UserAdmin):
+
+
+class CursoAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (_('Info'), {'fields': ('nome', 'universidade')}),

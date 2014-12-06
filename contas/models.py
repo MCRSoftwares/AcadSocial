@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, PermissionsMixin
 from universidades.models import UniversidadeModel, CursoModel
 
+
 class UsuarioManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, is_active, **extra_fields):

@@ -174,7 +174,7 @@ class UsuarioLoginForm(forms.ModelForm):
             self.usuario = authenticate(username=email, password=password)
 
             if not self.usuario:
-                # Se o usuário for nulo, então o email ou a senha está(ão) incorreto(s).
+                # Se o usuário for nulo, então o email ou a senha estão incorretos.
 
                 raise forms.ValidationError(errors.erro_login['login_invalido'], code='login_e01')
 
