@@ -9,4 +9,4 @@ Requisitos para o debug do sistema:
 - Django 1.7.1 (pip install django)
 - Pillow 2.6.1 (pip install pillow)
 - Django-Organizations (pip install django-organizations)
-- De preferência utilizar o PyCharm da JetBrains.
+- De preferência utilizar o PyCharm da JetBrains versão Professional (licensa acadêmica de um ano). (https://www.jetbrains.com/pycharm/)
