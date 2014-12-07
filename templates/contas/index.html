@@ -1,13 +1,55 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
 {% load staticfiles %}
-
-{% block title %} Bem-vindo! {% endblock %}
-
-{% block head %}
-{% endblock %}
-
-{% block body %}
-<a href="{% url 'perfil' user.uid user.perfil_link %}">{{ user.first_name }} {{ user.last_name }} </a>
-- <a href="{% url 'logout' %}">Logout</a>
-
-{% endblock %}
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AcadSocial - Bem-vindo!</title>
+    <link href="{% static 'bootstrap\css\bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css\acadsocial.css' %}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">
+					Acad<b>Social</b>
+				</a>
+			</div>
+			<div class="nav navbar-right">
+				<div class="dropdown">
+					<a class="btn default-btn dropdown-toggle" href="#" data-toggle="dropdown">
+						Entrar
+					</a>
+					<div class="dropdown-menu">
+						<form class="form" method="post">
+                            {% csrf_token %}
+							<b class="form-label">
+                                Entre no AcadSocial!
+							</b>
+							<br/>
+							{{ login_form.email }}
+							{{ login_form.password }}
+							<br/>
+							<button type="submit" class="btn default-btn">
+								Entrar
+							</button>&nbsp
+							<button type="button" class="btn default-btn">
+								Esqueci a Senha
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="nav navbar-right">
+				<a href="{% url 'cadastro' %}" class="btn default-btn">Cadastre-se</a>&nbsp&nbsp
+			</div>
+		</div>
+	</nav>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="{% static 'bootstrap\js\bootstrap.min.js' %}"></script>
+</body>
+</html>

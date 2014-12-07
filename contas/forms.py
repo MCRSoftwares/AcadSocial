@@ -68,13 +68,14 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos campos
 
-    first_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=first_name_attrs))
-    last_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=last_name_attrs))
-    email_front = forms.CharField(max_length=128, widget=forms.TextInput(attrs=email_attrs))
+    first_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=first_name_attrs), label='nome')
+    last_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=last_name_attrs), label='sobrenome')
+    email_front = forms.CharField(max_length=128, widget=forms.TextInput(attrs=email_attrs), label='e-mail')
     email_back = forms.ChoiceField(choices=email_list)
     email = forms.EmailField(widget=forms.HiddenInput(), required=False)
-    password = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_attrs))
-    password_conf = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_conf_attrs))
+    password = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_attrs), label='senha')
+    password_conf = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_conf_attrs),
+                                    label='confirmar senha')
 
     def clean(self):
 
@@ -89,7 +90,12 @@ class UsuarioCadastroForm(forms.ModelForm):
         return self.cleaned_data
 
     def clean_email(self):
-        email_front = self.cleaned_data['email_front']
+
+        try:
+            email_front = self.cleaned_data['email_front']
+        except:
+            raise forms.ValidationError(errors.erro_cadastro['email_invalido'], code='cadastro_e02')
+
         email_back = self.cleaned_data['email_back']
 
         email = email_front + email_back
@@ -102,7 +108,12 @@ class UsuarioCadastroForm(forms.ModelForm):
         except UsuarioModel.DoesNotExist:
             return email
 
-        raise forms.ValidationError(errors.erro_cadastro['email_ja_existente'], code='cadastro_e02')
+        raise forms.ValidationError(errors.erro_cadastro['email_ja_existente'], code='cadastro_e03')
+
+    def __init__(self, *args, **kwargs):
+        super(UsuarioCadastroForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.error_messages = {'required': 'O campo \'%s\' é obrigatório' % field.label}
 
     class Meta:
         model = UsuarioModel
@@ -137,7 +148,12 @@ class PerfilCadastroForm(forms.ModelForm):
 
     universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
     curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
-    foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs), required=False)
+    foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs), required=False, label='foto')
+
+    def __init__(self, request=None, *args, **kwargs):
+        super(PerfilCadastroForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.error_messages = {'required': 'O campo \'%s\' é obrigatório' % field.label}
 
     def clean(self):
 
@@ -152,7 +168,7 @@ class PerfilCadastroForm(forms.ModelForm):
         try:
             datetime.strptime(nasc_str, '%d-%m-%Y')
         except ValueError:
-            raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e03')
+            raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e04')
 
     class Meta:
         model = PerfilModel
@@ -163,8 +179,8 @@ class UsuarioLoginForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    email_attrs = {'placeholder': 'E-mail'}
-    password_attrs = {'placeholder': 'Senha'}
+    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control'}
+    password_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
 
     # Criação dos campos
 
@@ -177,7 +193,7 @@ class UsuarioLoginForm(forms.ModelForm):
         self.usuario = None
 
         for field in self.fields.values():
-            field.error_messages = {'required': 'O campo \'%s\' campo é obrigatório' % field.label}
+            field.error_messages = {'required': 'O campo \'%s\' é obrigatório' % field.label}
 
     def clean(self):
         email = self.cleaned_data.get('email')

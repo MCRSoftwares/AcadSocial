@@ -111,15 +111,49 @@ def view_pagina_inicial(request):
     # Checa se o usuário já está logado
 
     if not request.user.is_authenticated():
-        return view_login_usuario(request)
+        return view_pagina_inicial_login(request)
 
     return view_pagina_inicial_logada(request)
+
+
+def view_pagina_inicial_login(request):
+    args = {}
+
+    # Checa se o usuário já está logado
+
+    if request.user.is_authenticated():
+        return view_pagina_inicial_logada(request)
+
+    if request.method == 'POST':
+        login_form = UsuarioLoginForm(data=request.POST)
+
+        # Caso o login ocorra de forma correta (campos corretos)
+
+        if login_form.is_valid():
+            login(request, login_form.get_usuario())
+
+            # Se o usuário for um superuser, este será redirecionado para a página de admin
+
+            if request.user.is_superuser:
+                return HttpResponseRedirect('/admin')
+
+            # Se for um usuário normal, ele será mandado para a view da página principal
+
+            return redirect(methods.redirect_to_next(request.get_full_path()))
+        else:
+            return view_login_usuario(request)
+    else:
+        login_form = UsuarioLoginForm(request)
+
+    args['login_form'] = login_form
+
+    return render(request, 'contas/index.html', args)
 
 
 def view_pagina_inicial_logada(request):
     args = {}
 
-    return render(request, 'contas/index.html', args)
+    return render(request, 'contas/home.html', args)
 
 
 def view_login_usuario(request):
@@ -128,7 +162,7 @@ def view_login_usuario(request):
     # Checa se o usuário já está logado
 
     if request.user.is_authenticated():
-        return view_pagina_inicial_logada(request)
+        return HttpResponseRedirect('/')
 
     if request.method == 'POST':
         login_form = UsuarioLoginForm(data=request.POST)

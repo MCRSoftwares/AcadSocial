@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %} Bem-vindo! {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<a href="{% url 'perfil' user.uid user.perfil_link %}">{{ user.first_name }} {{ user.last_name }} </a>
+- <a href="{% url 'logout' %}">Logout</a>
+
+{% endblock %}
