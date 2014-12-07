@@ -21,6 +21,7 @@ erro_cadastro = {
     'senhas_diferentes': 'As senhas estão diferentes!',
     'email_ja_existente': 'Esse e-mail já está cadastrado!',
     'data_incorreta': 'Essa data não existe!',
+    'email_invalido': 'Esse e-mail não é válido!',
 }
 
 erro_login = {

@@ -111,7 +111,7 @@ TEMPLATE_DIRS = (
 
 AUTH_USER_MODEL = 'contas.UsuarioModel'
 
-LOGIN_URL = '/'
+LOGIN_URL = '/login/'
 
 VALID_EMAILS = (
     '@cin.ufpe.br',
