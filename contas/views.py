@@ -16,6 +16,7 @@ Descrição:
 """
 
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm, EnviarTokenForm, SenhaResetForm
+from universidades.models import UniversidadeModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
@@ -45,7 +46,7 @@ def view_cadastrar_usuario(request):
             # Passando as informações do formuário para seus respectivos modelos.
 
             usuario = usuario_form.save()
-            usuario.email = usuario_form.cleaned_data['email']
+            usuario.email = usuario_form.cleaned_data['email'].lower()
             usuario.set_password(usuario.password)
             usuario.save()
 
@@ -148,6 +149,9 @@ def view_pagina_inicial_login(request):
 
 def view_pagina_inicial_logada(request):
     args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    args['perfil'] = perfil
 
     return render(request, 'contas/home.html', args)
 
@@ -343,7 +347,7 @@ def view_reativar_usuario(request):
         reativar_form = EnviarTokenForm(data=request.POST)
 
         if reativar_form.is_valid():
-            email = reativar_form.cleaned_data['email']
+            email = reativar_form.cleaned_data['email'].lower()
             usuario = UsuarioModel.object.get(email=email)
 
             # Checa se o usuário desativado possui algum token ativo
@@ -379,15 +383,17 @@ def view_reativar_usuario(request):
 
 
 @login_required
-def view_perfil_usuario(request, host, perfil_link):
+def view_perfil_usuario(request, sigla, perfil_link):
     args = {}
 
     # Procura por um usuário e perfil existente que pertença ao link dado.
 
-    usuario = get_object_or_404(UsuarioModel, host=host, perfil_link=perfil_link, is_active=True)
-    perfil = get_object_or_404(PerfilModel, usuario=usuario)
+    sigla = sigla.upper()
 
-    args['usuario'] = usuario
+    universidade = get_object_or_404(UniversidadeModel, sigla=sigla)
+    perfil = get_object_or_404(PerfilModel, perfil_link=perfil_link, universidade=universidade)
+
+    args['usuario'] = perfil.usuario
     args['perfil'] = perfil
     args['idade'] = methods.calcular_idade(perfil.data_nascimento)
     args['aniversario'] = methods.calcular_aniversario(perfil.data_nascimento)

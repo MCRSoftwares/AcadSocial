@@ -25,8 +25,8 @@ from contas.forms import UsuarioChangeForm, UsuarioCreationForm
 class UsuarioAdmin(UserAdmin):
 
     fieldsets = (
-        (_('Account info'), {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'perfil_link', 'host')}),
+        (_(u'Informações do usuário'), {'fields': ('email', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -42,18 +42,18 @@ class UsuarioAdmin(UserAdmin):
 class PerfilAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_('User info'), {'fields': ('usuario',)}),
+        (_(u'Informações do usuário'), {'fields': ('usuario', 'perfil_link',)}),
         (_('Personal info'), {'fields': ('universidade', 'curso', 'foto', 'data_nascimento')}),
     )
 
-    list_display = ('usuario', 'universidade', 'curso')
-    search_fields = ('usuario__email', 'universidade__sigla', 'curso__nome',)
+    list_display = ('usuario', 'perfil_link', 'universidade', 'curso',)
+    search_fields = ('usuario__email', 'perfil_link', 'universidade__sigla', 'curso__nome',)
 
 
 class TokenAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_('User info'), {'fields': ('usuario',)}),
+        (_(u'Informações do usuário'), {'fields': ('usuario',)}),
         (_('Token'), {'fields': ('active', 'valid', 'token', 'tipo', 'data_expiracao', 'data_request')}),
     )
 

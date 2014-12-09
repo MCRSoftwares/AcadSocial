@@ -114,7 +114,6 @@ def redirect_to_next(path):
 
     if '?next=/' in path:
         path = path[path.index('?next=/') + 6:]
-
         return path
 
     return '/'
@@ -171,7 +170,10 @@ def validar_senhas(senha, senha_conf):
     Confere se as senhas estão válidas e retorna o tipo de erro caso não esteja.
     """
 
-    if senha and not re.match('[A-Za-z0-9:;@#$%&+=]{8,}', senha):
+    if senha and not re.match('^\S*(?=\S*[a-zA-Z])(?=\S*[0-9])\S{6,20}$', senha):
+
+        # A senha deve conter pelo menos 6 caracteres, tendo pelo menos 1 letra e 1 número.
+
         return 'invalida'
 
     if senha != senha_conf:

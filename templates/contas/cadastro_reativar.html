@@ -7,7 +7,7 @@
 
 {% block body %}
     {% if not finalizado %}
-        Por favor, informe seu e-mail novamente para receber um novo link de ativação.<br>
+        Por favor, informe seu e-mail para receber um novo link de ativação.<br>
         <form action="" method="post">
             {% csrf_token %}
             {{ reativar_form.email.errors }}

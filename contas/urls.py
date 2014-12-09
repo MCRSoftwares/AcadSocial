@@ -25,7 +25,7 @@ urlpatterns = patterns('',
                        url(r'^conta/cadastro/$', views.view_cadastrar_usuario, name='cadastro'),
                        url(r'^conta/ativar/(?P<chave>\w+)/', views.view_confirmar_usuario, name='confirmar'),
                        url(r'^conta/reativar/', views.view_reativar_usuario, name='reativar'),
-                       url(r'^perfil/(?P<host>\w+)/(?P<perfil_link>[\w\-]+)/',
+                       url(r'^perfil/(?P<sigla>\w+)/(?P<perfil_link>[\w\-]+)/',
                            views.view_perfil_usuario, name='perfil'),
 
                        url(r'^conta/login/', views.view_login_usuario, name='login'),

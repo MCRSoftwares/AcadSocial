@@ -25,7 +25,7 @@ from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, 
 from datetime import timedelta
 from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
-from contas.methods import selecionar_inicio_email, selecionar_final_email
+from contas.methods import selecionar_inicio_email
 
 
 class UsuarioManager(BaseUserManager):
@@ -70,9 +70,6 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=128, blank=True)
     last_name = models.CharField(_('last name'), max_length=128, blank=True)
 
-    perfil_link = models.CharField(_('profile link'), max_length=200)
-    host = models.CharField(_('university host'), max_length=64)
-
     is_active = models.BooleanField(_('active'), default=False, help_text=active_help_text)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=staff_help_text)
 
@@ -94,24 +91,11 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None):
         send_mail(subject, message, from_email, [self.email])
 
-    def get_short_email(self):
-        return selecionar_inicio_email(self.email)
-
-    def get_host_email(self):
-        return selecionar_final_email(self.email)
-
     def __unicode__(self):
         return self.email
 
     def save(self, *args, **kwargs):
-        if self.email:
-            self.perfil_link = slugify(self.get_short_email())
-            self.host = slugify(self.get_host_email())
-
         super(UsuarioModel, self).save(*args, **kwargs)
-
-    def get_absolute_url(self):
-        return "/perfil/%s/%s" % (urlquote(self.host), urlquote(self.perfil_link))
 
     class Meta:
         verbose_name = _('usuario')
@@ -125,6 +109,8 @@ class PerfilModel(models.Model):
     data_nascimento = models.DateField(_('birth date'))
     universidade = models.ForeignKey(UniversidadeModel)
     curso = models.ForeignKey(CursoModel)
+
+    perfil_link = models.CharField(_('profile link'), max_length=128, unique=True)
 
     def __unicode__(self):
         return self.usuario.email
@@ -141,10 +127,16 @@ class PerfilModel(models.Model):
         except PerfilModel.DoesNotExist:
             pass
 
+        if self.usuario.email:
+            self.perfil_link = slugify(self.get_short_email())
+
         super(PerfilModel, self).save(*args, **kwargs)
 
+    def get_short_email(self):
+        return selecionar_inicio_email(self.usuario.email)
+
     def get_absolute_url(self):
-        return "/perfil/%s/%s" % (urlquote(self.usuario.uid), urlquote(self.usuario.perfil_link))
+        return "/perfil/%s/%s" % (urlquote(slugify(self.universidade.sigla)), urlquote(self.perfil_link))
 
     class Meta:
         verbose_name = _('perfil')

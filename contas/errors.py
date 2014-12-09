@@ -24,8 +24,7 @@ erro_cadastro = {
     'email_invalido': 'Esse e-mail não é válido!',
     'nome_incompleto': 'O campo \'nome\' deve conter pelo menos dois caracteres!',
     'sobrenome_incompleto': 'O campo \'sobrenome\' deve conter pelo menos dois caracteres!',
-    'senha_invalida': 'A senha deve ter entre 8 e 16 caracteres e aceita somente os caracteres: '
-                      'A-Z, a-z, 0-9, :;@#$%&+=-'
+    'senha_invalida': 'A senha deve ter pelo menos 6 caracteres, contendo pelo menos 1 letra e 1 número e sem espaços.'
 }
 
 erro_login = {
@@ -36,5 +35,5 @@ erro_login = {
 erro_enviar_token = {
     'email_invalido': 'Esse e-mail não está cadastrado!',
     'senhas_diferentes': 'As senhas estão diferentes!',
-    'senha_invalida': 'A senha deve ter entre 8 e 16 caracteres!',
+    'senha_invalida': 'A senha deve ter pelo menos 6 caracteres, contendo pelo menos 1 letra e 1 número e sem espaços.',
 }

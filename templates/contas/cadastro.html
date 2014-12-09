@@ -9,7 +9,7 @@
 {% if user.is_authenticated %}
     Você já está logado!
 {% else %}
-    <form method="post" action="." style="display:inline" class="form-inline" enctype="multipart/form-data">
+    <form method="post" action="." class="form-inline" enctype="multipart/form-data">
          {% csrf_token %}
          {{ usuario_form.first_name }}
          {% if usuario_form.first_name.errors %}
@@ -17,7 +17,6 @@
                 {{ error }}
             {% endfor %}
         {% endif %}
-        <br>
          {{ usuario_form.last_name}}
          {% if usuario_form.last_name.errors %}
             {% for error in usuario_form.last_name.errors %}
@@ -50,6 +49,7 @@
                 {{ error }}
             {% endfor %}
         {% endif %}
+
         <br>
          {{ perfil_form.foto }}
          {% if usuario_form.foto.errors %}
@@ -57,6 +57,7 @@
                 {{ error }}
             {% endfor %}
          {% endif %}
+
         <br>
          {{ perfil_form.universidade }}
          {% if usuario_form.unviersidade.errors %}
@@ -70,6 +71,7 @@
                 {{ error }}
             {% endfor %}
         {% endif %}
+
         <br>
          {{ perfil_form.dia }}
          {{ perfil_form.mes }}
@@ -79,13 +81,15 @@
                 {{ error }}
             {% endfor %}
         {% endif %}
+
+        <br>
           {% if perfil_form.non_field_errors %}
             {% for error in perfil_form.non_field_errors %}
                 {{ error }}
             {% endfor %}
         {% endif %}
-        <br><br>
-         <button type="submit" class="btn btn-default" name="submit">Enviar</button>
+        <br>
+         <button type="submit" name="submit" class="btn btn-default">Enviar</button>
     </form>
 
 {% endif %}

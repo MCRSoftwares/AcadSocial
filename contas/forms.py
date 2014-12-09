@@ -16,7 +16,7 @@ Descrição:
 """
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from contas.models import UsuarioModel, PerfilModel
+from contas.models import UsuarioModel, PerfilModel, TokenModel
 from django.contrib.auth import authenticate
 from django import forms
 from datetime import datetime
@@ -68,13 +68,16 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos campos
 
-    first_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=first_name_attrs), label='nome')
-    last_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=last_name_attrs), label='sobrenome')
-    email_front = forms.CharField(max_length=128, widget=forms.TextInput(attrs=email_attrs), label='e-mail')
+    first_name = forms.CharField(min_length=2, max_length=128, widget=forms.TextInput(attrs=first_name_attrs))
+    last_name = forms.CharField(min_length=2, max_length=128, widget=forms.TextInput(attrs=last_name_attrs),
+                                label='sobrenome')
+    email_front = forms.CharField(min_length=2, max_length=128, widget=forms.TextInput(attrs=email_attrs),
+                                  label='e-mail')
     email_back = forms.ChoiceField(choices=email_list, widget=forms.Select(attrs=email_attrs))
     email = forms.EmailField(widget=forms.HiddenInput(), required=False)
-    password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_attrs), label='senha')
-    password_conf = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_conf_attrs),
+    password = forms.CharField(min_length=6, max_length=20, widget=forms.PasswordInput(attrs=password_attrs),
+                               label='senha')
+    password_conf = forms.CharField(min_length=6, max_length=20, widget=forms.PasswordInput(attrs=password_conf_attrs),
                                     label='confirmar senha')
 
     def clean(self):
@@ -105,10 +108,9 @@ class UsuarioCadastroForm(forms.ModelForm):
 
         try:
             email_front = self.cleaned_data['email_front']
+            email_back = self.cleaned_data['email_back']
         except:
             raise forms.ValidationError(errors.erro_cadastro['email_invalido'], code='cadastro_e02')
-
-        email_back = self.cleaned_data['email_back']
 
         email = email_front + email_back
 
@@ -197,7 +199,7 @@ class UsuarioLoginForm(forms.ModelForm):
         self.usuario = None
 
     def clean(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get('email').lower()
         password = self.cleaned_data.get('password')
 
         if email and password:
@@ -235,7 +237,7 @@ class EnviarTokenForm(forms.ModelForm):
 
     def clean_email(self):
 
-        email = self.cleaned_data['email']
+        email = self.cleaned_data['email'].lower()
 
         # Checa se o e-mail existe.
 
@@ -275,9 +277,9 @@ class SenhaResetForm(forms.ModelForm):
 
     # Criação dos campos
 
-    senha = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=senha_attrs), label='senha',
-                            required=True)
-    senha_conf = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=senha_conf_attrs),
+    senha = forms.CharField(min_length=6, max_length=20, widget=forms.PasswordInput(attrs=senha_attrs),
+                            label='senha', required=True)
+    senha_conf = forms.CharField(min_length=6, max_length=20, widget=forms.PasswordInput(attrs=senha_conf_attrs),
                                  label='confirme a senha', required=True)
 
     def clean(self):
