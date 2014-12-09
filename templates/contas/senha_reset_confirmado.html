@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %} Resetar senha {% endblock %}
+
+{% block body %}
+{% if expired %}
+    Seu pedido de redefinição de senha expirou.<br>
+    Clique <a href="{% url 'senha-reset' %}">aqui</a> para receber outro link.
+{% else %}
+Por favor, informe sua nova senha.
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ senha_form.senha }}
+        {% if senha_form.senha.errors %}
+            {% for error in senha_form.senha.errors %}
+                {{ error }}
+                <br/>
+            {% endfor %}
+        {% endif %}
+        {{ senha_form.senha_conf }}
+        {% if senha_form.senha_conf.errors %}
+            {% for error in senha_form.senha_conf.errors %}
+                {{ error }}
+                <br/>
+            {% endfor %}
+        {% endif %}
+        {% if senha_form.non_field_errors %}
+            {% for error in senha_form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
+                <br/>
+        <input type="submit" value="Enviar" />
+    </form>
+{% endif %}
+{% endblock %}

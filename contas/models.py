@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -13,7 +13,7 @@ Caso(s) de Uso: DV001, DV002
 
 Descrição:
     Definição dos modelos relacionados à aplicação de contas (cadastro/login).
-    Inclui os modelos: PerfilModel, UsuarioModel e UsuarioManager.
+    Inclui os modelos: PerfilModel, UsuarioModel e TokenModel.
 """
 
 from django.db import models
@@ -22,9 +22,10 @@ from django.utils.http import urlquote
 from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, PermissionsMixin
+from datetime import timedelta
 from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
-from contas import methods
+from contas.methods import selecionar_inicio_email, selecionar_final_email
 
 
 class UsuarioManager(BaseUserManager):
@@ -57,7 +58,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 
     # Definição dos help_texts
 
-    active_help_text = _('Designates whether this user should be treated as active.'
+    active_help_text = _('Designates whether this user should be treated as active. '
                          'Unselect this instead of deleting accounts.')
 
     staff_help_text = _('Designates whether the user can log into this admin site.')
@@ -70,6 +71,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=128, blank=True)
 
     perfil_link = models.CharField(_('profile link'), max_length=200)
+    host = models.CharField(_('university host'), max_length=64)
 
     is_active = models.BooleanField(_('active'), default=False, help_text=active_help_text)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=staff_help_text)
@@ -93,7 +95,10 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email])
 
     def get_short_email(self):
-        return methods.selecionar_inicio_email(self.email)
+        return selecionar_inicio_email(self.email)
+
+    def get_host_email(self):
+        return selecionar_final_email(self.email)
 
     def __unicode__(self):
         return self.email
@@ -101,11 +106,12 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if self.email:
             self.perfil_link = slugify(self.get_short_email())
+            self.host = slugify(self.get_host_email())
 
         super(UsuarioModel, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return "/perfil/%s/%s" % (urlquote(self.uid), urlquote(self.perfil_link))
+        return "/perfil/%s/%s" % (urlquote(self.host), urlquote(self.perfil_link))
 
     class Meta:
         verbose_name = _('usuario')
@@ -119,13 +125,9 @@ class PerfilModel(models.Model):
     data_nascimento = models.DateField(_('birth date'))
     universidade = models.ForeignKey(UniversidadeModel)
     curso = models.ForeignKey(CursoModel)
-    chave_ativacao = models.CharField(_('activation key'), max_length=40, blank=True)
 
     def __unicode__(self):
         return self.usuario.email
-
-    def get_foto_name(self):
-        return 'imagens/perfil/' + methods.gerar_nome_imagem(self.usuario.uid)
 
     def save(self, *args, **kwargs):
         try:
@@ -141,6 +143,35 @@ class PerfilModel(models.Model):
 
         super(PerfilModel, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return "/perfil/%s/%s" % (urlquote(self.usuario.uid), urlquote(self.usuario.perfil_link))
+
     class Meta:
         verbose_name = _('perfil')
         verbose_name_plural = _('perfils')
+
+
+class TokenModel(models.Model):
+
+    active_help_text = _('Designates whether this token should be treated as active. '
+                         'An inactive token is a token that expired before being used. '
+                         'Unselect this instead of deleting tokens.')
+
+    valid_help_text = _('Designates whether this token should be treated as valid. '
+                        'An invalid token cannot be accessed. '
+                        'Unselect this instead of deleting tokens.')
+
+    usuario = models.ForeignKey(UsuarioModel)
+    tipo = models.CharField(max_length=128)
+    token = models.CharField(_('token'), max_length=40, blank=True)
+    data_request = models.DateTimeField(_('request date'), default=timezone.now())
+    data_expiracao = models.DateTimeField(_('expiration date'), default=(timezone.now() + timedelta(days=1)))
+    active = models.BooleanField(_('active'), default=True, help_text=active_help_text)
+    valid = models.BooleanField(_('valid'), default=True, help_text=valid_help_text)
+
+    def __unicode__(self):
+        return self.token + '(active=' + str(self.active) + ', tipo=' + self.tipo + ')'
+
+    class Meta:
+        verbose_name = _('token')
+        verbose_name_plural = _('tokens')

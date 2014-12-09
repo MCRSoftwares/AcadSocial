@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    {% if expired %}
+        Sua conta expirou após 7 dias sem ativá-la.<br>
+        Por favor, informe seu e-mail novamente para receber um novo link de ativação.<br>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ ativacao_form.email.errors }}
+            {{ ativacao_form.email }}<br/>
+            <input type="submit" value="Enviar" />
+        </form>
+    {% else %}
+        Sua conta foi ativada!<br>
+        <a href="{% url 'index' %}">Realizar login</a>
+    {% endif %}
+
+{% endblock %}

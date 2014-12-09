@@ -7,45 +7,86 @@
 
 {% block body %}
 {% if user.is_authenticated %}
-Você já está logado!
+    Você já está logado!
 {% else %}
-<form method="post" action="." enctype="multipart/form-data">
+    <form method="post" action="." style="display:inline" class="form-inline" enctype="multipart/form-data">
          {% csrf_token %}
-         {{ usuario_form.first_name.errors }}
-         {{ usuario_form.first_name}}
+         {{ usuario_form.first_name }}
+         {% if usuario_form.first_name.errors %}
+            {% for error in usuario_form.first_name.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
         <br>
-         {{ usuario_form.last_name.errors }}
          {{ usuario_form.last_name}}
+         {% if usuario_form.last_name.errors %}
+            {% for error in usuario_form.last_name.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
         <br>
-         {{ usuario_form.email_front.errors }}
          {{ usuario_form.email_front}}
-         {{ usuario_form.email_back.errors }}
+         {% if usuario_form.email_front.errors %}
+            {% for error in usuario_form.email_front.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
          {{ usuario_form.email_back}}
-         {{ usuario_form.email.errors }}
-         {{ usuario_form.email}}
+        {% if usuario_form.email.errors %}
+            {% for error in usuario_form.email.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
         <br>
-         {{ usuario_form.password.errors }}
          {{ usuario_form.password }}
-        <br>
-         {{ usuario_form.password_conf.errors }}
+        {% if usuario_form.password.errors %}
+            {% for error in usuario_form.password.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
          {{ usuario_form.password_conf }}
-         <br>
-         {{ perfil_form.foto.errors }}
+         {% if usuario_form.password_conf.errors %}
+            {% for error in usuario_form.password_conf.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
+        <br>
          {{ perfil_form.foto }}
-         <br>
-         {{ perfil_form.universidade.errors }}
+         {% if usuario_form.foto.errors %}
+            {% for error in usuario_form.foto.errors %}
+                {{ error }}
+            {% endfor %}
+         {% endif %}
+        <br>
          {{ perfil_form.universidade }}
-         <br>
-         {{ perfil_form.curso.errors }}
+         {% if usuario_form.unviersidade.errors %}
+            {% for error in usuario_form.universidade.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
          {{ perfil_form.curso }}
-         <br>
+         {% if usuario_form.curso.errors %}
+            {% for error in usuario_form.curso.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
+        <br>
          {{ perfil_form.dia }}
          {{ perfil_form.mes }}
          {{ perfil_form.ano }}
-         <br>
-         {{ usuario_form.non_field_errors }}
-         {{ perfil_form.non_field_errors }}
-         <button type="submit" name="submit">Enviar</button>
-        </form>
+         {% if usuario_form.non_field_errors %}
+            {% for error in usuario_form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
+          {% if perfil_form.non_field_errors %}
+            {% for error in perfil_form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
+        <br><br>
+         <button type="submit" class="btn btn-default" name="submit">Enviar</button>
+    </form>
+
 {% endif %}
 {% endblock %}

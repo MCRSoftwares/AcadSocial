@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -22,9 +22,19 @@ erro_cadastro = {
     'email_ja_existente': 'Esse e-mail já está cadastrado!',
     'data_incorreta': 'Essa data não existe!',
     'email_invalido': 'Esse e-mail não é válido!',
+    'nome_incompleto': 'O campo \'nome\' deve conter pelo menos dois caracteres!',
+    'sobrenome_incompleto': 'O campo \'sobrenome\' deve conter pelo menos dois caracteres!',
+    'senha_invalida': 'A senha deve ter entre 8 e 16 caracteres e aceita somente os caracteres: '
+                      'A-Z, a-z, 0-9, :;@#$%&+=-'
 }
 
 erro_login = {
     'login_invalido': 'E-mail ou senha incorretos!',
     'email_inativo': 'Esse e-mail não está ativado!',
+}
+
+erro_enviar_token = {
+    'email_invalido': 'Esse e-mail não está cadastrado!',
+    'senhas_diferentes': 'As senhas estão diferentes!',
+    'senha_invalida': 'A senha deve ter entre 8 e 16 caracteres!',
 }

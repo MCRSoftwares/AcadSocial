@@ -8,15 +8,31 @@ Versão do Código: 01v001a
 Responsável: Victor Ferraz
 Auxiliar: -
 
-Requisito(s): RF001, RF002
-Caso(s) de Uso: DV001, DV002
+Requisito(s): RF001, RF002, RF020, RF022, RF023, RF027
+Caso(s) de Uso: DV001, DV002, DVA012
 
 Descrição:
     Definição dos métodos auxiliares relacionados à aplicação de contas (cadastro/login).
 """
 
 from datetime import datetime
+from django.core.mail import send_mail
 import hashlib
+import random
+import re
+
+
+def gerar_chave(param):
+
+    """
+    Gera um hash baseado num valor random e soma com uma
+    chave baseada num parâmetro passado para esta função.
+    """
+
+    hash_salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+    chave = hashlib.sha1(hash_salt+param).hexdigest()
+
+    return chave
 
 
 def gerar_nome_imagem(random_id):
@@ -29,7 +45,7 @@ def gerar_nome_imagem(random_id):
     data = datetime.today()
     data_f = data.strftime('%Y%m%d%H%M%S')
 
-    nome_foto = str(data_f) + '-' + str(random_id) + str(hashlib.sha1(str(data)).hexdigest()[0:15])
+    nome_foto = str(data_f) + '-' + str(random_id) + gerar_chave(str(data))
 
     return nome_foto + '.jpg'
 
@@ -76,6 +92,20 @@ def selecionar_inicio_email(email):
     return inicio
 
 
+def selecionar_final_email(email):
+
+    """
+    Separa o e-mail em duas partes pelo @,
+    utilizado para criação do link do perfil do usuário
+    """
+
+    divisao_inicio = str(email).index('@')
+    divisao_fim = str(email).rindex('.')
+    inicio = str(email)[divisao_inicio:divisao_fim]
+
+    return inicio
+
+
 def redirect_to_next(path):
 
     """
@@ -83,8 +113,69 @@ def redirect_to_next(path):
     """
 
     if '?next=/' in path:
-        path = path[7:]
+        path = path[path.index('?next=/') + 6:]
 
         return path
 
     return '/'
+
+
+def enviar_email_ativacao(email, nome, sobrenome, chave):
+
+    """
+    Envia um e-mail de ativação ao usuário que solicitou o cadastro.
+    """
+
+    email_assunto = 'AcadSocial - Confirme seu e-mail'
+
+    email_conteudo = 'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
+                     'Clique no link abaixo para confirmar o seu e-mail e utilizar nossa rede!' \
+                     '\nhttp://127.0.0.1:8000/conta/ativar/%s' % (nome, sobrenome, chave)
+
+    send_mail(email_assunto, email_conteudo, None, [email], fail_silently=False)
+
+
+def enviar_email_senha_reset(token, usuario, email):
+
+    """
+    Envia um e-mail de redefinição de senha para o usuário que a solicitou.
+    """
+
+    email_assunto = 'Redefinição da senha'
+    email_conteudo = 'http://127.0.0.1:8000/conta/senha/%s/%s' % (usuario.uid, token.token)
+
+    send_mail(email_assunto, email_conteudo, None, [email], fail_silently=False)
+
+
+def gerar_token(tipo, usuario, token, token_param, data=None):
+
+    """
+    Preenche os atribudos de models.TokenModel(), incluindo a chave em si.
+    """
+
+    token.usuario = usuario
+    token.token = gerar_chave(token_param)
+    token.tipo = tipo
+
+    if data:
+        token.data_expiracao = data
+
+    token.save()
+
+    return token
+
+
+def validar_senhas(senha, senha_conf):
+
+    """
+    Confere se as senhas estão válidas e retorna o tipo de erro caso não esteja.
+    """
+
+    if senha and not re.match('[A-Za-z0-9:;@#$%&+=]{8,}', senha):
+        return 'invalida'
+
+    if senha != senha_conf:
+        return 'diferentes'
+
+    return 'correta'
+

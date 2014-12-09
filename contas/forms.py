@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v005a
+Versão do Código: 01v006a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -20,9 +20,9 @@ from contas.models import UsuarioModel, PerfilModel
 from django.contrib.auth import authenticate
 from django import forms
 from datetime import datetime
-from contas import errors
+from contas import errors, methods
 from universidades.models import UniversidadeModel, CursoModel
-from AcadSocial import settings
+from contas import constants
 
 # Forms relacionados à página do admin
 
@@ -56,35 +56,47 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    first_name_attrs = {'placeholder': 'Nome'}
-    last_name_attrs = {'placeholder': 'Sobrenome'}
-    email_attrs = {'placeholder': 'E-mail'}
-    password_attrs = {'placeholder': 'Senha'}
-    password_conf_attrs = {'placeholder': 'Confirme a senha'}
+    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control'}
+    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control'}
+    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control'}
+    password_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
+    password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control'}
 
     # Criação dos emails disponíveis para cadastro
 
-    email_list = {(emails, emails) for emails in settings.VALID_EMAILS}
+    email_list = {(emails, emails) for emails in constants.VALID_EMAILS}
 
     # Criação dos campos
 
     first_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=first_name_attrs), label='nome')
     last_name = forms.CharField(max_length=128, widget=forms.TextInput(attrs=last_name_attrs), label='sobrenome')
     email_front = forms.CharField(max_length=128, widget=forms.TextInput(attrs=email_attrs), label='e-mail')
-    email_back = forms.ChoiceField(choices=email_list)
+    email_back = forms.ChoiceField(choices=email_list, widget=forms.Select(attrs=email_attrs))
     email = forms.EmailField(widget=forms.HiddenInput(), required=False)
-    password = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_attrs), label='senha')
-    password_conf = forms.CharField(max_length=128, widget=forms.PasswordInput(attrs=password_conf_attrs),
+    password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_attrs), label='senha')
+    password_conf = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=password_conf_attrs),
                                     label='confirmar senha')
 
     def clean(self):
+
+        nome = self.cleaned_data.get('first_name')
+        sobrenome = self.cleaned_data.get('last_name')
+
+        if nome and len(nome) < 2:
+            raise forms.ValidationError(errors.erro_cadastro['nome_incompleto'], code='cadastro_e05')
+
+        if sobrenome and len(sobrenome) < 2:
+            raise forms.ValidationError(errors.erro_cadastro['sobrenome_incompleto'], code='cadastro_e06')
 
         # Checa se os campos password e password_conf estão corretos (iguais).
 
         password = self.cleaned_data.get('password')
         password_conf = self.cleaned_data.get('password_conf')
 
-        if password != password_conf:
+        if methods.validar_senhas(password, password_conf) == 'invalida':
+            raise forms.ValidationError(errors.erro_cadastro['senha_invalida'], code='cadastro_e04')
+
+        if methods.validar_senhas(password, password_conf) == 'diferentes':
             raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e01')
 
         return self.cleaned_data
@@ -110,11 +122,6 @@ class UsuarioCadastroForm(forms.ModelForm):
 
         raise forms.ValidationError(errors.erro_cadastro['email_ja_existente'], code='cadastro_e03')
 
-    def __init__(self, *args, **kwargs):
-        super(UsuarioCadastroForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.error_messages = {'required': 'O campo \'%s\' é obrigatório' % field.label}
-
     class Meta:
         model = UsuarioModel
         fields = ('first_name', 'last_name', 'email_front', 'email_back', 'password', 'password_conf')
@@ -124,10 +131,10 @@ class PerfilCadastroForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    universidade_attrs = {'placeholder': 'Universidade'}
-    campus_attrs = {'placeholder': 'Campus'}
-    curso_attrs = {'placeholder': 'Curso'}
-    foto_attrs = {}
+    universidade_attrs = {'placeholder': 'Universidade', 'class': 'form-control'}
+    curso_attrs = {'placeholder': 'Curso', 'class': 'form-control'}
+    foto_attrs = {'class': 'form-control'}
+    data_nascimento_attrs = {'class': 'form-control'}
 
     # Criação das listas de dia, mês e ano
 
@@ -142,18 +149,15 @@ class PerfilCadastroForm(forms.ModelForm):
 
     # Criação dos campos
 
-    dia = forms.ChoiceField(choices=dia_list)
-    mes = forms.ChoiceField(choices=mes_list)
-    ano = forms.ChoiceField(choices=ano_list)
+    dia = forms.ChoiceField(choices=dia_list, widget=forms.Select(data_nascimento_attrs))
+    mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(data_nascimento_attrs))
+    ano = forms.ChoiceField(choices=ano_list, widget=forms.Select(data_nascimento_attrs))
 
-    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade')
-    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso')
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade',
+                                          label='universidade', widget=forms.Select(attrs=universidade_attrs))
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', label='curso',
+                                   widget=forms.Select(attrs=curso_attrs))
     foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs), required=False, label='foto')
-
-    def __init__(self, request=None, *args, **kwargs):
-        super(PerfilCadastroForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.error_messages = {'required': 'O campo \'%s\' é obrigatório' % field.label}
 
     def clean(self):
 
@@ -168,7 +172,7 @@ class PerfilCadastroForm(forms.ModelForm):
         try:
             datetime.strptime(nasc_str, '%d-%m-%Y')
         except ValueError:
-            raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e04')
+            raise forms.ValidationError(errors.erro_cadastro['data_incorreta'], code='cadastro_e04')
 
     class Meta:
         model = PerfilModel
@@ -191,9 +195,6 @@ class UsuarioLoginForm(forms.ModelForm):
         super(UsuarioLoginForm, self).__init__(*args, **kwargs)
         self.request = request
         self.usuario = None
-
-        for field in self.fields.values():
-            field.error_messages = {'required': 'O campo \'%s\' é obrigatório' % field.label}
 
     def clean(self):
         email = self.cleaned_data.get('email')
@@ -220,3 +221,77 @@ class UsuarioLoginForm(forms.ModelForm):
     class Meta:
         model = UsuarioModel
         fields = ('email', 'password',)
+
+
+class EnviarTokenForm(forms.ModelForm):
+
+    # Criação dos atributos do campo
+
+    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control'}
+
+    # Criação do campo
+
+    email = forms.EmailField(max_length=128, widget=forms.EmailInput(attrs=email_attrs), label='e-mail')
+
+    def clean_email(self):
+
+        email = self.cleaned_data['email']
+
+        # Checa se o e-mail existe.
+
+        try:
+            UsuarioModel.object.get(email=email)
+
+            return email
+        except UsuarioModel.DoesNotExist:
+            raise forms.ValidationError(errors.erro_enviar_token['email_invalido'], code='enviar_token_e01')
+
+    def clean(self):
+        email = self.cleaned_data.get('email')
+
+        # Checa se o e-mail existe.
+
+        # Método clean(self) alterado para que ele aceite o valor do email, caso contrário,
+        # ele tentará registrar um novo usuário com este email.
+
+        try:
+            UsuarioModel.object.get(email=email)
+        except UsuarioModel.DoesNotExist:
+            return self.cleaned_data
+
+        return self.cleaned_data
+
+    class Meta:
+        model = UsuarioModel
+        fields = ('email',)
+
+
+class SenhaResetForm(forms.ModelForm):
+
+    # Criação dos atributos dos campos
+
+    senha_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
+    senha_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control'}
+
+    # Criação dos campos
+
+    senha = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=senha_attrs), label='senha',
+                            required=True)
+    senha_conf = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs=senha_conf_attrs),
+                                 label='confirme a senha', required=True)
+
+    def clean(self):
+        senha = self.cleaned_data.get('senha')
+        senha_conf = self.cleaned_data.get('senha_conf')
+
+        if methods.validar_senhas(senha, senha_conf) == 'deferente':
+            raise forms.ValidationError(errors.erro_enviar_token['senhas_diferentes'], code='enviar_token_e02')
+
+        elif methods.validar_senhas(senha, senha_conf) == 'invalida':
+            raise forms.ValidationError(errors.erro_enviar_token['senha_invalida'], code='enviar_token_e03')
+
+        return self.cleaned_data
+
+    class Meta:
+        model = UsuarioModel
+        fields = ('senha', 'senha_conf')

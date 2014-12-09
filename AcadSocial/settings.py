@@ -3,8 +3,8 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Sistema: 0.0.1a002
-Versão do Código: 01v001a
+Versão do Sistema: 0.0.1a003
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -34,6 +34,12 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LANGUAGE_CODE = 'pt-br'
+
+LANGUAGES = (
+    ('pt-br', u'Português'),
+    ('en-us', u'Inglês'),
+)
 
 # Application definition
 
@@ -76,8 +82,6 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -111,13 +115,7 @@ TEMPLATE_DIRS = (
 
 AUTH_USER_MODEL = 'contas.UsuarioModel'
 
-LOGIN_URL = '/login/'
-
-VALID_EMAILS = (
-    '@cin.ufpe.br',
-    '@ufpe.br',
-)
-
+LOGIN_URL = '/conta/login/'
 
 # DEBUG - Email config
 

@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -18,7 +18,7 @@ Descrição:
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
-from contas.models import UsuarioModel, PerfilModel
+from contas.models import UsuarioModel, PerfilModel, TokenModel
 from contas.forms import UsuarioChangeForm, UsuarioCreationForm
 
 
@@ -26,7 +26,7 @@ class UsuarioAdmin(UserAdmin):
 
     fieldsets = (
         (_('Account info'), {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'perfil_link')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'perfil_link', 'host')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -35,7 +35,7 @@ class UsuarioAdmin(UserAdmin):
     form = UsuarioChangeForm
     add_form = UsuarioCreationForm
     list_display = ('email', 'first_name', 'last_name', 'is_staff')
-    search_fields = ('email', 'first_name', 'last_name')
+    search_fields = ('email', 'first_name', 'last_name',)
     ordering = ('email',)
 
 
@@ -47,8 +47,20 @@ class PerfilAdmin(admin.ModelAdmin):
     )
 
     list_display = ('usuario', 'universidade', 'curso')
-    search_fields = ('universidade', 'curso',)
+    search_fields = ('usuario__email', 'universidade__sigla', 'curso__nome',)
+
+
+class TokenAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_('User info'), {'fields': ('usuario',)}),
+        (_('Token'), {'fields': ('active', 'valid', 'token', 'tipo', 'data_expiracao', 'data_request')}),
+    )
+
+    list_display = ('usuario', 'data_expiracao', 'data_request', 'tipo', 'active', 'valid')
+    search_fields = ('usuario__first_name', 'usuario__last_name', 'usuario__email', 'tipo',)
 
 
 admin.site.register(UsuarioModel, UsuarioAdmin)
 admin.site.register(PerfilModel, PerfilAdmin)
+admin.site.register(TokenModel, TokenAdmin)

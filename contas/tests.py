@@ -17,5 +17,4 @@ Descrição:
 """
 
 from django.test import TestCase
-
-# Create your tests here.
+from contas.models import PerfilModel, UsuarioModel, TokenModel
