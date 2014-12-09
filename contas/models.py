@@ -162,7 +162,7 @@ class TokenModel(models.Model):
     valid = models.BooleanField(_('valid'), default=True, help_text=valid_help_text)
 
     def __unicode__(self):
-        return self.token + '(active=' + str(self.active) + ', tipo=' + self.tipo + ')'
+        return self.token + '(active=' + str(self.active) + ', type=' + self.tipo + ')'
 
     class Meta:
         verbose_name = _('token')

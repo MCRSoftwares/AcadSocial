@@ -150,6 +150,9 @@ def view_pagina_inicial_login(request):
 def view_pagina_inicial_logada(request):
     args = {}
 
+    if request.user.is_superuser:
+        return HttpResponseRedirect('/admin')
+
     perfil = PerfilModel.objects.get(usuario=request.user)
     args['perfil'] = perfil
 

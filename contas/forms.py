@@ -199,10 +199,11 @@ class UsuarioLoginForm(forms.ModelForm):
         self.usuario = None
 
     def clean(self):
-        email = self.cleaned_data.get('email').lower()
+        email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
 
         if email and password:
+            email = email.lower()
             self.usuario = authenticate(username=email, password=password)
 
             if not self.usuario:
@@ -237,7 +238,10 @@ class EnviarTokenForm(forms.ModelForm):
 
     def clean_email(self):
 
-        email = self.cleaned_data['email'].lower()
+        email = self.cleaned_data['email']
+
+        if email:
+            email = email.lower()
 
         # Checa se o e-mail existe.
 
