@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -25,7 +25,7 @@ from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, 
 from datetime import timedelta
 from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
-from contas.methods import selecionar_inicio_email, gerar_nome_imagem
+from contas.methods import selecionar_inicio_email, converter_para_jpg
 
 
 class UsuarioManager(BaseUserManager):
@@ -106,7 +106,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 class PerfilModel(models.Model):
 
     usuario = models.OneToOneField(UsuarioModel)
-    foto = models.ImageField(_('picture'), upload_to='imagens/perfil/', default='imagens/perfil/default.jpg')
+    foto = models.ImageField(_('picture'), upload_to='imagens/perfil', default='imagens/perfil/default.jpg')
     data_nascimento = models.DateField(_('birth date'))
     universidade = models.ForeignKey(UniversidadeModel)
     curso = models.ForeignKey(CursoModel)
@@ -123,7 +123,7 @@ class PerfilModel(models.Model):
             if not self.foto:
                 self.foto = 'imagens/perfil/default.jpg'
             elif self.foto != foto:
-                self.foto.name = self.get_foto_name()
+                self.foto = self.get_foto_name()
 
         except PerfilModel.DoesNotExist:
             pass
@@ -137,7 +137,7 @@ class PerfilModel(models.Model):
         return selecionar_inicio_email(self.usuario.email)
 
     def get_foto_name(self):
-        return gerar_nome_imagem(self.usuario.uid)
+        return converter_para_jpg(self.foto, self.usuario.uid)
 
     def get_absolute_url(self):
         return "/perfil/%s/%s" % (urlquote(slugify(self.universidade.sigla)), urlquote(self.perfil_link))

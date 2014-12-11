@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v004a
+Versão do Código: 01v005a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -17,16 +17,17 @@ Descrição:
 
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm, EnviarTokenForm, SenhaResetForm
 from universidades.models import UniversidadeModel
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contas.models import PerfilModel, UsuarioModel, TokenModel
-from contas import methods
+from contas.methods import gerar_token, converter_para_jpg, enviar_email_ativacao, calcular_idade
+from contas.methods import redirecionar_para, enviar_email_senha_reset, calcular_aniversario
 from django.contrib.auth.decorators import login_required
-from contas import constants
+from contas.constants import TOKEN_TYPE
 from mainAcad.forms import UsuarioSearchForm
 
 
@@ -40,7 +41,7 @@ def view_cadastrar_usuario(request):
 
     if request.method == 'POST':
         usuario_form = UsuarioCadastroForm(data=request.POST)
-        perfil_form = PerfilCadastroForm(data=request.POST)
+        perfil_form = PerfilCadastroForm(data=request.POST, files=request.FILES)
 
         if usuario_form.is_valid() and perfil_form.is_valid():
 
@@ -64,14 +65,13 @@ def view_cadastrar_usuario(request):
 
             # Método que preenche os atributos de TokenModel
 
-            token = methods.gerar_token(constants.TOKEN_TYPE[0], usuario, token, email,
-                                        timezone.now() + timedelta(days=7))
+            token = gerar_token(TOKEN_TYPE[0], usuario, token, email, timezone.now() + timedelta(days=7))
 
             # Salvando a foto (caso esta tenha sido definida) e renomeando-a.
 
             if 'foto' in request.FILES:
                 foto = request.FILES['foto']
-                foto.name = methods.gerar_nome_imagem(usuario.uid)
+                foto.name = converter_para_jpg(foto, usuario.uid)
                 perfil.foto = foto
 
             # Formatação da data de nascimento do usuário
@@ -89,7 +89,7 @@ def view_cadastrar_usuario(request):
 
             # Enviando e-mail de validação da conta para o usuário
 
-            methods.enviar_email_ativacao(email, nome, sobrenome, token.token)
+            enviar_email_ativacao(email, nome, sobrenome, token.token)
 
             args['usuario'] = usuario
 
@@ -138,7 +138,7 @@ def view_pagina_inicial_login(request):
 
             # Se for um usuário normal, ele será mandado para a view da página principal.
 
-            return redirect(methods.redirect_to_next(request.get_full_path()))
+            return redirect(redirecionar_para(request.get_full_path()))
         else:
             return view_login_usuario(request)
     else:
@@ -185,7 +185,7 @@ def view_login_usuario(request):
 
             # Se for um usuário normal, ele será mandado para a view da página principal.
 
-            return redirect(methods.redirect_to_next(request.get_full_path()))
+            return redirect(redirecionar_para(request.get_full_path()))
 
     else:
         login_form = UsuarioLoginForm(request)
@@ -242,12 +242,11 @@ def view_confirmar_usuario(request, chave):
             # Gera um novo token de ativação de conta para o usuário
 
             novo_token = TokenModel()
-            novo_token = methods.gerar_token(constants.TOKEN_TYPE[0], usuario, novo_token, email,
-                                             timezone.now() + timedelta(days=7))
+            novo_token = gerar_token(TOKEN_TYPE[0], usuario, novo_token, email,  timezone.now() + timedelta(days=7))
 
             # Envia um novo e-mail de ativação para o usuário
 
-            methods.enviar_email_ativacao(email, usuario.first_name, usuario.last_name, novo_token.token)
+            enviar_email_ativacao(email, usuario.first_name, usuario.last_name, novo_token.token)
 
             args['email'] = email
 
@@ -286,8 +285,8 @@ def view_senha_reset(request):
             # Gera um token de redefinição de senha.
 
             token = TokenModel()
-            token = methods.gerar_token(constants.TOKEN_TYPE[1], usuario, token, email)
-            methods.enviar_email_senha_reset(token, usuario, email)
+            token = gerar_token(TOKEN_TYPE[1], usuario, token, email)
+            enviar_email_senha_reset(token, usuario, email)
 
             return render(request, 'contas/senha_reset_completo.html', args)
     else:
@@ -370,12 +369,11 @@ def view_reativar_usuario(request):
             # Gera um novo token de ativação de conta para o usuário
 
             novo_token = TokenModel()
-            novo_token = methods.gerar_token(constants.TOKEN_TYPE[0], usuario, novo_token, email,
-                                             timezone.now() + timedelta(days=7))
+            novo_token = gerar_token(TOKEN_TYPE[0], usuario, novo_token, email, timezone.now() + timedelta(days=7))
 
             # Envia um novo e-mail de ativação para o usuário
 
-            methods.enviar_email_ativacao(email, usuario.first_name, usuario.last_name, novo_token.token)
+            enviar_email_ativacao(email, usuario.first_name, usuario.last_name, novo_token.token)
 
             args['finalizado'] = True
 
@@ -401,8 +399,8 @@ def view_perfil_usuario(request, sigla, perfil_link):
 
     args['usuario'] = perfil.usuario
     args['perfil'] = perfil
-    args['idade'] = methods.calcular_idade(perfil.data_nascimento)
-    args['aniversario'] = methods.calcular_aniversario(perfil.data_nascimento)
+    args['idade'] = calcular_idade(perfil.data_nascimento)
+    args['aniversario'] = calcular_aniversario(perfil.data_nascimento)
 
     return render(request, 'contas/perfil.html', args)
 

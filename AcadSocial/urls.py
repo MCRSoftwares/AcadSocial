@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -24,9 +24,6 @@ urlpatterns = patterns('',
                        url(r'^', include('contas.urls')),
                        url(r'^', include('mainAcad.urls')),
                        )
-
-urlpatterns += patterns((r'^static/(?P<path>.*)$', 'django.views.static.serve',
-                         {'document_root': settings.STATIC_ROOT}),)
 
 if settings.DEBUG:
     urlpatterns += patterns('django.views.static', (r'media/(?P<path>.*)', 'serve',

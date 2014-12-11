@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -23,3 +23,5 @@ TOKEN_TYPE = (
     'email_ativacao',
     'senha_reset',
 )
+
+MAX_IMAGE_SIZE = 4*1024*1024

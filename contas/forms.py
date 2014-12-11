@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v006a
+Versão do Código: 01v007a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -16,13 +16,14 @@ Descrição:
 """
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from contas.models import UsuarioModel, PerfilModel, TokenModel
+from contas.models import UsuarioModel, PerfilModel
 from django.contrib.auth import authenticate
 from django import forms
 from datetime import datetime
-from contas import errors, methods
+from contas.methods import validar_senhas, validar_palavra
+from contas.errors import erro_cadastro, erro_enviar_token, erro_login
 from universidades.models import UniversidadeModel, CursoModel
-from contas import constants
+from contas.constants import MAX_IMAGE_SIZE, VALID_EMAILS
 
 # Forms relacionados à página do admin
 
@@ -64,7 +65,7 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos emails disponíveis para cadastro
 
-    email_list = {(emails, emails) for emails in constants.VALID_EMAILS}
+    email_list = {(emails, emails) for emails in VALID_EMAILS}
 
     # Criação dos campos
 
@@ -82,25 +83,33 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     def clean(self):
 
+        # Checa se os campos nome e sobrenome são válidos
+
         nome = self.cleaned_data.get('first_name')
         sobrenome = self.cleaned_data.get('last_name')
 
         if nome and len(nome) < 2:
-            raise forms.ValidationError(errors.erro_cadastro['nome_incompleto'], code='cadastro_e05')
+            raise forms.ValidationError(erro_cadastro['nome_incompleto'], code='nome_incompleto')
 
         if sobrenome and len(sobrenome) < 2:
-            raise forms.ValidationError(errors.erro_cadastro['sobrenome_incompleto'], code='cadastro_e06')
+            raise forms.ValidationError(erro_cadastro['sobrenome_incompleto'], code='sobrenome_incompleto')
+
+        if validar_palavra(nome):
+            raise forms.ValidationError(erro_cadastro['nome_invalido'], code='nome_invalido')
+
+        if validar_palavra(sobrenome):
+            raise forms.ValidationError(erro_cadastro['sobrenome_invalido'], code='sobrenome_invalido')
 
         # Checa se os campos password e password_conf estão corretos (iguais).
 
         password = self.cleaned_data.get('password')
         password_conf = self.cleaned_data.get('password_conf')
 
-        if methods.validar_senhas(password, password_conf) == 'invalida':
-            raise forms.ValidationError(errors.erro_cadastro['senha_invalida'], code='cadastro_e04')
+        if validar_senhas(password, password_conf) == 'invalida':
+            raise forms.ValidationError(erro_cadastro['senha_invalida'], code='senha_invalida')
 
-        if methods.validar_senhas(password, password_conf) == 'diferentes':
-            raise forms.ValidationError(errors.erro_cadastro['senhas_diferentes'], code='cadastro_e01')
+        if validar_senhas(password, password_conf) == 'diferentes':
+            raise forms.ValidationError(erro_cadastro['senhas_diferentes'], code='senhas_diferentes')
 
         return self.cleaned_data
 
@@ -110,7 +119,7 @@ class UsuarioCadastroForm(forms.ModelForm):
             email_front = self.cleaned_data['email_front']
             email_back = self.cleaned_data['email_back']
         except:
-            raise forms.ValidationError(errors.erro_cadastro['email_invalido'], code='cadastro_e02')
+            raise forms.ValidationError(erro_cadastro['email_invalido'], code='email_invalido')
 
         email = email_front + email_back
 
@@ -122,7 +131,7 @@ class UsuarioCadastroForm(forms.ModelForm):
         except UsuarioModel.DoesNotExist:
             return email
 
-        raise forms.ValidationError(errors.erro_cadastro['email_ja_existente'], code='cadastro_e03')
+        raise forms.ValidationError(erro_cadastro['email_ja_existente'], code='email_ja_existente')
 
     class Meta:
         model = UsuarioModel
@@ -135,7 +144,7 @@ class PerfilCadastroForm(forms.ModelForm):
 
     universidade_attrs = {'placeholder': 'Universidade', 'class': 'form-control'}
     curso_attrs = {'placeholder': 'Curso', 'class': 'form-control'}
-    foto_attrs = {'class': 'form-control'}
+    foto_attrs = {'accept': 'image/x-png, image/gif, image/jpeg, image/jpg', 'class': 'form-control'}
     data_nascimento_attrs = {'class': 'form-control'}
 
     # Criação das listas de dia, mês e ano
@@ -174,7 +183,15 @@ class PerfilCadastroForm(forms.ModelForm):
         try:
             datetime.strptime(nasc_str, '%d-%m-%Y')
         except ValueError:
-            raise forms.ValidationError(errors.erro_cadastro['data_incorreta'], code='cadastro_e04')
+            raise forms.ValidationError(erro_cadastro['data_incorreta'], code='data_incorreta')
+
+        foto = self.files['foto']
+
+        if foto:
+            if foto.size > MAX_IMAGE_SIZE:
+                raise forms.ValidationError(erro_cadastro['foto_limite_tamanho'], code='foto_limite_tamanho')
+
+        return self.cleaned_data
 
     class Meta:
         model = PerfilModel
@@ -209,12 +226,12 @@ class UsuarioLoginForm(forms.ModelForm):
             if not self.usuario:
                 # Se o usuário for nulo, então o email ou a senha estão incorretos.
 
-                raise forms.ValidationError(errors.erro_login['login_invalido'], code='login_e01')
+                raise forms.ValidationError(erro_login['login_invalido'], code='login_invalido')
 
             elif not self.usuario.is_active:
                 # Caso o login esteja correto, mas o usuário não esteja ativado (conta cancelada / conta não confirmada)
 
-                raise forms.ValidationError(errors.erro_login['email_inativo'], code='login_e02')
+                raise forms.ValidationError(erro_login['email_inativo'], code='email_inativo')
 
         return self.cleaned_data
 
@@ -250,7 +267,7 @@ class EnviarTokenForm(forms.ModelForm):
 
             return email
         except UsuarioModel.DoesNotExist:
-            raise forms.ValidationError(errors.erro_enviar_token['email_invalido'], code='enviar_token_e01')
+            raise forms.ValidationError(erro_enviar_token['email_invalido'], code='email_invalido')
 
     def clean(self):
         email = self.cleaned_data.get('email')
@@ -290,11 +307,11 @@ class SenhaResetForm(forms.ModelForm):
         senha = self.cleaned_data.get('senha')
         senha_conf = self.cleaned_data.get('senha_conf')
 
-        if methods.validar_senhas(senha, senha_conf) == 'deferente':
-            raise forms.ValidationError(errors.erro_enviar_token['senhas_diferentes'], code='enviar_token_e02')
+        if validar_senhas(senha, senha_conf) == 'deferente':
+            raise forms.ValidationError(erro_enviar_token['senhas_diferentes'], code='senhas_diferentes')
 
-        elif methods.validar_senhas(senha, senha_conf) == 'invalida':
-            raise forms.ValidationError(errors.erro_enviar_token['senha_invalida'], code='enviar_token_e03')
+        elif validar_senhas(senha, senha_conf) == 'invalida':
+            raise forms.ValidationError(erro_enviar_token['senha_invalida'], code='senha_invalida')
 
         return self.cleaned_data
 

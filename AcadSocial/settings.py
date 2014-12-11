@@ -3,8 +3,8 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Sistema: 0.0.1a003
-Versão do Código: 01v002a
+Versão do Sistema: 0.0.1a004
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -127,7 +127,7 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/emails_ativacao/')
 
-
+"""
 # HEROKU CONFIGURATION
 
 # Simplified static file serving.
@@ -145,3 +145,4 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
+"""

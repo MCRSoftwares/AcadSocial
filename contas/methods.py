@@ -17,9 +17,11 @@ Descrição:
 
 from datetime import datetime
 from django.core.mail import send_mail
+from PIL import Image
 import hashlib
 import random
 import re
+from AcadSocial.settings import MEDIA_ROOT
 
 
 def gerar_chave(param):
@@ -45,9 +47,28 @@ def gerar_nome_imagem(random_id):
     data = datetime.today()
     data_f = data.strftime('%Y%m%d%H%M%S')
 
-    nome_foto = str(data_f) + '-' + str(random_id) + gerar_chave(str(data))
+    nome_foto = str(data_f) + str(random_id)
 
     return nome_foto + '.jpg'
+
+
+def converter_para_jpg(imagem_path, uid):
+
+    """
+    Converte a imagem hospedada pelo usuário para JPEG.
+    """
+
+    imagem = Image.open(imagem_path)
+
+    nova_imagem = Image.new("RGB", imagem.size, (255, 255, 255))
+    nova_imagem.paste(imagem)
+
+    imagem_name = gerar_nome_imagem(uid)
+    nova_imagem_path = str(MEDIA_ROOT + '\\imagens\\perfil\\' + imagem_name)
+
+    nova_imagem.save(nova_imagem_path, 'JPEG', quality=80)
+
+    return imagem_name
 
 
 def calcular_idade(data):
@@ -106,7 +127,7 @@ def selecionar_final_email(email):
     return inicio
 
 
-def redirect_to_next(path):
+def redirecionar_para(path):
 
     """
     Checa se há um redirecionamento requisitado após o login do usuário.
@@ -181,3 +202,14 @@ def validar_senhas(senha, senha_conf):
 
     return 'correta'
 
+
+def validar_palavra(palavra):
+
+    """
+    Confere se a palavra contém somente caracteres válidos (não numéricos).
+    """
+
+    if palavra and re.match('^\S*(?=\S*[0-9])\S$', palavra):
+        return False
+
+    return True
