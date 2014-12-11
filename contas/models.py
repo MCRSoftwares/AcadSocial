@@ -25,7 +25,7 @@ from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, 
 from datetime import timedelta
 from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
-from contas.methods import selecionar_inicio_email
+from contas.methods import selecionar_inicio_email, gerar_nome_imagem
 
 
 class UsuarioManager(BaseUserManager):
@@ -69,7 +69,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email'), max_length=200, unique=True, db_index=True)
     first_name = models.CharField(_('first name'), max_length=128, blank=True)
     last_name = models.CharField(_('last name'), max_length=128, blank=True)
-
+    full_name = models.CharField(_('full name'), max_length=256)
     is_active = models.BooleanField(_('active'), default=False, help_text=active_help_text)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=staff_help_text)
 
@@ -95,6 +95,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def save(self, *args, **kwargs):
+        self.full_name = self.get_full_name()
         super(UsuarioModel, self).save(*args, **kwargs)
 
     class Meta:
@@ -135,6 +136,9 @@ class PerfilModel(models.Model):
     def get_short_email(self):
         return selecionar_inicio_email(self.usuario.email)
 
+    def get_foto_name(self):
+        return gerar_nome_imagem(self.usuario.uid)
+
     def get_absolute_url(self):
         return "/perfil/%s/%s" % (urlquote(slugify(self.universidade.sigla)), urlquote(self.perfil_link))
 
@@ -162,7 +166,7 @@ class TokenModel(models.Model):
     valid = models.BooleanField(_('valid'), default=True, help_text=valid_help_text)
 
     def __unicode__(self):
-        return self.token + '(active=' + str(self.active) + ', type=' + self.tipo + ')'
+        return self.token + '(active=' + str(self.active) + ', valid=' + str(self.valid) + ', type=' + self.tipo + ')'
 
     class Meta:
         verbose_name = _('token')

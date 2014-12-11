@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-{% load staticfiles %}
-{% load bootstrap3 %}
+{% load static from staticfiles %}
+
 <html>
 <head lang="en">
     <meta charset="UTF-8">
     <title>AcadSocial - {% block title %}{% endblock %}</title>
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <link href="{% static 'css\acadsocial.css' %}" rel="stylesheet">
+    <link href="{% static '../static/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static '../static/css/acadsocial.css' %}" rel="stylesheet">
     {% block head %}
     {% endblock %}
 </head>
@@ -35,6 +34,6 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="{% static 'bootstrap\js\bootstrap.min.js' %}"></script>
+	<script src="{% static '../static/bootstrap/js/bootstrap.min.js' %}"></script>
 </body>
 </html>

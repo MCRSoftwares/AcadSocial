@@ -17,7 +17,7 @@ Descrição:
 
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm, EnviarTokenForm, SenhaResetForm
 from universidades.models import UniversidadeModel
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout
@@ -27,6 +27,7 @@ from contas.models import PerfilModel, UsuarioModel, TokenModel
 from contas import methods
 from django.contrib.auth.decorators import login_required
 from contas import constants
+from mainAcad.forms import UsuarioSearchForm
 
 
 def view_cadastrar_usuario(request):
@@ -63,7 +64,8 @@ def view_cadastrar_usuario(request):
 
             # Método que preenche os atributos de TokenModel
 
-            token = methods.gerar_token(0, usuario, token, email, timezone.now() + timedelta(days=7))
+            token = methods.gerar_token(constants.TOKEN_TYPE[0], usuario, token, email,
+                                        timezone.now() + timedelta(days=7))
 
             # Salvando a foto (caso esta tenha sido definida) e renomeando-a.
 
@@ -155,6 +157,7 @@ def view_pagina_inicial_logada(request):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(request.GET)
 
     return render(request, 'contas/home.html', args)
 

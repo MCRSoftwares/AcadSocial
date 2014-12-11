@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %} Bem-vindo! {% endblock %}
+
+{% block nav-container %}
+    <form method="get" action="/search/">
+    <div class="col-sm-6" style="margin-top:-6px">
+        {{ pesquisa_form.pesquisa }}
+    </form>
+{% endblock %}
+
+{% block body %}
+    Usuários:<br>
+    {% for perfil in perfils %}
+        <A href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
+        {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
+        </a>
+        <br>
+    {% endfor %}
+    <br>
+    Universidades:<br>
+    {% for universidade in universidades %}
+        {{ universidade.sigla }} - {{ universidade.nome }}
+        <br>
+    {% endfor %}
+    <br>
+    Cursos:<br>
+    {% for curso in cursos %}
+        {{ curso.universidade.sigla }} - {{ curso.nome }}
+        <br>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,6 @@
+*.pyc
+.idea
+staticfiles
+*.log
+media
+*.sqlite3
