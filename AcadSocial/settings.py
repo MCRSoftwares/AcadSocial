@@ -18,6 +18,8 @@ Descrição:
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import dj_database_url
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -32,7 +34,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 LANGUAGE_CODE = 'pt-br'
 
@@ -125,4 +127,21 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/emails_ativacao/')
 
+
+# HEROKU CONFIGURATION
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# Parse database configuration from $DATABASE_URL
+DATABASES['default'] = dj_database_url.config()
+
+# Enable Connection Pooling (if desired)
+DATABASES['default']['ENGINE'] = 'django_postgrespool'
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']

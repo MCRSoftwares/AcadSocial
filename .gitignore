@@ -1,6 +1,6 @@
 *.pyc
 .idea
-staticfiles
 *.log
+venv
+staticfiles
 media
-*.sqlite3
