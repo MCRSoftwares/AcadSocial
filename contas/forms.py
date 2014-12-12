@@ -20,7 +20,7 @@ from contas.models import UsuarioModel, PerfilModel
 from django.contrib.auth import authenticate
 from django import forms
 from datetime import datetime
-from contas.methods import validar_senhas, validar_palavra
+from contas.methods import validar_senhas, validar_palavra, converter_para_jpg
 from contas.errors import erro_cadastro, erro_enviar_token, erro_login
 from universidades.models import UniversidadeModel, CursoModel
 from contas.constants import MAX_IMAGE_SIZE, VALID_EMAILS
@@ -57,11 +57,11 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control'}
-    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control'}
-    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control'}
-    password_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
-    password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control'}
+    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control', 'value': 'Victor'}
+    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control', 'value': 'Ferraz'}
+    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control', 'value': 'victor-sferraz'}
+    password_attrs = {'placeholder': 'Senha', 'class': 'form-control', 'value': 'alpiste1'}
+    password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control', 'value': 'alpiste1'}
 
     # Criação dos emails disponíveis para cadastro
 
@@ -94,10 +94,10 @@ class UsuarioCadastroForm(forms.ModelForm):
         if sobrenome and len(sobrenome) < 2:
             raise forms.ValidationError(erro_cadastro['sobrenome_incompleto'], code='sobrenome_incompleto')
 
-        if validar_palavra(nome):
+        if not validar_palavra(nome):
             raise forms.ValidationError(erro_cadastro['nome_invalido'], code='nome_invalido')
 
-        if validar_palavra(sobrenome):
+        if not validar_palavra(sobrenome):
             raise forms.ValidationError(erro_cadastro['sobrenome_invalido'], code='sobrenome_invalido')
 
         # Checa se os campos password e password_conf estão corretos (iguais).
@@ -185,9 +185,12 @@ class PerfilCadastroForm(forms.ModelForm):
         except ValueError:
             raise forms.ValidationError(erro_cadastro['data_incorreta'], code='data_incorreta')
 
-        foto = self.files['foto']
+        if 'foto' in self.files:
 
-        if foto:
+            foto = self.files['foto']
+
+            # Checa se a foto possui o tamanho máximo definido (6MB).
+
             if foto.size > MAX_IMAGE_SIZE:
                 raise forms.ValidationError(erro_cadastro['foto_limite_tamanho'], code='foto_limite_tamanho')
 

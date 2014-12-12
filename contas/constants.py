@@ -25,3 +25,5 @@ TOKEN_TYPE = (
 )
 
 MAX_IMAGE_SIZE = 4*1024*1024
+
+DEFAULT_PICTURE = 'imagens/perfil/default.jpg'

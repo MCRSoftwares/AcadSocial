@@ -47,12 +47,12 @@ def gerar_nome_imagem(random_id):
     data = datetime.today()
     data_f = data.strftime('%Y%m%d%H%M%S')
 
-    nome_foto = str(data_f) + str(random_id)
+    nome_foto = str(data_f) + gerar_chave(str(random_id))[:5]
 
     return nome_foto + '.jpg'
 
 
-def converter_para_jpg(imagem_path, uid):
+def converter_para_jpg(imagem_path, media_path):
 
     """
     Converte a imagem hospedada pelo usuário para JPEG.
@@ -63,10 +63,10 @@ def converter_para_jpg(imagem_path, uid):
     nova_imagem = Image.new("RGB", imagem.size, (255, 255, 255))
     nova_imagem.paste(imagem)
 
-    imagem_name = gerar_nome_imagem(uid)
-    nova_imagem_path = str(MEDIA_ROOT + '\\imagens\\perfil\\' + imagem_name)
+    imagem_name = gerar_nome_imagem(imagem_path)
+    nova_imagem_path = str(MEDIA_ROOT + media_path + imagem_name)
 
-    nova_imagem.save(nova_imagem_path, 'JPEG', quality=80)
+    nova_imagem.save(nova_imagem_path, 'JPEG', quality=95)
 
     return imagem_name
 

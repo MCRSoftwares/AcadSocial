@@ -26,6 +26,7 @@ from datetime import timedelta
 from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
 from contas.methods import selecionar_inicio_email, converter_para_jpg
+from contas.constants import DEFAULT_PICTURE
 
 
 class UsuarioManager(BaseUserManager):
@@ -106,7 +107,7 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 class PerfilModel(models.Model):
 
     usuario = models.OneToOneField(UsuarioModel)
-    foto = models.ImageField(_('picture'), upload_to='imagens/perfil', default='imagens/perfil/default.jpg')
+    foto = models.ImageField(_('picture'), upload_to='imagens/perfil', default=DEFAULT_PICTURE)
     data_nascimento = models.DateField(_('birth date'))
     universidade = models.ForeignKey(UniversidadeModel)
     curso = models.ForeignKey(CursoModel)
@@ -117,27 +118,32 @@ class PerfilModel(models.Model):
         return self.usuario.email
 
     def save(self, *args, **kwargs):
-        try:
-            foto = PerfilModel.objects.get(usuario=self.usuario).foto
 
-            if not self.foto:
-                self.foto = 'imagens/perfil/default.jpg'
-            elif self.foto != foto:
-                self.foto = self.get_foto_name()
-
-        except PerfilModel.DoesNotExist:
-            pass
+        foto_path = '/imagens/perfil/'
 
         if self.usuario.email:
             self.perfil_link = slugify(self.get_short_email())
+
+        try:
+
+            # Se o perfil já existe, é porque o usuário (ou admin) está alterando as informações após o cadastro.
+
+            foto = PerfilModel.objects.get(usuario=self.usuario).foto
+
+            if self.foto != foto:
+
+                # Caso encontre alguma alteração na foto, esta passará pela conversão
+
+                self.foto = foto_path[1:] + converter_para_jpg(self.foto, foto_path)
+
+        except PerfilModel.DoesNotExist:
+            # Se o perfil não existe, é porque o usuário está se cadastrando.
+            self.foto = foto_path[1:] + converter_para_jpg(self.foto, foto_path)
 
         super(PerfilModel, self).save(*args, **kwargs)
 
     def get_short_email(self):
         return selecionar_inicio_email(self.usuario.email)
-
-    def get_foto_name(self):
-        return converter_para_jpg(self.foto, self.usuario.uid)
 
     def get_absolute_url(self):
         return "/perfil/%s/%s" % (urlquote(slugify(self.universidade.sigla)), urlquote(self.perfil_link))

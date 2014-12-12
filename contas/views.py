@@ -24,7 +24,7 @@ from django.contrib.auth import login, logout
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contas.models import PerfilModel, UsuarioModel, TokenModel
-from contas.methods import gerar_token, converter_para_jpg, enviar_email_ativacao, calcular_idade
+from contas.methods import gerar_token, enviar_email_ativacao, calcular_idade
 from contas.methods import redirecionar_para, enviar_email_senha_reset, calcular_aniversario
 from django.contrib.auth.decorators import login_required
 from contas.constants import TOKEN_TYPE
@@ -66,13 +66,6 @@ def view_cadastrar_usuario(request):
             # Método que preenche os atributos de TokenModel
 
             token = gerar_token(TOKEN_TYPE[0], usuario, token, email, timezone.now() + timedelta(days=7))
-
-            # Salvando a foto (caso esta tenha sido definida) e renomeando-a.
-
-            if 'foto' in request.FILES:
-                foto = request.FILES['foto']
-                foto.name = converter_para_jpg(foto, usuario.uid)
-                perfil.foto = foto
 
             # Formatação da data de nascimento do usuário
 
