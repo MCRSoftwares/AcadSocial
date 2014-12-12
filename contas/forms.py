@@ -57,11 +57,11 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control', 'value': 'Victor'}
-    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control', 'value': 'Ferraz'}
-    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control', 'value': 'victor-sferraz'}
-    password_attrs = {'placeholder': 'Senha', 'class': 'form-control', 'value': 'alpiste1'}
-    password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control', 'value': 'alpiste1'}
+    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control'}
+    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control'}
+    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control'}
+    password_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
+    password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control'}
 
     # Criação dos emails disponíveis para cadastro
 
