@@ -53,8 +53,8 @@ class UsuarioManager(BaseUserManager):
 class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 
     """
-        Substitui o modelo de Usuário original do django.
-        Este fora criado para aceitar somente o e-mail como "username"
+    Substitui o modelo de Usuário original do django.
+    Este fora criado para aceitar somente o e-mail como "username"
     """
 
     # Definição dos help_texts
