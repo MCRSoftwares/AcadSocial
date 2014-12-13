@@ -3,8 +3,8 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Sistema: 0.0.1a004
-Versão do Código: 01v004a
+Versão do Sistema: 0.0.1a005
+Versão do Código: 01v005a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'friendship',
     'mainAcad',
     'contas',
     'universidades',

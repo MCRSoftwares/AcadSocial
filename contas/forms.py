@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v007a
+Versão do Código: 01v008a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -20,10 +20,10 @@ from contas.models import UsuarioModel, PerfilModel
 from django.contrib.auth import authenticate
 from django import forms
 from datetime import datetime
-from contas.methods import validar_senhas, validar_palavra, converter_para_jpg
+from contas.methods import validar_senhas, validar_palavra
 from contas.errors import erro_cadastro, erro_enviar_token, erro_login
 from universidades.models import UniversidadeModel, CursoModel
-from contas.constants import MAX_IMAGE_SIZE, VALID_EMAILS
+from contas.constants import VALID_EMAILS
 
 # Forms relacionados à página do admin
 
@@ -144,7 +144,6 @@ class PerfilCadastroForm(forms.ModelForm):
 
     universidade_attrs = {'placeholder': 'Universidade', 'class': 'form-control'}
     curso_attrs = {'placeholder': 'Curso', 'class': 'form-control'}
-    foto_attrs = {'accept': 'image/x-png, image/gif, image/jpeg, image/jpg', 'class': 'form-control'}
     data_nascimento_attrs = {'class': 'form-control'}
 
     # Criação das listas de dia, mês e ano
@@ -168,7 +167,6 @@ class PerfilCadastroForm(forms.ModelForm):
                                           label='universidade', widget=forms.Select(attrs=universidade_attrs))
     curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', label='curso',
                                    widget=forms.Select(attrs=curso_attrs))
-    foto = forms.ImageField(widget=forms.FileInput(attrs=foto_attrs), required=False, label='foto')
 
     def clean(self):
 
@@ -185,20 +183,11 @@ class PerfilCadastroForm(forms.ModelForm):
         except ValueError:
             raise forms.ValidationError(erro_cadastro['data_incorreta'], code='data_incorreta')
 
-        if 'foto' in self.files:
-
-            foto = self.files['foto']
-
-            # Checa se a foto possui o tamanho máximo definido (6MB).
-
-            if foto.size > MAX_IMAGE_SIZE:
-                raise forms.ValidationError(erro_cadastro['foto_limite_tamanho'], code='foto_limite_tamanho')
-
         return self.cleaned_data
 
     class Meta:
         model = PerfilModel
-        fields = ('dia', 'mes', 'ano', 'universidade', 'curso', 'foto')
+        fields = ('dia', 'mes', 'ano', 'universidade', 'curso')
 
 
 class UsuarioLoginForm(forms.ModelForm):

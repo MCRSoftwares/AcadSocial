@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v005a
+Versão do Código: 01v006a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -14,8 +14,6 @@ Caso(s) de Uso: DV001, DV002
 Descrição:
     Definição das mensagens de erro relacionados à aplicação de contas (cadastro/login).
 """
-
-from contas.constants import MAX_IMAGE_SIZE
 
 # Erros relacionados ao forms.py
 
@@ -29,7 +27,6 @@ erro_cadastro = {
     'nome_invalido': 'O campo \'nome\' não pode conter valores numéricos!',
     'sobrenome_invalido': 'O campo \'sobrenome\' não pode conter valores numéricos!',
     'senha_invalida': 'A senha deve ter pelo menos 6 caracteres, contendo pelo menos 1 letra e 1 número e sem espaços.',
-    'foto_limite_tamanho': 'A imagem deve ter no máximo %s.%sMB!' % (str(MAX_IMAGE_SIZE)[0], str(MAX_IMAGE_SIZE)[1]),
 }
 
 erro_login = {

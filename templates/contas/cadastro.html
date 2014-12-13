@@ -48,9 +48,9 @@
         {% endif %}
 
         <br>
-         {{ perfil_form.foto }}
-         {% if perfil_form.foto.errors %}
-            {% for error in perfil_form.foto.errors %}
+         {{ foto_form.imagem }}
+         {% if foto_form.foto.errors %}
+            {% for error in foto_form.foto.errors %}
                 {{ error }}
             {% endfor %}
          {% endif %}

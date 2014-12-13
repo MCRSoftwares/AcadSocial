@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v004a
+Versão do Código: 01v005a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -25,8 +25,7 @@ from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, 
 from datetime import timedelta
 from universidades.models import UniversidadeModel, CursoModel
 from django.template.defaultfilters import slugify
-from contas.methods import selecionar_inicio_email, converter_para_jpg
-from contas.constants import DEFAULT_PICTURE
+from contas.methods import selecionar_inicio_email
 
 
 class UsuarioManager(BaseUserManager):
@@ -107,7 +106,6 @@ class UsuarioModel(AbstractBaseUser, PermissionsMixin):
 class PerfilModel(models.Model):
 
     usuario = models.OneToOneField(UsuarioModel)
-    foto = models.ImageField(_('picture'), upload_to='imagens/perfil', default=DEFAULT_PICTURE)
     data_nascimento = models.DateField(_('birth date'))
     universidade = models.ForeignKey(UniversidadeModel)
     curso = models.ForeignKey(CursoModel)
@@ -119,26 +117,8 @@ class PerfilModel(models.Model):
 
     def save(self, *args, **kwargs):
 
-        foto_path = '/imagens/perfil/'
-
         if self.usuario.email:
             self.perfil_link = slugify(self.get_short_email())
-
-        try:
-
-            # Se o perfil já existe, é porque o usuário (ou admin) está alterando as informações após o cadastro.
-
-            foto = PerfilModel.objects.get(usuario=self.usuario).foto
-
-            if self.foto != foto:
-
-                # Caso encontre alguma alteração na foto, esta passará pela conversão
-
-                self.foto = foto_path[1:] + converter_para_jpg(self.foto, foto_path)
-
-        except PerfilModel.DoesNotExist:
-            # Se o perfil não existe, é porque o usuário está se cadastrando.
-            self.foto = foto_path[1:] + converter_para_jpg(self.foto, foto_path)
 
         super(PerfilModel, self).save(*args, **kwargs)
 

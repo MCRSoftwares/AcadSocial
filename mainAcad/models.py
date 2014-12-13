@@ -1,3 +1,54 @@
-from django.db import models
+# -*- encoding: utf-8 -*-
 
-# Create your models here.
+"""
+Equipe MCRSoftwares - AcadSocial
+
+Versão do Código: 01v002a
+
+Responsável: Victor Ferraz
+Auxiliar: -
+
+Requisito(s): -
+Caso(s) de Uso: -
+
+Descrição:
+    Definição dos modelos relacionadas à aplicação principal.
+"""
+
+from django.db import models
+from contas.models import PerfilModel
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
+from mainAcad.methods import converter_para_jpg
+from mainAcad.constants import DEFAULT_PICTURE
+
+
+class ImagemModel(models.Model):
+
+    active_help_text = _('Designates whether this image should be treated as active. '
+                         'Unselect this instead of deleting images.')
+
+    profile_help_text = _('Designates whether this image should be treated as a profile picture. '
+                          'Unselect this instead of deleting the profile image.')
+
+    imagem = models.ImageField(_('Image'), upload_to='imagens', default=DEFAULT_PICTURE)
+    perfil = models.ForeignKey(PerfilModel)
+    data_envio = models.DateTimeField(default=timezone.now())
+    is_active = models.BooleanField(default=True, help_text=active_help_text)
+    is_profile_image = models.BooleanField(default=False, help_text=profile_help_text)
+
+    def __unicode__(self):
+        return str(self.imagem)
+
+    def save(self, *args, **kwargs):
+
+        imagem_path = '/imagens/'
+
+        if self.imagem.name != DEFAULT_PICTURE:
+            self.imagem = converter_para_jpg(self.imagem, imagem_path)
+
+        super(ImagemModel, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('imagem')
+        verbose_name_plural = _('imagens')

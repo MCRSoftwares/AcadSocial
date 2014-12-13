@@ -3,3 +3,4 @@ pillow
 django-organizations
 whitenoise
 bcrypt
+django-friendship

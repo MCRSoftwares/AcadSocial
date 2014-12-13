@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -17,11 +17,9 @@ Descrição:
 
 from datetime import datetime
 from django.core.mail import send_mail
-from PIL import Image
 import hashlib
 import random
 import re
-from AcadSocial.settings import MEDIA_ROOT
 
 
 def gerar_chave(param):
@@ -31,44 +29,10 @@ def gerar_chave(param):
     chave baseada num parâmetro passado para esta função.
     """
 
-    hash_salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-    chave = hashlib.sha1(hash_salt+param).hexdigest()
+    hash_salt = hashlib.sha256(str(random.random())).hexdigest()[:5]
+    chave = hashlib.sha256(hash_salt+param).hexdigest()
 
     return chave
-
-
-def gerar_nome_imagem(random_id):
-
-    """
-    Gera um nome para a foto utilizando a hora/data em que fora postada,
-    junto do id do usuário que a postou e um hash aleatório baseado na data da postagem.
-    """
-
-    data = datetime.today()
-    data_f = data.strftime('%Y%m%d%H%M%S')
-
-    nome_foto = str(data_f) + gerar_chave(str(random_id))[:5]
-
-    return nome_foto + '.jpg'
-
-
-def converter_para_jpg(imagem_path, media_path):
-
-    """
-    Converte a imagem hospedada pelo usuário para JPEG.
-    """
-
-    imagem = Image.open(imagem_path)
-
-    nova_imagem = Image.new("RGB", imagem.size, (255, 255, 255))
-    nova_imagem.paste(imagem)
-
-    imagem_name = gerar_nome_imagem(imagem_path)
-    nova_imagem_path = str(MEDIA_ROOT + media_path + imagem_name)
-
-    nova_imagem.save(nova_imagem_path, 'JPEG', quality=95)
-
-    return imagem_name
 
 
 def calcular_idade(data):

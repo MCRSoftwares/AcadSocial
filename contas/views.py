@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v005a
+Versão do Código: 01v006a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -15,7 +15,8 @@ Descrição:
     Definição das views relacionadas à aplicação de contas (cadastro/login).
 """
 
-from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm, EnviarTokenForm, SenhaResetForm
+from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm
+from contas.forms import EnviarTokenForm, SenhaResetForm
 from universidades.models import UniversidadeModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -28,7 +29,8 @@ from contas.methods import gerar_token, enviar_email_ativacao, calcular_idade
 from contas.methods import redirecionar_para, enviar_email_senha_reset, calcular_aniversario
 from django.contrib.auth.decorators import login_required
 from contas.constants import TOKEN_TYPE
-from mainAcad.forms import UsuarioSearchForm
+from mainAcad.forms import UsuarioSearchForm, ImagemUploadForm
+from mainAcad.models import ImagemModel
 
 
 def view_cadastrar_usuario(request):
@@ -41,9 +43,10 @@ def view_cadastrar_usuario(request):
 
     if request.method == 'POST':
         usuario_form = UsuarioCadastroForm(data=request.POST)
-        perfil_form = PerfilCadastroForm(data=request.POST, files=request.FILES)
+        perfil_form = PerfilCadastroForm(data=request.POST)
+        foto_form = ImagemUploadForm(files=request.FILES)
 
-        if usuario_form.is_valid() and perfil_form.is_valid():
+        if usuario_form.is_valid() and perfil_form.is_valid() and foto_form.is_valid():
 
             # Passando as informações do formuário para seus respectivos modelos.
 
@@ -80,6 +83,14 @@ def view_cadastrar_usuario(request):
 
             perfil.save()
 
+            # Fazendo upload da foto
+
+            foto = foto_form.save(commit=False)
+            foto.perfil = perfil
+            foto.is_profile_image = True
+
+            foto.save()
+
             # Enviando e-mail de validação da conta para o usuário
 
             enviar_email_ativacao(email, nome, sobrenome, token.token)
@@ -90,10 +101,13 @@ def view_cadastrar_usuario(request):
     else:
         usuario_form = UsuarioCadastroForm()
         perfil_form = PerfilCadastroForm()
+        foto_form = ImagemUploadForm()
+
         args['usuario'] = None
 
     args['usuario_form'] = usuario_form
     args['perfil_form'] = perfil_form
+    args['foto_form'] = foto_form
 
     return render(request, 'contas/cadastro.html', args)
 
@@ -149,6 +163,7 @@ def view_pagina_inicial_logada(request):
         return HttpResponseRedirect('/admin')
 
     perfil = PerfilModel.objects.get(usuario=request.user)
+
     args['perfil'] = perfil
     args['pesquisa_form'] = UsuarioSearchForm(request.GET)
 
@@ -389,7 +404,9 @@ def view_perfil_usuario(request, sigla, perfil_link):
 
     universidade = get_object_or_404(UniversidadeModel, sigla=sigla)
     perfil = get_object_or_404(PerfilModel, perfil_link=perfil_link, universidade=universidade)
+    imagem = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
 
+    args['foto'] = imagem
     args['usuario'] = perfil.usuario
     args['perfil'] = perfil
     args['idade'] = calcular_idade(perfil.data_nascimento)
