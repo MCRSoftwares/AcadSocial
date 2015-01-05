@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -114,5 +114,5 @@ class ParticipaEventoModel(models.Model):
         return str(self.evento) + ' - ' + str(self.membro)
 
     class Meta:
-        verbose_name = _(u'participação (Evento)')
-        verbose_name_plural = _(u'participações (Evento)')
+        verbose_name = _(u'relaçao Usuário-Evento')
+        verbose_name_plural = _(u'relação Usuário-Evento')
