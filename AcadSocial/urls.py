@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -23,6 +23,7 @@ urlpatterns = patterns('',
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^', include('contas.urls')),
                        url(r'^', include('mainAcad.urls')),
+                       url(r'^grupo/', include('grupos.urls')),
                        )
 
 if settings.DEBUG:
