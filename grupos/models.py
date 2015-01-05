@@ -24,10 +24,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class InteresseModel(models.Model):
-    nome = models.CharField(max_length=96)
+    interesse = models.CharField(max_length=96)
+    data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
 
     def __unicode__(self):
-        return self.nome
+        return self.interesse
 
     class Meta:
         verbose_name = _(u'interesse')
@@ -37,6 +38,7 @@ class InteresseModel(models.Model):
 class UsuarioInteresseModel(models.Model):
     interesse = models.ForeignKey(InteresseModel)
     usuario = models.ForeignKey(UsuarioModel)
+    data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
 
     def __unicode__(self):
         return str(self.interesse) + ' - ' + str(self.usuario)
@@ -63,6 +65,7 @@ class GrupoModel(models.Model):
 class GrupoInteresseModel(models.Model):
     interesse = models.ForeignKey(InteresseModel)
     grupo = models.ForeignKey(GrupoModel)
+    data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
 
     def __unicode__(self):
         return str(self.interesse) + ' - ' + str(self.grupo)
@@ -73,7 +76,7 @@ class GrupoInteresseModel(models.Model):
 
 
 class MembroModel(models.Model):
-    membro = models.ForeignKey(UsuarioModel)
+    usuario = models.ForeignKey(UsuarioModel)
     grupo = models.ForeignKey(GrupoModel)
     data_entrada = models.DateTimeField(_('data de entrada'), default=timezone.now())
     is_admin = models.BooleanField(_('administrador'), default=False)
@@ -104,7 +107,7 @@ class EventoModel(models.Model):
 
 class ParticipaEventoModel(models.Model):
     evento = models.ForeignKey(EventoModel)
-    membro = models.ForeignKey(UsuarioModel)
+    usuario = models.ForeignKey(UsuarioModel)
     data_participacao = models.DateTimeField(_(u'data de participação'), default=timezone.now())
 
     def __unicode__(self):
