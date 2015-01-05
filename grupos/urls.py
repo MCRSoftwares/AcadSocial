@@ -20,5 +20,5 @@ from grupos import views
 
 
 urlpatterns = patterns('',
-                       url(r'^$', views.view_pagina_grupo, name='grupo-index'),
+                       url(r'^(?P<gid>\w+)/', views.view_pagina_grupo, name='grupo-index'),
                        )
