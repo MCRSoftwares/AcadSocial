@@ -66,7 +66,7 @@ class MembroAdmin(admin.ModelAdmin):
 class ParticipaEventoAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações da relação'), {'fields': ('membro', 'evento', 'data_participacao')}),
+        (_(u'Informações da relação'), {'fields': ('usuario', 'evento', 'data_participacao')}),
     )
 
     list_display = ('evento', 'usuario', 'data_participacao',)

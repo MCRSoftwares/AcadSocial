@@ -117,4 +117,4 @@ class ParticipaEventoModel(models.Model):
 
     class Meta:
         verbose_name = _(u'relaçao Usuário-Evento')
-        verbose_name_plural = _(u'relação Usuário-Evento')
+        verbose_name_plural = _(u'relações Usuário-Evento')
