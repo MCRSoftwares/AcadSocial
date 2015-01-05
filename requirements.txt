@@ -1,7 +1,6 @@
 virtualenv
 django
 pillow
-django-organizations
 whitenoise
 bcrypt
 django-friendship
