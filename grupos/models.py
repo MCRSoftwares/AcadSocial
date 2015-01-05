@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class InteresseModel(models.Model):
+    iid = models.AutoField(_('interesse ID'), primary_key=True)
     interesse = models.CharField(max_length=96)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
 
@@ -49,6 +50,7 @@ class UsuarioInteresseModel(models.Model):
 
 
 class GrupoModel(models.Model):
+    gid = models.AutoField(_('grupo ID'), primary_key=True)
     nome = models.CharField(max_length=128)
     descricao = models.TextField(_(u'descrição'), max_length=1024)
     criado_por = models.ForeignKey(UsuarioModel)

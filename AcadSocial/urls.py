@@ -23,7 +23,7 @@ urlpatterns = patterns('',
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^', include('contas.urls')),
                        url(r'^', include('mainAcad.urls')),
-                       url(r'^grupo/', include('grupos.urls')),
+                       url(r'^grupo/(?P<gid>\w+)/', include('grupos.urls')),
                        )
 
 if settings.DEBUG:

@@ -18,7 +18,7 @@ Descrição:
 from django.shortcuts import render
 
 
-def view_pagina_grupo(request):
+def view_pagina_grupo(request, gid):
     args = {}
-
+    # TODO criar view das páginas dos grupos
     return render(request, 'grupos/pagina_grupo.html', args)
