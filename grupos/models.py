@@ -90,8 +90,8 @@ class MembroModel(models.Model):
 
 
 class EventoModel(models.Model):
-    titulo = models.CharField(_(u'Descrição'), max_length=128)
-    descricao = models.TextField(_(u'Descrição'), max_length=1024)
+    titulo = models.CharField(_(u'título'), max_length=128)
+    descricao = models.TextField(_(u'descrição'), max_length=1024)
     grupo = models.ForeignKey(GrupoModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
     data_evento = models.DateTimeField(_('data do evento'))
