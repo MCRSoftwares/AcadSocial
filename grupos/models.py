@@ -14,7 +14,8 @@ Caso(s) de Uso: DVA001, DVA002, DVA006, DVA007
 Descrição:
     Definição dos modelos relacionados à aplicação de grupos e eventos.
     Inclui os modelos: GrupoModel, EventoModel, MembroModel, ParticipaEventoModel,
-                       InteresseModel, UsuarioInteresseModel, GrupoInteresseModel.
+                       InteresseModel, UsuarioInteresseModel, GrupoInteresseModel,
+                       ConviteGrupoModel, ConviteEventoModel.
 """
 
 from django.db import models
