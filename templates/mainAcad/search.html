@@ -30,4 +30,10 @@
         {{ curso.universidade.sigla }} - {{ curso.nome }}
         <br>
     {% endfor %}
+    <br>
+    Grupos:<br>
+    {% for grupo in grupos %}
+        <a href="{% url 'grupo-index' grupo.gid %}">{{ grupo.nome }}</a>
+        <br>
+    {% endfor %}
 {% endblock %}

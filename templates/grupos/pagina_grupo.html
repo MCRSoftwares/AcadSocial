@@ -1,2 +1,9 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% block body %}
+    {%  if membro %}
+        Você é um membro!
+    {% else %}
+        Você não é um membro!
+    {% endif %}
+{% endblock %}

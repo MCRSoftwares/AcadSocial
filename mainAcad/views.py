@@ -18,6 +18,7 @@ Descrição:
 from django.shortcuts import render
 from mainAcad.forms import UsuarioSearchForm
 from contas.models import PerfilModel, UsuarioModel
+from grupos.models import GrupoModel
 from universidades.models import UniversidadeModel, CursoModel
 from django.db.models import Q
 
@@ -41,13 +42,17 @@ def view_usuario_search(request):
             curso_query = Q(nome__contains=data) | Q(universidade__sigla__contains=data) | \
                 Q(universidade__nome__contains=data)
 
+            grupo_query = Q(nome__contains=data) | Q(grupointeressemodel__interesse__interesse__contains=data)
+
             perfils = PerfilModel.objects.filter(perfil_query, usuario__is_active=True)
             universidades = UniversidadeModel.objects.filter(univ_query)
             cursos = CursoModel.objects.filter(curso_query)
+            grupos = GrupoModel.objects.filter(grupo_query)
 
             args['perfils'] = perfils
             args['universidades'] = universidades
             args['cursos'] = cursos
+            args['grupos'] = grupos
     else:
         pesquisa_form = UsuarioSearchForm()
 

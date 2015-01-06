@@ -125,4 +125,3 @@ admin.site.register(UsuarioInteresseModel, UsuarioInteresseAdmin)
 admin.site.register(GrupoInteresseModel, GrupoInteresseAdmin)
 admin.site.register(ConviteGrupoModel, ConviteGrupoAdmin)
 admin.site.register(ConviteEventoModel, ConviteEventoAdmin)
-
