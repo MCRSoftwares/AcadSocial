@@ -110,6 +110,8 @@ def enviar_email_ativacao(email, nome, sobrenome, chave):
     Envia um e-mail de ativação ao usuário que solicitou o cadastro.
     """
 
+    # TODO criar um título e conteúdo melhor para o e-mail de ativação
+
     email_assunto = 'AcadSocial - Confirme seu e-mail'
 
     email_conteudo = 'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
@@ -125,7 +127,10 @@ def enviar_email_senha_reset(token, usuario, email):
     Envia um e-mail de redefinição de senha para o usuário que a solicitou.
     """
 
+    # TODO criar um título e conteúdo melhor para o e-mail de redefinição de senha
+
     email_assunto = 'Redefinição da senha'
+
     email_conteudo = 'http://127.0.0.1:8000/conta/senha/%s/%s' % (usuario.uid, token.token)
 
     send_mail(email_assunto, email_conteudo, None, [email], fail_silently=False)
