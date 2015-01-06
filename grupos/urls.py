@@ -15,7 +15,7 @@ Descrição:
     Definição das URLs relacionadas à aplicação de grupos e eventos.
 """
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from grupos import views
 
 

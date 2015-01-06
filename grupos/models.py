@@ -84,7 +84,7 @@ class MembroModel(models.Model):
     is_admin = models.BooleanField(_('administrador'), default=False)
 
     def __unicode__(self):
-        return str(self.grupo) + ' - ' + str(self.membro)
+        return str(self.grupo) + ' - ' + str(self.usuario)
 
     class Meta:
         verbose_name = _('membro')
@@ -113,8 +113,40 @@ class ParticipaEventoModel(models.Model):
     data_participacao = models.DateTimeField(_(u'data de participação'), default=timezone.now())
 
     def __unicode__(self):
-        return str(self.evento) + ' - ' + str(self.membro)
+        return str(self.evento) + ' - ' + str(self.usuario)
 
     class Meta:
         verbose_name = _(u'relaçao Usuário-Evento')
         verbose_name_plural = _(u'relações Usuário-Evento')
+
+
+class ConviteGrupoModel(models.Model):
+    usuario = models.ForeignKey(UsuarioModel, related_name='grupo_criador_convite')
+    convidado = models.ForeignKey(UsuarioModel, related_name='grupo_convidado')
+    data_envio = models.DateTimeField(_('data de envio'), default=timezone.now())
+    grupo = models.ForeignKey(GrupoModel)
+    ativo = models.BooleanField(default=True)
+    aceito = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return str(self.grupo) + ' (' + str(self.usuario) + ': ' + str(self.convidado) + ')'
+
+    class Meta:
+        verbose_name = _('convite (Grupo)')
+        verbose_name_plural = _('convites (Grupo)')
+
+
+class ConviteEventoModel(models.Model):
+    usuario = models.ForeignKey(UsuarioModel, related_name='evento_criador_convite')
+    convidado = models.ForeignKey(UsuarioModel, related_name='evento_convidado')
+    data_envio = models.DateTimeField(_('data de envio'), default=timezone.now())
+    evento = models.ForeignKey(EventoModel)
+    ativo = models.BooleanField(default=True)
+    aceito = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return str(self.evento) + ' (' + str(self.usuario) + ': ' + str(self.convidado) + ')'
+
+    class Meta:
+        verbose_name = _('convite (Evento)')
+        verbose_name_plural = _('convites (Evento)')

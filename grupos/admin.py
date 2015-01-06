@@ -18,6 +18,7 @@ Descrição:
 from django.contrib import admin
 from grupos.models import GrupoModel, EventoModel, MembroModel, ParticipaEventoModel
 from grupos.models import InteresseModel, UsuarioInteresseModel, GrupoInteresseModel
+from grupos.models import ConviteEventoModel, ConviteGrupoModel
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -35,7 +36,7 @@ class GrupoAdmin(admin.ModelAdmin):
 class EventoAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do evento'), {'fields': ('titulo', 'descricao')}),
+        (_(u'Informações do evento'), {'fields': ('titulo', 'descricao', 'data_evento', 'grupo')}),
         (_(u'Criação'), {'fields': ('criado_por', 'data_criacao')}),
     )
 
@@ -93,6 +94,28 @@ class GrupoInteresseAdmin(admin.ModelAdmin):
     search_fields = ('interesse', 'grupo', 'data_criacao',)
 
 
+class ConviteGrupoAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_(u'Usuários relacionados'), {'fields': ('usuario', 'convidado',)}),
+        (_(u'Informações do convite'), {'fields': ('grupo', 'data_envio', 'ativo', 'aceito',)}),
+    )
+
+    list_display = ('grupo', 'usuario', 'convidado', 'data_envio', 'aceito', 'ativo',)
+    search_fields = ('grupo', 'usuario', 'convidado', 'data_envio',)
+
+
+class ConviteEventoAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_(u'Usuários relacionados'), {'fields': ('usuario', 'convidado',)}),
+        (_(u'Informações do convite'), {'fields': ('evento', 'data_envio', 'ativo', 'aceito',)}),
+    )
+
+    list_display = ('evento', 'usuario', 'convidado', 'data_envio', 'aceito', 'ativo',)
+    search_fields = ('evento', 'usuario', 'convidado', 'data_envio',)
+
+
 admin.site.register(GrupoModel, GrupoAdmin)
 admin.site.register(EventoModel, EventoAdmin)
 admin.site.register(InteresseModel, InteresseAdmin)
@@ -100,3 +123,6 @@ admin.site.register(MembroModel, MembroAdmin)
 admin.site.register(ParticipaEventoModel, ParticipaEventoAdmin)
 admin.site.register(UsuarioInteresseModel, UsuarioInteresseAdmin)
 admin.site.register(GrupoInteresseModel, GrupoInteresseAdmin)
+admin.site.register(ConviteGrupoModel, ConviteGrupoAdmin)
+admin.site.register(ConviteEventoModel, ConviteEventoAdmin)
+
