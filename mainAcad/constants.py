@@ -15,6 +15,6 @@ Descrição:
     Definição das constantes relacionadas à aplicação principal.
 """
 
-MAX_IMAGE_SIZE = 4*1024*1024
+MAX_IMAGE_SIZE = 2*1024*1024
 
 DEFAULT_PICTURE = 'imagens/perfil/default.jpg'

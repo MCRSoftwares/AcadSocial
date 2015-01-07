@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -35,7 +35,8 @@ class UsuarioSearchForm(forms.ModelForm):
 
 class ImagemUploadForm(forms.ModelForm):
 
-    imagem_attrs = {'accept': 'image/x-png, image/gif, image/jpeg, image/jpg', 'class': 'form-control'}
+    imagem_attrs = {'accept': 'image/x-png, image/gif, image/jpeg, image/jpg',
+                    'id': 'imageID', 'style': 'display:none;', 'name': 'file'}
 
     imagem = forms.ImageField(widget=forms.FileInput(attrs=imagem_attrs), required=False)
 
