@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -18,13 +18,13 @@ Descrição:
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from grupos.models import GrupoModel, MembroModel
-from contas.models import UsuarioModel
 from django.contrib.auth.decorators import login_required
 
 
 @login_required
 def view_pagina_grupo(request, gid):
     args = {}
+    grupo = None
 
     try:
         grupo = GrupoModel.objects.get(gid=gid)
@@ -37,6 +37,7 @@ def view_pagina_grupo(request, gid):
         membro = None
 
     args['membro'] = membro
+    args['grupo'] = grupo
 
     return render(request, 'grupos/pagina_grupo.html', args)
 
@@ -56,3 +57,22 @@ def view_editar_grupo(request, gid):
             return HttpResponseRedirect('/grupo/' + gid + '/')
 
         return render(request, 'grupos/editar_grupo.html', args)
+
+
+@login_required
+def view_entrar_grupo(request, gid):
+
+    grupo = None
+
+    try:
+        grupo = GrupoModel.objects.get(gid=gid)
+        MembroModel.objects.get(usuario=request.user, grupo=grupo)
+
+    except GrupoModel.DoesNotExist:
+        return HttpResponseRedirect('/')
+
+    except MembroModel.DoesNotExist:
+        membro = MembroModel(usuario=request.user, grupo=grupo)
+        membro.save()
+
+    return HttpResponseRedirect('/grupo/' + gid + '/')

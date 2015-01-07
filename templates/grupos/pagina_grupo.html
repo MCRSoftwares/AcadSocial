@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block body %}
-    {%  if membro %}
+    {% if membro %}
         Você é um membro!
     {% else %}
-        Você não é um membro!
+        Você não é um membro! <a href="{% url 'grupo-entrar' grupo.gid %}">Entrar no grupo.</a>
     {% endif %}
 {% endblock %}

@@ -14,3 +14,5 @@ Caso(s) de Uso: -
 Descrição:
     Definição dos formulários relacionados à aplicação de grupos e eventos.
 """
+
+from django import forms
