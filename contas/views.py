@@ -102,6 +102,8 @@ def view_cadastrar_usuario(request):
             enviar_email_ativacao(email, nome, sobrenome, token.token)
 
             args['usuario'] = usuario
+            args['login_form'] = login_form
+            args['token'] = token
 
             return render(request, 'contas/cadastro_sucesso.html', args)
     else:
@@ -219,6 +221,14 @@ def view_logout_usuario(request):
 def view_confirmar_usuario(request, chave):
     args = {}
 
+    if request.method == 'POST' and 'loginForm' in request.POST:
+        login_form = UsuarioLoginForm(data=request.POST)
+        return login_form_body(request, view_login_usuario, login_form, login)
+    else:
+        login_form = UsuarioLoginForm()
+
+    args['login_form'] = login_form
+
     if request.user.is_authenticated():
         # Se o usuário já estiver logado, ele será redirecionado para a página inicial.
         return HttpResponseRedirect('/')
@@ -239,6 +249,7 @@ def view_confirmar_usuario(request, chave):
         usuario = token.usuario
         usuario.is_active = True
         usuario.save()
+        args['usuario'] = usuario
 
         # O token é definido como inválido, para que não possa ser acessado novamente.
 
@@ -270,6 +281,8 @@ def view_confirmar_usuario(request, chave):
             token.valid = False
             token.save()
 
+            args['usuario'] = usuario
+
             return render(request, 'contas/cadastro_email_ativacao.html', args)
     else:
         ativacao_form = EnviarTokenForm()
@@ -280,6 +293,7 @@ def view_confirmar_usuario(request, chave):
 
     args['expired'] = not token.active
     args['ativacao_form'] = ativacao_form
+    args['token'] = token
 
     return render(request, 'contas/cadastro_confirmar.html', args)
 
@@ -377,6 +391,14 @@ def view_senha_reset_confirmado(request, uid, chave):
 def view_reativar_usuario(request):
     args = {}
 
+    if request.method == 'POST' and 'loginForm' in request.POST:
+        login_form = UsuarioLoginForm(data=request.POST)
+        return login_form_body(request, view_login_usuario, login_form, login)
+    else:
+        login_form = UsuarioLoginForm()
+
+    args['login_form'] = login_form
+
     if request.user.is_authenticated():
         return HttpResponseRedirect('/')
 
@@ -408,7 +430,7 @@ def view_reativar_usuario(request):
             enviar_email_ativacao(email, usuario.first_name, usuario.last_name, novo_token.token)
 
             args['finalizado'] = True
-
+            args['usuario'] = usuario
     else:
         reativar_form = EnviarTokenForm()
         args['finalizado'] = False

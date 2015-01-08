@@ -145,7 +145,7 @@ class TokenModel(models.Model):
 
     usuario = models.ForeignKey(UsuarioModel)
     tipo = models.CharField(max_length=128)
-    token = models.CharField(_('token'), max_length=40, blank=True)
+    token = models.CharField(_('token'), max_length=128, blank=True)
     data_request = models.DateTimeField(_('request date'), default=timezone.now())
     data_expiracao = models.DateTimeField(_('expiration date'), default=(timezone.now() + timedelta(days=1)))
     active = models.BooleanField(_('active'), default=True, help_text=active_help_text)
