@@ -25,6 +25,44 @@ b {
 	font-weight: 600;
 }
 
+legend {
+    color: #7C0B1F;
+}
+
+.ultra-bold {
+    font-weight: 700;
+}
+
+.full-width {
+    width:100%;
+}
+
+.acad-title > a {
+    font-family: Josefin Sans, sans-serif;
+    color: #555;
+    font-size: 80pt;
+    font-weight: 700;
+}
+
+.acad-title > a > b {
+    color: #7C0B1F;
+    font-weight: 700;
+}
+
+.acad-title-white > a {
+    font-family: Josefin Sans, sans-serif;
+    color: #fff;
+    font-size: 80pt;
+    font-weight: 700;
+}
+
+
+.footer {
+    background-color: #7C0B1F;
+    width: 100%;
+    height: 60px;
+}
+
 .navbar-default {
 	background-color: #FFFFFF;
 	border: 0;
@@ -61,7 +99,7 @@ b {
 
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-  	color: #a00012;
+  	color: #7C0B1F;
 	background: transparent;
 }
 
@@ -81,8 +119,8 @@ b {
 }
 
 .panel-default .panel-heading {
-	background: #7C0B1F;
-	color: #fff;
+	background: #f8f8f8;
+	color: #7C0B1F;
 	border-radius: 0;
 	border-bottom: 1px solid #eee;
 }
@@ -93,16 +131,18 @@ b {
 
 .btn-default {
 	border-radius: 0;
-	background-color: #eaeaea;
-	border: 1px solid #eaeaea;
+	background-color: #eee;
+    color: #7C0B1F;
+	border: 1px solid #eee;
 	font-weight: 600;
 }
 
 .btn-default:hover,
 .btn-default:focus {
 	border-radius: 0;
-	background-color: #ddd;
-	border: 1px solid #ddd;
+    color: #555;
+	background-color: #e9e9e9;
+	border: 1px solid #e9e9e9;
 }
 
 .btn-primary {
@@ -160,6 +200,9 @@ textarea.form-control {
 	margin-bottom: -5px;
 	font-size: 10pt;
 	padding: 10px 35px 10px 10px;
+    border-color: #EBCCD1;
+    color: #A94442;
+    background-color: #F2DEDE;
 }
 
 .alert-warning {
@@ -167,4 +210,9 @@ textarea.form-control {
 	margin-bottom: -5px;
 	font-size: 10pt;
 	padding: 10px 35px 10px 10px;
+}
+
+.input-group-addon {
+    border-radius: 0;
+    background-color: #f1f1f1;
 }

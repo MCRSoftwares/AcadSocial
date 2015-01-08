@@ -130,7 +130,7 @@ class PerfilModel(models.Model):
 
     class Meta:
         verbose_name = _('perfil')
-        verbose_name_plural = _('perfils')
+        verbose_name_plural = _('perfis')
 
 
 class TokenModel(models.Model):

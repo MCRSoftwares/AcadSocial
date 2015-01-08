@@ -17,240 +17,278 @@
                     success: function (data) {
                         $('#termosCondicoes').html(data);
                     }
-                })
-$(function() {
-    $( "#dialog" ).dialog();
-  });
+                });
+
             });
     </script>
 {% endblock %}
 
+{% block body-style %}
+    style="background:#650A1C";
+{% endblock %}
+
+{% block navbar-right %}
+    <li class="dropdown">
+    	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
+		<div class="dropdown-menu panel panel-default">
+            <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
+        		{% csrf_token %}
+				<div class="panel-body" style="margin-top:-10px;">
+        			<fieldset>
+            			<legend><h4>Entrar no AcadSocial</h4></legend>
+
+                        <div class="form-group">
+							<div class="col-lg-12">
+								{{ login_form.email }}
+							</div>
+                		</div>
+
+                    	<div class="form-group">
+							<div class="col-lg-12">
+								{{ login_form.password }}
+							</div>
+                		</div>
+
+                		<a href="{% url 'senha-reset' %}" ><i class="fa fa-frown-o"></i> Esqueci a senha</a>
+                    </fieldset>
+            	</div>
+                <button class="btn btn-primary panel-footer" name='loginForm' style="width:100%;margin-bottom:-5px">Entrar</button>
+            </form>
+		</div>
+	</li>
+{% endblock %}
+
 {% block body %}
-    <form method="post" id='my_form' action="." enctype="multipart/form-data" class="col-lg-6 form-horizontal">
-        {% csrf_token %}
-        <fieldset>
-            <div class="panel panel-default">
-                <div class="panel-body">
+    <div class="acad-title-white text-center">
+        <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
+    </div>
+    <br><br>
+    <div class="col-lg-6">
+        <form method="post" action="" enctype="multipart/form-data" class="form-horizontal">
+            {% csrf_token %}
+            <fieldset>
+                <div class="panel panel-default">
+                    <div class="panel-body">
 
-                    <legend>Cadastre-se no AcadSocial</legend>
+                        <legend>Cadastre-se no AcadSocial</legend>
 
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Nome</label>
-                        <div class="col-lg-9">
-                            {{ usuario_form.first_name }}
-                            {% if usuario_form.last_name.errors %}
-                                {% for error in usuario_form.first_name.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Sobrenome</label>
-
-                        <div class="col-lg-9">
-                            {{ usuario_form.last_name }}
-                            {% if usuario_form.last_name.errors %}
-                                {% for error in usuario_form.last_name.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="col-lg-3 control-label">E-mail</label>
-
-                        <div class="col-lg-5" style="padding-right: 0;">
-                            {{ usuario_form.email_front }}
-                        </div>
-
-                        <div class="col-lg-4">
-                            {{ usuario_form.email_back }}
-                        </div>
-
-                        <div class="col-lg-9 col-lg-offset-3">
-                            {% if usuario_form.email.errors %}
-                                {% for error in usuario_form.email.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Senha</label>
-                        <div class="col-lg-9">
-                            {{ usuario_form.password }}
-                            {% if usuario_form.password.errors %}
-                                {% for error in usuario_form.password.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="col-lg-3 control-label"></label>
-
-                        <div class="col-lg-9">
-                            {{ usuario_form.password_conf }}
-                            {% if usuario_form.password_conf.errors %}
-                                {% for error in usuario_form.password_conf.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Foto</label>
-                        <div class="col-lg-9">
-                            <div class="input-group">
-                                {{ foto_form.imagem }}
-                                <input id="imageName" class="form-control" disabled type="text" onload="$('#imageName').val($('#imageID').val());">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-link" onclick="$('input[id=imageID]').click();" type="button">
-                                        Escolher
-                                    </button>
-                                </span>
-                            </div>
-                            <span class="help-block">
-                                A foto deve ter o tamanho máximo de 2MB.
-                            </span>
-                            {% if foto_form.imagem.errors %}
-                                {% for error in foto_form.imagem.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                    <br>
-                                {% endfor %}
-                            {% endif %}
-                            {% if foto_form.non_field_errors %}
-                                {% for error in foto_form.non_field_errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Nome</label>
+                            <div class="col-lg-9">
+                                {{ usuario_form.first_name }}
+                                {% if usuario_form.first_name.errors %}
+                                    {% for error in usuario_form.first_name.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Sobrenome</label>
+
+                            <div class="col-lg-9">
+                                {{ usuario_form.last_name }}
+                                {% if usuario_form.last_name.errors %}
+                                    {% for error in usuario_form.last_name.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-lg-3 control-label">E-mail</label>
+
+                            <div class="col-lg-5" style="padding-right: 0;">
+                                {{ usuario_form.email_front }}
+                            </div>
+
+                            <div class="col-lg-4">
+                                {{ usuario_form.email_back }}
+                            </div>
+
+                            <div class="col-lg-9 col-lg-offset-3">
+                                {% if usuario_form.email.errors %}
+                                    {% for error in usuario_form.email.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Senha</label>
+                            <div class="col-lg-9">
+                                {{ usuario_form.password }}
+                                {% if usuario_form.password.errors %}
+                                    {% for error in usuario_form.password.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-lg-3 control-label"></label>
+
+                            <div class="col-lg-9">
+                                {{ usuario_form.password_conf }}
+                                {% if usuario_form.password_conf.errors %}
+                                    {% for error in usuario_form.password_conf.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Foto</label>
+                            <div class="col-lg-9">
+                                <div class="input-group">
+                                    {{ foto_form.imagem }}
+                                    <input id="imageName" class="form-control" disabled type="text" onload="$('#imageName').val($('#imageID').val());">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-link" onclick="$('input[id=imageID]').click();" type="button">
+                                            Escolher
+                                        </button>
                                     </span>
-                                {% endfor %}
-                            {% endif %}
+                                </div>
+                                <span class="help-block">
+                                    A foto deve ter o tamanho máximo de 2MB.
+                                </span>
+                                {% if foto_form.imagem.errors %}
+                                    {% for error in foto_form.imagem.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                        <br>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if foto_form.non_field_errors %}
+                                    {% for error in foto_form.non_field_errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                                {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
                         </div>
 
+                        <div class="form-group">
+
+                            <label class="col-lg-3 control-label">Universidade</label>
+
+                            <div class="col-lg-9">
+
+                                {{ perfil_form.universidade }}
+                                {% if perfil_form.universidade.errors %}
+                                    {% for error in perfil_form.universidade.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-lg-3 control-label">Curso</label>
+
+                            <div class="col-lg-9">
+
+                                {{ perfil_form.curso }}
+                                {% if perfil_form.curso.errors %}
+                                    {% for error in perfil_form.curso.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-lg-3 control-label">Data de Nascimento</label>
+
+                            <div class="col-lg-3" style="padding-right: 5px;">
+                                {{ perfil_form.dia }}
+                            </div>
+
+                            <div class="col-lg-3" style="padding-right: 5px;">
+                                {{ perfil_form.mes }}
+                            </div>
+
+                            <div class="col-lg-3">
+                                {{ perfil_form.ano }}
+                            </div>
+
+                        </div>
+
+                        {% if perfil_form.non_field_errors %}
+                            {% for error in perfil_form.non_field_errors %}
+                                <span class="help-block alert alert-danger alert-dismissable">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {{ error }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if usuario_form.non_field_errors %}
+                            {% for error in usuario_form.non_field_errors %}
+                                <br>
+                                <span class="help-block alert alert-danger alert-dismissable">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {{ error }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="form-group">
+                            <div class="checkbox text-center">
+                                <label>
+                                    {{ perfil_form.termos_condicoes }}
+                                    Li e concordo com os termos e condições de uso.
+                                </label>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-
-                        <label class="col-lg-3 control-label">Universidade</label>
-
-                        <div class="col-lg-9">
-
-                            {{ perfil_form.universidade }}
-                            {% if perfil_form.universidade.errors %}
-                                {% for error in perfil_form.universidade.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="col-lg-3 control-label">Curso</label>
-
-                        <div class="col-lg-9">
-
-                            {{ perfil_form.curso }}
-                            {% if perfil_form.curso.errors %}
-                                {% for error in perfil_form.curso.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
-                                    </span>
-                                {% endfor %}
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="col-lg-3 control-label">Data de Nascimento</label>
-
-                        <div class="col-lg-3" style="padding-right: 5px;">
-                            {{ perfil_form.dia }}
-                        </div>
-
-                        <div class="col-lg-3" style="padding-right: 5px;">
-                            {{ perfil_form.mes }}
-                        </div>
-
-                        <div class="col-lg-3">
-                            {{ perfil_form.ano }}
-                        </div>
-
-                    </div>
-
-                    {% if perfil_form.non_field_errors %}
-                        {% for error in perfil_form.non_field_errors %}
-                            <span class="help-block alert alert-danger alert-dismissable">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                {{ error }}
-                            </span>
-                        {% endfor %}
-                    {% endif %}
-
-                    {% if usuario_form.non_field_errors %}
-                        {% for error in usuario_form.non_field_errors %}
-                            <br>
-                            <span class="help-block alert alert-danger alert-dismissable">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                {{ error }}
-                            </span>
-                        {% endfor %}
-                    {% endif %}
-                    <div class="form-group">
-                        <div class="checkbox text-center">
-                            <label>
-                                {{ perfil_form.termos_condicoes }}
-                                Li e concordo com os termos e condições de uso.
-                            </label>
-                        </div>
-                    </div>
+                    <button type="submit" class="panel-footer btn btn-default" name="cadastroForm" style="width:100%;">Enviar</button>
                 </div>
-                    <button type="submit" class="panel-footer btn btn-primary" style="width:100%;">Enviar</button>
-            </div>
-        </fieldset>
-    </form>
-
+            </fieldset>
+        </form>
+    </div>
     <div class="col-lg-6">
 
         <div class="panel panel-default">

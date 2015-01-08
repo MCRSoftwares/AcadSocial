@@ -41,7 +41,26 @@ def view_cadastrar_usuario(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect('/')
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'loginForm' in request.POST:
+        login_form = UsuarioLoginForm(data=request.POST)
+
+        if login_form.is_valid():
+            login(request, login_form.get_usuario())
+
+            # Se o usuário for um superuser, este será redirecionado para a página de admin.
+
+            if request.user.is_superuser:
+                return HttpResponseRedirect('/admin')
+
+            # Se for um usuário normal, ele será mandado para a view da página principal.
+
+            return redirect(redirecionar_para(request.get_full_path()))
+        else:
+            return HttpResponseRedirect('/conta/login/')
+    else:
+        login_form = UsuarioLoginForm()
+
+    if request.method == 'POST' and 'cadastroForm' in request.POST:
         usuario_form = UsuarioCadastroForm(data=request.POST)
         perfil_form = PerfilCadastroForm(data=request.POST)
         foto_form = ImagemUploadForm(files=request.FILES)
@@ -108,6 +127,7 @@ def view_cadastrar_usuario(request):
     args['usuario_form'] = usuario_form
     args['perfil_form'] = perfil_form
     args['foto_form'] = foto_form
+    args['login_form'] = login_form
 
     return render(request, 'contas/cadastro.html', args)
 
