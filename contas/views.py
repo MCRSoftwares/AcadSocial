@@ -25,7 +25,7 @@ from django.contrib.auth import login, logout
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contas.models import PerfilModel, UsuarioModel, TokenModel
-from contas.methods import gerar_token, enviar_email_ativacao, calcular_idade
+from contas.methods import gerar_token, enviar_email_ativacao, calcular_idade, login_form_body
 from contas.methods import redirecionar_para, enviar_email_senha_reset, calcular_aniversario
 from django.contrib.auth.decorators import login_required
 from contas.constants import TOKEN_TYPE
@@ -43,20 +43,7 @@ def view_cadastrar_usuario(request):
 
     if request.method == 'POST' and 'loginForm' in request.POST:
         login_form = UsuarioLoginForm(data=request.POST)
-
-        if login_form.is_valid():
-            login(request, login_form.get_usuario())
-
-            # Se o usuário for um superuser, este será redirecionado para a página de admin.
-
-            if request.user.is_superuser:
-                return HttpResponseRedirect('/admin')
-
-            # Se for um usuário normal, ele será mandado para a view da página principal.
-
-            return redirect(redirecionar_para(request.get_full_path()))
-        else:
-            return HttpResponseRedirect('/conta/login/')
+        return login_form_body(request, view_login_usuario, login_form, login)
     else:
         login_form = UsuarioLoginForm()
 
@@ -198,7 +185,7 @@ def view_login_usuario(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect('/')
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'loginForm' in request.POST:
         login_form = UsuarioLoginForm(data=request.POST)
 
         # Caso o login ocorra de forma correta (campos corretos).
@@ -300,6 +287,12 @@ def view_confirmar_usuario(request, chave):
 def view_senha_reset(request):
     args = {}
 
+    if request.method == 'POST' and 'loginForm' in request.POST:
+        login_form = UsuarioLoginForm(data=request.POST)
+        return login_form_body(request, view_login_usuario, login_form, login)
+    else:
+        login_form = UsuarioLoginForm()
+
     if request.method == 'POST':
         senha_form = EnviarTokenForm(data=request.POST)
 
@@ -309,7 +302,7 @@ def view_senha_reset(request):
 
             email = senha_form.cleaned_data['email']
             usuario = UsuarioModel.object.get(email=email)
-
+            args['user_email'] = email
             # Gera um token de redefinição de senha.
 
             token = TokenModel()
@@ -321,12 +314,19 @@ def view_senha_reset(request):
         senha_form = EnviarTokenForm()
 
     args['senha_form'] = senha_form
+    args['login_form'] = login_form
 
     return render(request, 'contas/senha_reset.html', args)
 
 
 def view_senha_reset_confirmado(request, uid, chave):
     args = {}
+
+    if request.method == 'POST' and 'loginForm' in request.POST:
+        login_form = UsuarioLoginForm(data=request.POST)
+        return login_form_body(request, view_login_usuario, login_form, login)
+    else:
+        login_form = UsuarioLoginForm()
 
     # Procura por um token que possua a chave dada e seja válido.
 
@@ -359,6 +359,8 @@ def view_senha_reset_confirmado(request, uid, chave):
             token.valid = False
             token.save()
 
+            args['login_form'] = login_form
+
             return render(request, 'contas/senha_reset_finalizado.html', args)
 
     else:
@@ -366,6 +368,8 @@ def view_senha_reset_confirmado(request, uid, chave):
 
     args['expired'] = not token.active
     args['senha_form'] = senha_form
+    args['login_form'] = login_form
+    args['token'] = token
 
     return render(request, 'contas/senha_reset_confirmado.html', args)
 

@@ -23,10 +23,6 @@
     </script>
 {% endblock %}
 
-{% block body-style %}
-    style="background:#650A1C";
-{% endblock %}
-
 {% block navbar-right %}
     <li class="dropdown">
     	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
@@ -59,7 +55,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="acad-title-white text-center">
+    <div class="acad-title text-center">
         <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
     </div>
     <br><br>
@@ -170,8 +166,13 @@
                                     {{ foto_form.imagem }}
                                     <input id="imageName" class="form-control" disabled type="text" onload="$('#imageName').val($('#imageID').val());">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-link" onclick="$('input[id=imageID]').click();" type="button">
+                                        <button class="btn btn-link" onclick="$('input[id=imageID]').click();" type="button" style="margin-left:-1px;">
                                             Escolher
+                                        </button>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-link" onclick="$('#imageName').val('');$('input[id=imageID]').val('');">
+                                            <b class="fa fa-close"></b>
                                         </button>
                                     </span>
                                 </div>
@@ -284,7 +285,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="panel-footer btn btn-default" name="cadastroForm" style="width:100%;">Enviar</button>
+                    <button type="submit" class="panel-footer btn btn-primary" name="cadastroForm" style="width:100%;">Enviar</button>
                 </div>
             </fieldset>
         </form>

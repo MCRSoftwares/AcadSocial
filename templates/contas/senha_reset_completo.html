@@ -1,7 +1,59 @@
 {% extends 'base.html' %}
 
-{% block title %} Resetar senha {% endblock %}
+{% block title %} Redefinir senha {% endblock %}
+
+{% block navbar-right %}
+    <li><a href="{% url 'cadastro' %}">Cadastre-se</a></li>
+    <li class="dropdown">
+    	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
+		<div class="dropdown-menu panel panel-default">
+            <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
+        		{% csrf_token %}
+				<div class="panel-body" style="margin-top:-10px;">
+        			<fieldset>
+            			<legend><h4>Entrar no AcadSocial</h4></legend>
+
+                        <div class="form-group">
+							<div class="col-lg-12">
+								{{ login_form.email }}
+							</div>
+                		</div>
+
+                    	<div class="form-group">
+							<div class="col-lg-12">
+								{{ login_form.password }}
+							</div>
+                		</div>
+
+                		<a href="{% url 'senha-reset' %}" ><i class="fa fa-frown-o"></i> Esqueci a senha</a>
+                    </fieldset>
+            	</div>
+                <button class="btn btn-primary panel-footer" name="loginForm" style="width:100%;margin-bottom:-5px">Entrar</button>
+            </form>
+		</div>
+	</li>
+{% endblock %}
 
 {% block body %}
-E-mail enviado! Cheque sua caixa de entrada para redefinir sua senha.
+    <div class="acad-title text-center">
+        <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
+    </div>
+    <br><br>
+    <div class="col-lg-6 col-lg-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <legend>Redefinição de senha</legend>
+                <div class="text-center">
+                    <b style="font-size:18pt;">E-mail enviado!</b>
+                </div>
+                <div class="text-left col-lg-11 col-lg-offset-1">
+                    <br>
+                    Cheque sua caixa de entrada em <b>{{ user_email }}</b> para redefinir sua senha.
+                    <br><br>
+                </div>
+            </div>
+            <a href="{% url 'login' %}" class="panel-footer btn btn-primary full-width" style="color:#fff;" >Voltar</a>
+        </div>
+    </div>
+
 {% endblock %}

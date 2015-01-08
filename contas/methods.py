@@ -17,6 +17,8 @@ Descrição:
 
 from datetime import datetime
 from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 import hashlib
 import random
 import re
@@ -182,3 +184,20 @@ def validar_palavra(palavra):
         return False
 
     return True
+
+
+def login_form_body(request, view_login_usuario, login_form, login):
+
+    if login_form.is_valid():
+        login(request, login_form.get_usuario())
+
+        # Se o usuário for um superuser, este será redirecionado para a página de admin.
+
+        if request.user.is_superuser:
+            return HttpResponseRedirect('/admin')
+
+        # Se for um usuário normal, ele será mandado para a view da página principal.
+
+        return redirect(redirecionar_para(request.get_full_path()))
+    else:
+        return view_login_usuario(request)

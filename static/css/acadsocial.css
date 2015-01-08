@@ -8,6 +8,11 @@ body {
 	color: #555;
 }
 
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+
 a,
 a:link,
 a:visited  {
@@ -119,14 +124,15 @@ legend {
 }
 
 .panel-default .panel-heading {
-	background: #f8f8f8;
-	color: #7C0B1F;
+	background: #7C0B1F;
+	color: #fff;
 	border-radius: 0;
 	border-bottom: 1px solid #eee;
 }
 
 .panel-default .panel-footer {
 	border-radius: 0;
+    background: #7C0B1F;
 }
 
 .btn-default {
@@ -200,7 +206,7 @@ textarea.form-control {
 	margin-bottom: -5px;
 	font-size: 10pt;
 	padding: 10px 35px 10px 10px;
-    border-color: #EBCCD1;
+    border: 1px solid #EBCCD1;
     color: #A94442;
     background-color: #F2DEDE;
 }

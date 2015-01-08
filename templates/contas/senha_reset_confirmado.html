@@ -1,36 +1,106 @@
 {% extends 'base.html' %}
 
-{% block title %} Resetar senha {% endblock %}
+{% block title %} Redefinir senha {% endblock %}
+
+{% block navbar-right %}
+    <li><a href="{% url 'cadastro' %}">Cadastre-se</a></li>
+    <li class="dropdown">
+    	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
+		<div class="dropdown-menu panel panel-default">
+            <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
+        		{% csrf_token %}
+				<div class="panel-body" style="margin-top:-10px;">
+        			<fieldset>
+            			<legend><h4>Entrar no AcadSocial</h4></legend>
+
+                        <div class="form-group">
+							<div class="col-lg-12">
+								{{ login_form.email }}
+							</div>
+                		</div>
+
+                    	<div class="form-group">
+							<div class="col-lg-12">
+								{{ login_form.password }}
+							</div>
+                		</div>
+
+                		<a href="{% url 'senha-reset' %}" ><i class="fa fa-frown-o"></i> Esqueci a senha</a>
+                    </fieldset>
+            	</div>
+                <button class="btn btn-primary panel-footer" name="loginForm" style="width:100%;margin-bottom:-5px">Entrar</button>
+            </form>
+		</div>
+	</li>
+{% endblock %}
 
 {% block body %}
-{% if expired %}
-    Seu pedido de redefinição de senha expirou.<br>
-    Clique <a href="{% url 'senha-reset' %}">aqui</a> para receber outro link.
-{% else %}
-Por favor, informe sua nova senha.
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ senha_form.senha }}
-        {% if senha_form.senha.errors %}
-            {% for error in senha_form.senha.errors %}
-                {{ error }}
-                <br/>
-            {% endfor %}
+    <div class="acad-title text-center">
+        <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
+    </div>
+    <br><br>
+    <div class="col-lg-6 col-lg-offset-3">
+        {% if expired %}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <legend>Redefinição de senha</legend>
+                    <br>
+                    <div class="text-center">
+                        <b style="font-size:16pt">Seu pedido de redefinição de senha expirou.</b>
+                        <br><br>
+                        Seu pedido expirou no dia {{ token.data_expiracao }}.
+                        <br><br><br>
+                    </div>
+                </div>
+                <a href="{% url 'senha-reset' %}" class="panel-footer btn btn-primary full-width" style="color:#fff;" >Reenviar e-mail de redefinição de senha</a>
+            </div>
+        {% else %}
+            <form method="post" action="" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %}
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <legend>Redefinição de senha</legend>
+                        <div class="text-left col-lg-12">
+                            Por favor, forneça sua nova senha nos campos abaixo.
+                            <br><br><br>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group col-lg-10 col-lg-offset-1">
+                                <span class="input-group-addon">
+                                    <b class="fa fa-lock" style="font-size:18px;">&nbsp</b>
+                                </span>
+                                {{ senha_form.senha }}
+                            </div>
+                            {% if senha_form.senha.errors %}
+                                {% for error in senha_form.senha.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group col-lg-10 col-lg-offset-1">
+                                <span class="input-group-addon">
+                                    <b class="fa fa-lock" style="font-size:18px;">&nbsp</b>
+                                </span>
+                                {{ senha_form.senha_conf }}
+                            </div>
+                            {% if senha_form.senha_conf.errors %}
+                                {% for error in senha_form.senha_conf.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary panel-footer" style="width:100%">Enviar</button>
+                </div>
+            </form>
         {% endif %}
-        {{ senha_form.senha_conf }}
-        {% if senha_form.senha_conf.errors %}
-            {% for error in senha_form.senha_conf.errors %}
-                {{ error }}
-                <br/>
-            {% endfor %}
-        {% endif %}
-        {% if senha_form.non_field_errors %}
-            {% for error in senha_form.non_field_errors %}
-                {{ error }}
-            {% endfor %}
-        {% endif %}
-                <br/>
-        <input type="submit" value="Enviar" />
-    </form>
-{% endif %}
+    </div>
+
 {% endblock %}
