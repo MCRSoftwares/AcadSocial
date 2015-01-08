@@ -21,6 +21,10 @@ a:active {
 	color: #555;
 }
 
+b {
+	font-weight: 600;
+}
+
 .navbar-default {
 	background-color: #FFFFFF;
 	border: 0;
@@ -72,10 +76,19 @@ a:active {
 	border-radius: 0;
 }
 
+.panel-default .panel-body {
+	padding: 25px;
+}
+
 .panel-default .panel-heading {
-	background: #f9f9f9;
+	background: #7C0B1F;
+	color: #fff;
 	border-radius: 0;
 	border-bottom: 1px solid #eee;
+}
+
+.panel-default .panel-footer {
+	border-radius: 0;
 }
 
 .btn-default {
@@ -126,6 +139,10 @@ a:active {
 	border-radius: 0;
 }
 
+textarea.form-control {
+	resize: none;
+}
+
 .form-control:focus {
   border-color: #ccc;
   outline: 0;
@@ -139,6 +156,13 @@ a:active {
 }
 
 .alert-danger {
+	border-radius: 0;
+	margin-bottom: -5px;
+	font-size: 10pt;
+	padding: 10px 35px 10px 10px;
+}
+
+.alert-warning {
 	border-radius: 0;
 	margin-bottom: -5px;
 	font-size: 10pt;

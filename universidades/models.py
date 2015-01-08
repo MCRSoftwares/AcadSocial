@@ -25,7 +25,7 @@ class UniversidadeModel(models.Model):
     nome = models.CharField(max_length=200)
 
     def __unicode__(self):
-        return self.sigla
+        return self.sigla + ' - ' + self.nome
 
     class Meta:
         verbose_name = _('universidade')

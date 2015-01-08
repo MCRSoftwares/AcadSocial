@@ -19,23 +19,24 @@ Descrição:
 
 erro_cadastro = {
     'senhas_diferentes': 'As senhas estão diferentes!',
-    'email_ja_existente': 'Esse e-mail já está cadastrado!',
-    'data_incorreta': 'Essa data não existe!',
-    'email_invalido': 'Esse e-mail não é válido!',
+    'email_ja_existente': 'Este e-mail já está cadastrado!',
+    'data_incorreta': 'Esta data não existe!',
+    'email_invalido': 'Este e-mail não é válido!',
     'nome_incompleto': 'O campo \'nome\' deve conter pelo menos dois caracteres!',
     'sobrenome_incompleto': 'O campo \'sobrenome\' deve conter pelo menos dois caracteres!',
     'nome_invalido': 'O campo \'nome\' não pode conter valores numéricos!',
     'sobrenome_invalido': 'O campo \'sobrenome\' não pode conter valores numéricos!',
     'senha_invalida': 'A senha deve ter pelo menos 6 caracteres, contendo pelo menos 1 letra e 1 número e sem espaços.',
+    'termos_nao_aceitos': 'Os termos e condições de uso devem ser aceitos.',
 }
 
 erro_login = {
     'login_invalido': 'E-mail ou senha incorretos!',
-    'email_inativo': 'Esse e-mail não está ativado!',
+    'email_inativo': 'Este e-mail não está ativado!',
 }
 
 erro_enviar_token = {
-    'email_invalido': 'Esse e-mail não está cadastrado!',
+    'email_invalido': 'Este e-mail não está cadastrado!',
     'senhas_diferentes': 'As senhas estão diferentes!',
     'senha_invalida': 'A senha deve ter pelo menos 6 caracteres, contendo pelo menos 1 letra e 1 número e sem espaços.',
 }

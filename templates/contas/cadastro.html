@@ -9,230 +9,246 @@
             $(document).ready(function(){
                $('input[id=imageID]').change(function() {
                     $('#imageName').val($(this).val());
-                });
+               });
+
+                $.ajax({
+                    url: '{% static 'text/termoscondicoes.txt' %}',
+                    dataType: 'text',
+                    success: function (data) {
+                        $('#termosCondicoes').html(data);
+                    }
+                })
+$(function() {
+    $( "#dialog" ).dialog();
+  });
             });
     </script>
-
 {% endblock %}
 
 {% block body %}
-    <form method="post" action="." enctype="multipart/form-data" class="panel panel-default col-sm-6 form-horizontal">
+    <form method="post" id='my_form' action="." enctype="multipart/form-data" class="col-lg-6 form-horizontal">
         {% csrf_token %}
         <fieldset>
+            <div class="panel panel-default">
+                <div class="panel-body">
 
-            <div class="panel-body">
+                    <legend>Cadastre-se no AcadSocial</legend>
 
-                <legend>Realizar Cadastro</legend>
-
-                <div class="form-group">
-
-                    <label class="col-lg-3 control-label">Nome</label>
-
-                    <div class="col-lg-9">
-                        {{ usuario_form.first_name }}
-                        {% if usuario_form.last_name.errors %}
-                            {% for error in usuario_form.first_name.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label class="col-lg-3 control-label">Sobrenome</label>
-
-                    <div class="col-lg-9">
-                        {{ usuario_form.last_name }}
-                        {% if usuario_form.last_name.errors %}
-                            {% for error in usuario_form.last_name.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="col-lg-3 control-label">E-mail</label>
-
-                    <div class="col-lg-5" style="padding-right: 0;">
-                        {{ usuario_form.email_front }}
-                    </div>
-
-                    <div class="col-lg-4">
-                        {{ usuario_form.email_back }}
-                    </div>
-
-                    <div class="col-lg-9 col-lg-offset-3">
-                        {% if usuario_form.email_front.errors %}
-                            {% for error in usuario_form.email_front.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 control-label">Senha</label>
-                    <div class="col-lg-9">
-                        {{ usuario_form.password }}
-                        {% if usuario_form.password.errors %}
-                            {% for error in usuario_form.password.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="col-lg-3 control-label"></label>
-
-                    <div class="col-lg-9">
-                        {{ usuario_form.password_conf }}
-                        {% if usuario_form.password_conf.errors %}
-                            {% for error in usuario_form.password_conf.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label class="col-lg-3 control-label">Foto</label>
-                    <div class="col-lg-9">
-                        <div class="input-group">
-                            {{ foto_form.imagem }}
-                            <input id="imageName" class="form-control" disabled type="text">
-                            <span class="input-group-btn">
-                                <button class="btn btn-link" onclick="$('input[id=imageID]').click();" type="button">
-                                    Escolher
-                                </button>
-                            </span>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Nome</label>
+                        <div class="col-lg-9">
+                            {{ usuario_form.first_name }}
+                            {% if usuario_form.last_name.errors %}
+                                {% for error in usuario_form.first_name.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
                         </div>
-                        <span class="help-block">
-                            A foto deve ter o tamanho máximo de 2MB.
-                        </span>
-                        {% if foto_form.imagem.errors %}
-                            {% for error in foto_form.imagem.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Sobrenome</label>
+
+                        <div class="col-lg-9">
+                            {{ usuario_form.last_name }}
+                            {% if usuario_form.last_name.errors %}
+                                {% for error in usuario_form.last_name.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-lg-3 control-label">E-mail</label>
+
+                        <div class="col-lg-5" style="padding-right: 0;">
+                            {{ usuario_form.email_front }}
+                        </div>
+
+                        <div class="col-lg-4">
+                            {{ usuario_form.email_back }}
+                        </div>
+
+                        <div class="col-lg-9 col-lg-offset-3">
+                            {% if usuario_form.email.errors %}
+                                {% for error in usuario_form.email.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Senha</label>
+                        <div class="col-lg-9">
+                            {{ usuario_form.password }}
+                            {% if usuario_form.password.errors %}
+                                {% for error in usuario_form.password.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-lg-3 control-label"></label>
+
+                        <div class="col-lg-9">
+                            {{ usuario_form.password_conf }}
+                            {% if usuario_form.password_conf.errors %}
+                                {% for error in usuario_form.password_conf.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Foto</label>
+                        <div class="col-lg-9">
+                            <div class="input-group">
+                                {{ foto_form.imagem }}
+                                <input id="imageName" class="form-control" disabled type="text" onload="$('#imageName').val($('#imageID').val());">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-link" onclick="$('input[id=imageID]').click();" type="button">
+                                        Escolher
+                                    </button>
                                 </span>
-                            {% endfor %}
-                        {% endif %}
+                            </div>
+                            <span class="help-block">
+                                A foto deve ter o tamanho máximo de 2MB.
+                            </span>
+                            {% if foto_form.imagem.errors %}
+                                {% for error in foto_form.imagem.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                    <br>
+                                {% endfor %}
+                            {% endif %}
+                            {% if foto_form.non_field_errors %}
+                                {% for error in foto_form.non_field_errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
                     </div>
 
+                    <div class="form-group">
+
+                        <label class="col-lg-3 control-label">Universidade</label>
+
+                        <div class="col-lg-9">
+
+                            {{ perfil_form.universidade }}
+                            {% if perfil_form.universidade.errors %}
+                                {% for error in perfil_form.universidade.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-lg-3 control-label">Curso</label>
+
+                        <div class="col-lg-9">
+
+                            {{ perfil_form.curso }}
+                            {% if perfil_form.curso.errors %}
+                                {% for error in perfil_form.curso.errors %}
+                                    <span class="help-block alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-lg-3 control-label">Data de Nascimento</label>
+
+                        <div class="col-lg-3" style="padding-right: 5px;">
+                            {{ perfil_form.dia }}
+                        </div>
+
+                        <div class="col-lg-3" style="padding-right: 5px;">
+                            {{ perfil_form.mes }}
+                        </div>
+
+                        <div class="col-lg-3">
+                            {{ perfil_form.ano }}
+                        </div>
+
+                    </div>
+
+                    {% if perfil_form.non_field_errors %}
+                        {% for error in perfil_form.non_field_errors %}
+                            <span class="help-block alert alert-danger alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if usuario_form.non_field_errors %}
+                        {% for error in usuario_form.non_field_errors %}
+                            <br>
+                            <span class="help-block alert alert-danger alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="form-group">
+                        <div class="checkbox text-center">
+                            <label>
+                                {{ perfil_form.termos_condicoes }}
+                                Li e concordo com os termos e condições de uso.
+                            </label>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="form-group">
-
-                    <label class="col-lg-3 control-label">Universidade</label>
-
-                    <div class="col-lg-9">
-
-                        {{ perfil_form.universidade }}
-                        {% if perfil_form.universidade.errors %}
-                            {% for error in perfil_form.universidade.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="col-lg-3 control-label">Curso</label>
-
-                    <div class="col-lg-9">
-
-                        {{ perfil_form.curso }}
-                        {% if perfil_form.curso.errors %}
-                            {% for error in perfil_form.curso.errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="col-lg-3 control-label">Data de Nascimento</label>
-
-                    <div class="col-lg-3" style="padding-right: 5px;">
-                        {{ perfil_form.dia }}
-                    </div>
-
-                    <div class="col-lg-3" style="padding-right: 5px;">
-                        {{ perfil_form.mes }}
-                    </div>
-
-                    <div class="col-lg-3">
-                        {{ perfil_form.ano }}
-                    </div>
-
-                </div>
-
-                {% if perfil_form.non_field_errors %}
-                    {% for error in perfil_form.non_field_errors %}
-                        <span class="help-block alert alert-danger alert-dismissable">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            {{ error }}
-                        </span>
-                    {% endfor %}
-                {% endif %}
-
-                {% if usuario_form.non_field_errors %}
-                    {% for error in usuario_form.non_field_errors %}
-                        <span class="help-block alert alert-danger alert-dismissable">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            {{ error }}
-                        </span>
-                    {% endfor %}
-                {% endif %}
-                <br>
-                <div class="form-group">
-
-                    <div class="col-lg-0 col-lg-offset-9">
-                        <button type="submit" class="btn btn-primary">&nbsp&nbsp&nbsp&nbsp&nbspEnviar&nbsp&nbsp&nbsp&nbsp&nbsp</button>
-
-                    </div>
-
-                </div>
-
+                    <button type="submit" class="panel-footer btn btn-primary" style="width:100%;">Enviar</button>
             </div>
-
         </fieldset>
-
     </form>
 
     <div class="col-lg-6">
@@ -240,14 +256,56 @@
         <div class="panel panel-default">
 
             <div class="panel-heading">
-                Não sabe qual o seu e-mail da UFPE?
+                <b>Não sabe qual o seu e-mail da UFPE?</b>
             </div>
 
-            <div class="panel-body">
-
+            <div class="panel-body text-justify">
+                <div class="col-lg-2">
+                    <i class="fa fa-graduation-cap fa-4x"></i>
+                </div>
+                <div class="col-lg-10">
+                    O AcadSocial utiliza do e-mail acadêmico para garantir com que seus usuários sejam
+                    parte da Universidade Federal de Pernambuco.
+                </div>
+                <div class="col-lg-12">
+                    <br>
+                    O seu e-mail acadêmico pode ser facilmente encontrado no <a href="https://www.siga.ufpe.br">SIG@</a>
+                    e pode ser acessado através do <a href="http://webmail.ufpe.br/zimbra/mail">WebmailUFPE</a>.
+                    <b>A senha do <a href="https://www.siga.ufpe.br">SIG@</a>
+                    é a mesma do <a href="http://webmail.ufpe.br/zimbra/mail">WebmailUFPE</a></b>.
+                </div>
+                <div class="col-lg-12 text-center">
+                    <br>
+                    <img src="{% static 'images/ufpemail1.png' %}" style="border:1px solid #eaeaea;">
+                </div>
+                <div class="col-lg-12">
+                    <br>
+                    O <a href="https://www.siga.ufpe.br">SIG@</a> disponibiliza o e-mail do usuário em sua página inicial,
+                    logo após o login (imagem acima).
+                </div>
+                <div class="col-lg-5">
+                    <br>
+                    <img src="{% static 'images/ufpemail2.png' %}" style="border:1px solid #ddd;">
+                </div>
+                <div class="col-lg-7">
+                    <br>
+                    No topo da página, ele oferece acesso ao <a href="http://webmail.ufpe.br/zimbra/mail">WebmailUFPE</a>
+                    (imagem à esquerda), o qual será usado para a confirmação da conta.
+                </div>
             </div>
 
         </div>
+        <div class="panel panel-default">
 
+            <div class="panel-heading">
+                <b>Termos e Condições de Uso</b>
+            </div>
+
+            <div class="panel-body text-justify">
+                <textarea readonly id="termosCondicoes" class="form-control" rows="15" style="background: #fff;"></textarea>
+            </div>
+
+        </div>
     </div>
+
 {% endblock %}

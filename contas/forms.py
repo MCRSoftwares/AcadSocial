@@ -168,8 +168,14 @@ class PerfilCadastroForm(forms.ModelForm):
     curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', label='curso',
                                    widget=forms.Select(attrs=curso_attrs))
 
+    termos_condicoes = forms.BooleanField(widget=forms.CheckboxInput())
+
     def clean(self):
 
+        # Checa se a os termos e condições de uso foram aceitos
+
+        if not self.cleaned_data.get('termos_condicoes'):
+            raise forms.ValidationError(erro_cadastro['termos_nao_aceitos'], code='termos_nao_aceitos')
         # Checa se a data de nascimento é válida
 
         dia_nasc = self.cleaned_data.get('dia')
