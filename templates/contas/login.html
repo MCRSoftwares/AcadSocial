@@ -1,13 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'base-sem-login.html' %}
 {% load staticfiles %}
 
 {% block title %} Bem-vindo! {% endblock %}
 
 {% block head %}
-{% endblock %}
-
-{% block navbar-right %}
-    <li><a href="{% url 'cadastro' %}">Cadastre-se</a></li>
 {% endblock %}
 
 {% block body %}
@@ -18,11 +14,11 @@
     <div class="col-lg-6 col-lg-offset-3">
         <form class="form-horizontal" method="post" enctype="multipart/form-data" action="">
             {% csrf_token %}
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <legend>Entrar no AcadSocial</legend>
-                    <br>
-                    <fieldset>
+            <fieldset>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <legend>Entrar no AcadSocial</legend>
+                        <br>
                         <div class="form-group">
                             <div class="input-group col-lg-10 col-lg-offset-1">
                                 <span class="input-group-addon">
@@ -65,13 +61,12 @@
                             {% endif %}
                         </div>
 
-                    </fieldset>
-
-                    <a href="{% url 'senha-reset' %}" class="col-lg-5"><i class="fa fa-frown-o"></i> &nbspEsqueci minha senha</a>
-                    <a href="{% url 'reativar' %}" class="col-lg-7"><i class="fa fa-envelope"></i> &nbspNão recebi o e-mail de ativação</a>
+                        <a href="{% url 'senha-reset' %}" class="col-lg-5"><i class="fa fa-frown-o"></i> &nbspEsqueci minha senha</a>
+                        <a href="{% url 'reativar' %}" class="col-lg-7"><i class="fa fa-envelope"></i> &nbspNão recebi o e-mail de ativação</a>
+                    </div>
+                    <button class="btn btn-primary panel-footer full-width" name="loginForm">Enviar</button>
                 </div>
-                <button class="btn btn-primary panel-footer full-width" name="loginForm">Enviar</button>
-            </div>
+            </fieldset>
         </form>
     </div>
 

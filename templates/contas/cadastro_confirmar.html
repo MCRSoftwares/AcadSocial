@@ -1,37 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'base-sem-cadastro.html' %}
 
 {% block title %} Cadastro {% endblock %}
-
-{% block navbar-right %}
-    <li class="dropdown">
-    	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
-		<div class="dropdown-menu panel panel-default">
-            <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
-        		{% csrf_token %}
-				<div class="panel-body" style="margin-top:-10px;">
-        			<fieldset>
-            			<legend><h4>Entrar no AcadSocial</h4></legend>
-
-                        <div class="form-group">
-							<div class="col-lg-12">
-								{{ login_form.email }}
-							</div>
-                		</div>
-
-                    	<div class="form-group">
-							<div class="col-lg-12">
-								{{ login_form.password }}
-							</div>
-                		</div>
-
-                		<a href="{% url 'senha-reset' %}" ><i class="fa fa-frown-o"></i> Esqueci minha senha</a>
-                    </fieldset>
-            	</div>
-                <button class="btn btn-primary panel-footer" name="loginForm" style="width:100%;margin-bottom:-5px">Entrar</button>
-            </form>
-		</div>
-	</li>
-{% endblock %}
 
 {% block body %}
     <div class="acad-title text-center">
@@ -42,38 +11,40 @@
          {% if expired %}
              <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
                 {% csrf_token %}
-                 <div class="panel panel-default">
-                     <div class="panel-body">
-                         <legend>Ativação da conta</legend>
-                         <br>
-                         <div class="text-center">
-                             <b style="font-size:16pt">Sua conta expirou após 7 dias sem ativá-la.</b>
-                             <br><br>
-                         </div>
-                         <div class="text-left">
-                             Esse link de ativação expirou em <b>{{ token.data_expiracao }}</b>.
-                             Por favor, forneça seu e-mail novamente para receber um novo link de ativação.
-                             <br><br><br>
-                         </div>
-                         <div class="form-group">
-                            <div class="input-group col-lg-10 col-lg-offset-1">
-                                <span class="input-group-addon">
-                                    <b class="ultra-bold" style="font-size:13pt;">@</b>
-                                </span>
-                                {{ ativacao_form.email }}
-                            </div>
-                            {% if ativacao_form.email.errors %}
-                                {% for error in ativacao_form.email.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
+                 <fieldset>
+                     <div class="panel panel-default">
+                         <div class="panel-body">
+                             <legend>Ativação da conta</legend>
+                             <br>
+                             <div class="text-center">
+                                 <b style="font-size:16pt">Sua conta expirou após 7 dias sem ativá-la.</b>
+                                 <br><br>
+                             </div>
+                             <div class="text-left">
+                                 Esse link de ativação expirou em <b>{{ token.data_expiracao }}</b>.
+                                 Por favor, forneça seu e-mail novamente para receber um novo link de ativação.
+                                 <br><br><br>
+                             </div>
+                             <div class="form-group">
+                                <div class="input-group col-lg-10 col-lg-offset-1">
+                                    <span class="input-group-addon">
+                                        <b class="ultra-bold" style="font-size:13pt;">@</b>
                                     </span>
-                                {% endfor %}
-                            {% endif %}
-                    </div>
+                                    {{ ativacao_form.email }}
+                                </div>
+                                {% if ativacao_form.email.errors %}
+                                    {% for error in ativacao_form.email.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                             </div>
+                         </div>
+                         <button type="submit" class="panel-footer btn btn-primary full-width" >Reenviar e-mail de ativação</button>
                      </div>
-                     <button type="submit" class="panel-footer btn btn-primary full-width" >Reenviar e-mail de ativação</button>
-                 </div>
+                 </fieldset>
              </form>
          {% else %}
             <div class="panel panel-default">

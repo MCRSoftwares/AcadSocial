@@ -1,37 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'base-sem-cadastro.html' %}
 
 {% block title %} Ativação da Conta {% endblock %}
-
-{% block navbar-right %}
-    <li class="dropdown">
-    	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
-		<div class="dropdown-menu panel panel-default">
-            <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
-        		{% csrf_token %}
-				<div class="panel-body" style="margin-top:-10px;">
-        			<fieldset>
-            			<legend><h4>Entrar no AcadSocial</h4></legend>
-
-                        <div class="form-group">
-							<div class="col-lg-12">
-								{{ login_form.email }}
-							</div>
-                		</div>
-
-                    	<div class="form-group">
-							<div class="col-lg-12">
-								{{ login_form.password }}
-							</div>
-                		</div>
-
-                		<a href="{% url 'senha-reset' %}" ><i class="fa fa-frown-o"></i> Esqueci minha senha</a>
-                    </fieldset>
-            	</div>
-                <button class="btn btn-primary panel-footer" name="loginForm" style="width:100%;margin-bottom:-5px">Entrar</button>
-            </form>
-		</div>
-	</li>
-{% endblock %}
 
 {% block body %}
     <div class="acad-title text-center">
@@ -42,32 +11,34 @@
         {% if not finalizado %}
             <form method="post" action="" enctype="multipart/form-data" class="form-horizontal">
                 {% csrf_token %}
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <legend>Ativação da conta</legend>
-                        <div class="text-left col-lg-12">
-                            Por favor, forneça seu e-mail para receber um novo link de ativação.
-                            <br><br><br>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group col-lg-10 col-lg-offset-1">
-                                <span class="input-group-addon">
-                                    <b style="font-size:13px;">@</b>
-                                </span>
-                                {{ reativar_form.email }}
+                <fieldset>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <legend>Ativação da conta</legend>
+                            <div class="text-left col-lg-12">
+                                Por favor, forneça seu e-mail para receber um novo link de ativação.
+                                <br><br><br>
                             </div>
-                            {% if reativar_form.email.errors %}
-                                {% for error in reativar_form.email.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {{ error }}
+                            <div class="form-group">
+                                <div class="input-group col-lg-10 col-lg-offset-1">
+                                    <span class="input-group-addon">
+                                        <b class="ultra-bold" style="font-size:13pt;">@</b>
                                     </span>
-                                {% endfor %}
-                            {% endif %}
+                                    {{ reativar_form.email }}
+                                </div>
+                                {% if reativar_form.email.errors %}
+                                    {% for error in reativar_form.email.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
                         </div>
+                        <button class="btn btn-primary panel-footer" style="width:100%">Enviar</button>
                     </div>
-                    <button class="btn btn-primary panel-footer" style="width:100%">Enviar</button>
-                </div>
+                </fieldset>
             </form>
         {% else %}
             <div class="panel panel-default">
