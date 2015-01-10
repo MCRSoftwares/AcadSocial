@@ -7,7 +7,7 @@
         <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
     </div>
     <br><br>
-    <div class="col-lg-6 col-lg-offset-3">
+    <div class="col-xs-6 col-xs-offset-3">
         {% if expired %}
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -29,12 +29,12 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <legend>Redefinição de senha</legend>
-                            <div class="text-left col-lg-12">
+                            <div class="text-left col-xs-12">
                                 Por favor, forneça sua nova senha nos campos abaixo.
                                 <br><br><br>
                             </div>
                             <div class="form-group">
-                                <div class="input-group col-lg-10 col-lg-offset-1">
+                                <div class="input-group col-xs-10 col-xs-offset-1">
                                     <span class="input-group-addon">
                                         <b class="fa fa-lock" style="font-size:18px;">&nbsp</b>
                                     </span>
@@ -42,7 +42,7 @@
                                 </div>
                                 {% if senha_form.senha.errors %}
                                     {% for error in senha_form.senha.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                        <span class="help-block alert alert-danger alert-dismissable col-xs-10 col-xs-offset-1">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -50,7 +50,7 @@
                                 {% endif %}
                             </div>
                             <div class="form-group">
-                                <div class="input-group col-lg-10 col-lg-offset-1">
+                                <div class="input-group col-xs-10 col-xs-offset-1">
                                     <span class="input-group-addon">
                                         <b class="fa fa-lock" style="font-size:18px;">&nbsp</b>
                                     </span>
@@ -58,7 +58,7 @@
                                 </div>
                                 {% if senha_form.senha_conf.errors %}
                                     {% for error in senha_form.senha_conf.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                        <span class="help-block alert alert-danger alert-dismissable col-xs-10 col-xs-offset-1">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>

@@ -7,14 +7,14 @@
         <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
     </div>
     <br><br>
-    <div class="col-lg-6 col-lg-offset-3">
+    <div class="col-xs-6 col-xs-offset-3">
         <div class="panel panel-default">
             <div class="panel-body">
                 <legend>Cadastre-se no AcadSocial</legend>
                 <div class="text-center">
                     <b style="font-size:16pt;">Cadastro realizado com sucesso!</b>
                 </div>
-                <div class="text-left col-lg-11 col-lg-offset-1">
+                <div class="text-left col-xs-11 col-xs-offset-1">
                     <br>
                     Cheque sua caixa de entrada em <b>{{ usuario.email }}</b> para ativar sua conta.
                     Se sua conta não for ativada até o dia <b>{{ token.data_expiracao }}</b>, o link de ativação expirará.
