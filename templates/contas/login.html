@@ -4,6 +4,19 @@
 {% block title %} Bem-vindo! {% endblock %}
 
 {% block head %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#emailInput').on('keypress click', function() {
+                $('#emailWError').hide();
+                $('#loginNFWError').hide();
+            });
+
+            $('#senhaInput').on('keypress click', function() {
+                $('#senhaWError').hide();
+                $('#loginNFWError').hide();
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -19,7 +32,7 @@
                     <div class="panel-body">
                         <legend>Entrar no AcadSocial</legend>
                         <br>
-                        <div class="form-group">
+                        <div class="form-group" id="emailInput">
                             <div class="input-group col-lg-10 col-lg-offset-1">
                                 <span class="input-group-addon">
                                     <b class="ultra-bold" style="font-size:13pt;">@</b>
@@ -28,23 +41,23 @@
                             </div>
                             {% if login_form.email.errors %}
                                 {% for error in login_form.email.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1" id="emailWError">
                                         <button type="button" class="close" data-dismiss="alert">×</button>
                                         {{ error }}
                                     </span>
                                 {% endfor %}
                             {% endif %}
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="senhaInput">
                             <div class="input-group col-lg-10 col-lg-offset-1">
                                 <span class="input-group-addon">
-                                    <b class="fa fa-lock" style="font-size:18px;">&nbsp</b>
+                                    <i class="fa fa-lock" style="font-size:14pt;"></i>&nbsp
                                 </span>
                                 {{ login_form.password }}
                             </div>
                             {% if login_form.password.errors %}
                                 {% for error in login_form.password.errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1" id="senhaWError">
                                         <button type="button" class="close" data-dismiss="alert">×</button>
                                         {{ error }}
                                     </span>
@@ -52,7 +65,7 @@
                             {% endif %}
                             {% if login_form.non_field_errors %}
                                 {% for error in login_form.non_field_errors %}
-                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1">
+                                    <span class="help-block alert alert-danger alert-dismissable col-lg-10 col-lg-offset-1" id="loginNFWError">
                                         <button type="button" class="close" data-dismiss="alert">×</button>
                                         {{ error }}
                                     </span>
@@ -61,8 +74,8 @@
                             {% endif %}
                         </div>
 
-                        <a href="{% url 'senha-reset' %}" class="col-lg-5"><i class="fa fa-frown-o"></i> &nbspEsqueci minha senha</a>
-                        <a href="{% url 'reativar' %}" class="col-lg-7"><i class="fa fa-envelope"></i> &nbspNão recebi o e-mail de ativação</a>
+                        <a href="{% url 'senha-reset' %}" class="col-lg-5"><span class="glyphicon glyphicon-remove-circle"></span> Esqueci minha senha</a>
+                        <a href="{% url 'reativar' %}" class="col-lg-7"><span class="glyphicon glyphicon-envelope"></span> Não recebi o e-mail de ativação</a>
                     </div>
                     <button class="btn btn-primary panel-footer full-width" name="loginForm">Enviar</button>
                 </div>

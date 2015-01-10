@@ -33,7 +33,7 @@ def view_usuario_search(request):
         pesquisa_form = UsuarioSearchForm(data=request.GET)
 
         if pesquisa_form.is_valid():
-            data = pesquisa_form.cleaned_data['pesquisa']
+            data = pesquisa_form.cleaned_data['q']
 
             perfil_query = Q(usuario__full_name__contains=data) | Q(perfil_link__contains=data)
 
@@ -44,12 +44,12 @@ def view_usuario_search(request):
 
             grupo_query = Q(nome__contains=data) | Q(grupointeressemodel__interesse__interesse__contains=data)
 
-            perfils = PerfilModel.objects.filter(perfil_query, usuario__is_active=True)
+            perfis = PerfilModel.objects.filter(perfil_query, usuario__is_active=True)
             universidades = UniversidadeModel.objects.filter(univ_query)
             cursos = CursoModel.objects.filter(curso_query)
             grupos = GrupoModel.objects.filter(grupo_query)
 
-            args['perfils'] = perfils
+            args['perfis'] = perfis
             args['universidades'] = universidades
             args['cursos'] = cursos
             args['grupos'] = grupos
@@ -57,5 +57,6 @@ def view_usuario_search(request):
         pesquisa_form = UsuarioSearchForm()
 
     args['pesquisa_form'] = pesquisa_form
+    args['perfil'] = PerfilModel.objects.get(usuario=request.user)
 
     return render(request, 'mainAcad/search.html', args)

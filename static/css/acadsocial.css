@@ -117,6 +117,7 @@ legend {
 
 .panel-default {
 	border-radius: 0;
+    border: 1px solid #e7e7e7;
 }
 
 .panel-default .panel-body {
@@ -133,6 +134,13 @@ legend {
 .panel-default .panel-footer {
 	border-radius: 0;
     background: #7C0B1F;
+}
+
+.panel-bordeless {
+    border: 0;
+    -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .075);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .075);
+    -moz-box-shadow: 1px 1px 2px rgba(0, 0, 0, .075);
 }
 
 .btn-default {
@@ -165,20 +173,68 @@ legend {
 	border: 1px solid #555;
 }
 
-.btn-link {
+.input-group-btn .btn-link {
 	border-radius: 0;
 	border: 1px solid #ccc;
 	background: #ffffff;
-	color: #555
+	color: #555;
 }
 
-.btn-link:hover,
-.btn-link:focus {
+.input-group-btn .btn-link:hover,
+.input-group-btn .btn-link:focus {
 	border-radius: 0;
-	background: #f5f5f5;
+	background: #f4f4f4;
+	border: 1px solid #ccc;
+	color: #333;
+	text-decoration: none;
+}
+
+.input-group-btn .btn-default {
+	border-radius: 0;
+	border: 1px solid #ccc;
+	background: #ffffff;
+	color: #7C0B1F;
+}
+
+.input-group-btn .btn-default:hover,
+.input-group-btn .btn-default:focus {
+	border-radius: 0;
+	background: #fff;
 	border: 1px solid #ccc;
 	color: #555;
 	text-decoration: none;
+}
+
+.search-bar {
+    margin-top: 11px;
+    margin-left: 3px;
+    width: 400px;
+}
+
+.search-bar .form-control {
+    height: 30px;
+    border-right: 0;
+    background-color: #fff;
+}
+
+.search-bar .form-control:focus {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+       -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+          transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.search-bar .input-group-btn .btn-default {
+    border-left: 0;
+    height: 30px;
+    line-height: 5px;
+    font-size: 11pt;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+       -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+          transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
 .form-control {
@@ -196,9 +252,29 @@ textarea.form-control {
           box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(194,194,194, .6);
 }
 
-.dropdown-menu {
+.has-error .form-control {
+  border-color: #CE8483;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+.has-error .form-control:focus {
+  border-color: #CE8483;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 3px #ce8483;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 3px #ce8483;
+}
+.has-error .input-group-addon {
+  color: #f2dede;
+  background-color: #7C0B1F;
+  border-color: #CE8483;
+}
+
+.login-dropdown {
 	border-radius: 0;
 	width: 300px;
+}
+
+.dropdown-menu > li > a {
+    color: #7C0B1F;
 }
 
 .alert-danger {
@@ -221,4 +297,69 @@ textarea.form-control {
 .input-group-addon {
     border-radius: 0;
     background-color: #f1f1f1;
+}
+
+.blank-divider-vertical {
+    height: 50px;
+    margin: 0 16px 0 0;
+}
+
+.divider-vertical {
+    height: 20px;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #f2f2f2;
+    margin: 30px -1px 0 0;
+}
+
+.usuario-info-topo {
+    background: #f9f9f9;
+    margin-top: -20px;
+    height: 55px;
+    border-top: 2px solid #fff;
+    border-bottom: 3px solid #e7e7e7;
+}
+
+.panel-info-topo {
+    margin-top: 8px;
+}
+
+.info-topo-nome {
+    font-family: Josefin Sans, sans-serif;
+    font-size: 13pt;
+    font-weight: 700;
+    color: #7C0B1F;
+}
+
+.info-topo-lista > li > a {
+    height: 53px;
+    line-height: 40px;
+    border-bottom: 3px solid #e7e7e7;
+    font-size: 12.3pt;
+    font-family: Josefin Sans, sans-serif;
+    background-color: transparent;
+}
+
+.info-topo-lista > li > a:hover {
+    border-bottom: 3px solid #7C0B1F;
+    background-color: transparent;
+}
+
+.navbar-default .navbar-nav .lista-active > a,
+.navbar-default .navbar-nav .lista-active > a:hover {
+    height: 53px;
+    line-height: 40px;
+    border-bottom: 3px solid #7C0B1F;
+    background-color: transparent;
+    color: #7C0B1F;
+}
+
+
+
+.profile-image {
+    border: 4px solid #e7e7e7;
+    border-radius: 100px;
+}
+
+.vertical-space {
+    margin-top: 22px;
 }

@@ -172,7 +172,9 @@ def view_pagina_inicial_logada(request):
         return HttpResponseRedirect('/admin')
 
     perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
 
+    args['foto'] = foto
     args['perfil'] = perfil
     args['pesquisa_form'] = UsuarioSearchForm(request.GET)
 
@@ -457,6 +459,8 @@ def view_perfil_usuario(request, sigla, perfil_link):
     args['perfil'] = perfil
     args['idade'] = calcular_idade(perfil.data_nascimento)
     args['aniversario'] = calcular_aniversario(perfil.data_nascimento)
+
+    args['pesquisa_form'] = UsuarioSearchForm(request.GET)
 
     return render(request, 'contas/perfil.html', args)
 

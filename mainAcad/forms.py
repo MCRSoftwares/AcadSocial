@@ -26,7 +26,7 @@ class UsuarioSearchForm(forms.ModelForm):
 
     pesquisa_attrs = {'placeholder': 'Pesquisar...', 'class': 'form-control'}
 
-    pesquisa = forms.CharField(max_length=256, widget=forms.TextInput(attrs=pesquisa_attrs))
+    q = forms.CharField(max_length=256, widget=forms.TextInput(attrs=pesquisa_attrs))
 
     class Meta:
         model = UsuarioModel

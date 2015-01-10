@@ -4,22 +4,67 @@
 {% block title %}Cadastro{% endblock %}
 
 {% block head %}
-
     <script type="text/javascript">
-            $(document).ready(function(){
-               $('input[id=imageID]').change(function() {
-                    $('#imageName').val($(this).val());
-               });
-
-                $.ajax({
-                    url: '{% static 'text/termoscondicoes.txt' %}',
-                    dataType: 'text',
-                    success: function (data) {
-                        $('#termosCondicoes').html(data);
-                    }
-                });
-
+        $(document).ready(function(){
+            $('input[id=imageID]').change(function() {
+                $('#imageName').val($(this).val());
             });
+
+            $.ajax({
+                url: '{% static 'text/termoscondicoes.txt' %}',
+                dataType: 'text',
+                success: function (data) {
+                    $('#termosCondicoes').html(data);
+                }
+            });
+
+            $('#nomeInput').on('keypress click', function() {
+               $('#nomeWError').hide();
+               $('#usuarioNFWError').hide();
+            });
+
+            $('#sobrenomeInput').on('keypress click', function() {
+               $('#sobrenomeWError').hide();
+               $('#usuarioNFWError').hide();
+            });
+
+            $('#emailInput').on('keypress click', function() {
+               $('#emailWError').hide();
+               $('#usuarioNFWError').hide();
+            });
+
+            $('#senhaInput').on('keypress click', function() {
+               $('#senhaWError').hide();
+               $('#usuarioNFWError').hide();
+            });
+
+            $('#senhaConfInput').on('keypress click', function() {
+               $('#senhaConfWError').hide();
+               $('#usuarioNFWError').hide();
+            });
+
+            $('#fotoInput').on('keypress click', function() {
+               $('#fotoWError').hide();
+               $('#fotoNFWError').hide();
+            });
+
+            $('#universidadeInput').on('keypress click', function() {
+               $('#universidadeWError').hide();
+            });
+
+            $('#cursoInput').on('keypress click', function() {
+               $('#cursoWError').hide();
+            });
+
+            $('#nascimentoInput').on('keypress click', function() {
+               $('#perfilNFWError').hide();
+            });
+
+            $('#termosInput').on('keypress click', function() {
+               $('#perfilNFWError').hide();
+            });
+
+        });
     </script>
 {% endblock %}
 
@@ -37,13 +82,13 @@
 
                         <legend>Cadastre-se no AcadSocial</legend>
 
-                        <div class="form-group">
+                        <div class="form-group" id="nomeInput">
                             <label class="col-lg-3 control-label">Nome</label>
                             <div class="col-lg-9">
                                 {{ usuario_form.first_name }}
                                 {% if usuario_form.first_name.errors %}
                                     {% for error in usuario_form.first_name.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="nomeWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -53,14 +98,14 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="sobrenomeInput">
                             <label class="col-lg-3 control-label">Sobrenome</label>
 
                             <div class="col-lg-9">
                                 {{ usuario_form.last_name }}
                                 {% if usuario_form.last_name.errors %}
                                     {% for error in usuario_form.last_name.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="sobrenomeWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -70,7 +115,7 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="emailInput">
 
                             <label class="col-lg-3 control-label">E-mail</label>
 
@@ -85,7 +130,7 @@
                             <div class="col-lg-9 col-lg-offset-3">
                                 {% if usuario_form.email.errors %}
                                     {% for error in usuario_form.email.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="emailWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -94,13 +139,13 @@
                             </div>
 
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="senhaInput">
                             <label class="col-lg-3 control-label">Senha</label>
                             <div class="col-lg-9">
                                 {{ usuario_form.password }}
                                 {% if usuario_form.password.errors %}
                                     {% for error in usuario_form.password.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="senhaWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -110,7 +155,7 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="senhaConfInput">
 
                             <label class="col-lg-3 control-label"></label>
 
@@ -118,7 +163,7 @@
                                 {{ usuario_form.password_conf }}
                                 {% if usuario_form.password_conf.errors %}
                                     {% for error in usuario_form.password_conf.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="senhaConfWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -128,7 +173,7 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="fotoInput">
                             <label class="col-lg-3 control-label">Foto</label>
                             <div class="col-lg-9">
                                 <div class="input-group">
@@ -150,7 +195,7 @@
                                 </span>
                                 {% if foto_form.imagem.errors %}
                                     {% for error in foto_form.imagem.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="fotoWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -159,7 +204,7 @@
                                 {% endif %}
                                 {% if foto_form.non_field_errors %}
                                     {% for error in foto_form.non_field_errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="fotoNFWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                                 {{ error }}
                                         </span>
@@ -169,7 +214,7 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="universidadeInput">
 
                             <label class="col-lg-3 control-label">Universidade</label>
 
@@ -178,7 +223,7 @@
                                 {{ perfil_form.universidade }}
                                 {% if perfil_form.universidade.errors %}
                                     {% for error in perfil_form.universidade.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="universidadeWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -189,7 +234,7 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="cursoInput">
 
                             <label class="col-lg-3 control-label">Curso</label>
 
@@ -198,7 +243,7 @@
                                 {{ perfil_form.curso }}
                                 {% if perfil_form.curso.errors %}
                                     {% for error in perfil_form.curso.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable">
+                                        <span class="help-block alert alert-danger alert-dismissable" id="cursoWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -209,7 +254,7 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="nascimentoInput">
 
                             <label class="col-lg-3 control-label">Data de Nascimento</label>
 
@@ -229,7 +274,7 @@
 
                         {% if perfil_form.non_field_errors %}
                             {% for error in perfil_form.non_field_errors %}
-                                <span class="help-block alert alert-danger alert-dismissable">
+                                <span class="help-block alert alert-danger alert-dismissable" id="perfilNFWError">
                                     <button type="button" class="close" data-dismiss="alert">×</button>
                                     {{ error }}
                                 </span>
@@ -239,13 +284,13 @@
                         {% if usuario_form.non_field_errors %}
                             {% for error in usuario_form.non_field_errors %}
                                 <br>
-                                <span class="help-block alert alert-danger alert-dismissable">
+                                <span class="help-block alert alert-danger alert-dismissable" id="usuarioNFWError">
                                     <button type="button" class="close" data-dismiss="alert">×</button>
                                     {{ error }}
                                 </span>
                             {% endfor %}
                         {% endif %}
-                        <div class="form-group">
+                        <div class="form-group" id="termosInput">
                             <div class="checkbox text-center">
                                 <label>
                                     {{ perfil_form.termos_condicoes }}
@@ -284,7 +329,7 @@
                 </div>
                 <div class="col-lg-12 text-center">
                     <br>
-                    <img src="{% static 'images/ufpemail1.png' %}" style="border:1px solid #eaeaea;">
+                    <img src="{% static 'images/ufpemail1.png' %}" style="border:1px solid #ddd;pointer-events: none;">
                 </div>
                 <div class="col-lg-12">
                     <br>
@@ -293,7 +338,7 @@
                 </div>
                 <div class="col-lg-5">
                     <br>
-                    <img src="{% static 'images/ufpemail2.png' %}" style="border:1px solid #ddd;">
+                    <img src="{% static 'images/ufpemail2.png' %}" style="border:1px solid #ddd;;pointer-events: none;">
                 </div>
                 <div class="col-lg-7">
                     <br>
