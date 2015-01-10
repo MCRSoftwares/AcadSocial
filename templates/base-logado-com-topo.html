@@ -84,7 +84,24 @@
 
         </div>
         <div class="outside">
-            {% block top %} {% endblock %}
+            <div class="navbar navbar-default usuario-info-topo square">
+                <div class="container">
+                    <ul class="nav navbar-nav navbar-left info-topo-panel">
+                        {% block -navbar-left %} {% endblock %}
+                        <li class="info-topo-nome">
+                            <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
+                                <img src="/media/{{ foto.thumbnail_home }}" width="68" height="68" class="profile-image">
+                                {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
+                            </a>
+                        </li>
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right info-topo-lista">
+                        {% block top-navbar-right %} {% endblock %}
+
+                    </ul>
+                </div>
+            </div>
         </div>
         <div class="container">
             {% block body %} {% endblock %}

@@ -67,3 +67,14 @@ def converter_para_jpg(imagem_path, media_path):
     nova_imagem.save(nova_imagem_path, 'JPEG', quality=95)
 
     return media_path[1:] + imagem_name
+
+
+def gerar_thumbnail(imagem, imagem_path, thumbnail_name, size):
+    thumbnail = imagem.resize(size, Image.ANTIALIAS)
+
+    thumbnail_media_path = str(imagem_path)[:len(str(imagem_path))-4] + thumbnail_name + '.jpg'
+    thumbnail_path = str(MEDIA_ROOT) + '/' + thumbnail_media_path
+
+    thumbnail.save(thumbnail_path, 'JPEG', quality=95)
+
+    return thumbnail_media_path

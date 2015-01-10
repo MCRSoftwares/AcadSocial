@@ -6,6 +6,8 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 11pt;
 	color: #555;
+    min-width: 992px;
+    width: auto;
 }
 
 html {
@@ -142,6 +144,18 @@ legend {
     box-shadow: 1px 1px 2px rgba(0, 0, 0, .075);
     -moz-box-shadow: 1px 1px 2px rgba(0, 0, 0, .075);
 }
+
+
+.panel-acad-home .panel-heading,
+.panel-bordeless .panel-heading {
+    background: #fff;
+    border: 0;
+    color: #7C0B1F;
+    font-family: Josefin Sans, sans-serif;
+    font-weight: 700;
+    font-size: 12pt;
+}
+
 
 .btn-default {
 	border-radius: 0;
@@ -319,15 +333,24 @@ textarea.form-control {
     border-bottom: 3px solid #e7e7e7;
 }
 
-.panel-info-topo {
-    margin-top: 8px;
+.info-topo-panel {
+    margin-top: -6px;
 }
+
 
 .info-topo-nome {
     font-family: Josefin Sans, sans-serif;
     font-size: 13pt;
     font-weight: 700;
     color: #7C0B1F;
+}
+
+.navbar .navbar-nav .info-topo-nome > a {
+    color: #7C0B1F;
+}
+
+.navbar .navbar-nav .info-topo-nome > a:hover {
+    color: #555;
 }
 
 .info-topo-lista > li > a {
@@ -353,6 +376,14 @@ textarea.form-control {
     color: #7C0B1F;
 }
 
+.panel-acad-home .panel-heading {
+    background: #fff;
+    border: 0;
+    color: #7C0B1F;
+    font-family: Josefin Sans, sans-serif;
+    font-weight: 700;
+    font-size: 12pt;
+}
 
 
 .profile-image {
@@ -362,4 +393,8 @@ textarea.form-control {
 
 .vertical-space {
     margin-top: 22px;
+}
+
+.square {
+    border-radius: 0;
 }

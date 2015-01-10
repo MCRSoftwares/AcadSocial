@@ -1,37 +1,27 @@
-{% extends 'base-logado.html' %}
+{% extends 'base-logado-com-topo.html' %}
 {% load staticfiles %}
 
 {% block title %} {% endblock %}
 
-{% block outside %}
-    <div class="navbar navbar-default usuario-info-topo" style="border-radius: 0;">
-        <div class="container">
-            <ul class="nav navbar-nav navbar-left panel-info-topo">
-                <li class="info-topo-nome">
-                    <img src="/media/{{ foto }}" width="68" height="68" class="profile-image">
-                    &nbsp{{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
-                </li>
-
-            </ul>
-            <ul class="nav navbar-nav navbar-right info-topo-lista">
-                <li class="divider-vertical"></li>
-                <li class="lista-active"><a href=""><i class="fa fa-home"></i> Página inicial</a></li>
-                <li class="divider-vertical"></li>
-                <li><a href=""><i class="fa fa-users"></i> Grupos</a></li>
-                <li class="divider-vertical"></li>
-                <li><a href=""><i class="fa fa-graduation-cap"></i> Interesses</a></li>
-                <li class="divider-vertical"></li>
-                <li><a href=""><i class="fa fa-comments"></i> Amigos</a></li>
-                <li class="divider-vertical"></li>
-            </ul>
-        </div>
-    </div>
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href=""><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href=""><i class="fa fa-users"></i> Grupos</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href=""><i class="fa fa-graduation-cap"></i> Interesses</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href=""><i class="fa fa-comments"></i> Amigos</a></li>
+    <li class="divider-vertical"></li>
 {% endblock %}
 
 {% block body %}
     <div class="vertical-space">
         <div class="col-md-3">
             <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading">
+
+                </div>
                 <div class="panel-body">
                     &nbsp
                 </div>
@@ -39,7 +29,10 @@
         </div>
 
         <div class="col-md-6">
-            <div class="panel panel-default">
+            <div class="panel panel-default panel-acad-home">
+                <div class="panel-heading">
+
+                </div>
                 <div class="panel-body">
                     &nbsp
                 </div>
@@ -48,6 +41,9 @@
 
         <div class="col-md-3">
             <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading">
+
+                </div>
                 <div class="panel-body">
                     &nbsp
                 </div>

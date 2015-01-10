@@ -19,8 +19,9 @@ from django.db import models
 from contas.models import PerfilModel
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from mainAcad.methods import converter_para_jpg
+from mainAcad.methods import converter_para_jpg, gerar_thumbnail
 from mainAcad.constants import DEFAULT_PICTURE
+from PIL import Image
 
 
 class ImagemModel(models.Model):
@@ -32,6 +33,9 @@ class ImagemModel(models.Model):
                           'Unselect this instead of deleting the profile image.')
 
     imagem = models.ImageField(_('Image'), upload_to='imagens', default=DEFAULT_PICTURE)
+    thumbnail_perfil = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/', default=DEFAULT_PICTURE)
+    thumbnail_home = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/', default=DEFAULT_PICTURE)
+    thumbnail = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/', default=DEFAULT_PICTURE)
     perfil = models.ForeignKey(PerfilModel)
     data_envio = models.DateTimeField(default=timezone.now())
     is_active = models.BooleanField(default=True, help_text=active_help_text)
@@ -46,6 +50,12 @@ class ImagemModel(models.Model):
 
         if self.imagem.name != DEFAULT_PICTURE:
             self.imagem = converter_para_jpg(self.imagem, imagem_path)
+            temp_imagem = self.imagem
+
+            imagem = Image.open(temp_imagem)
+            self.thumbnail_perfil = gerar_thumbnail(imagem, temp_imagem, '_thumbnail120', (120, 120))
+            self.thumbnail_home = gerar_thumbnail(imagem, temp_imagem, '_thumbnail68', (68, 68))
+            self.thumbnail = gerar_thumbnail(imagem, temp_imagem, '_thumbnail50', (50, 50))
 
         super(ImagemModel, self).save(*args, **kwargs)
 

@@ -23,7 +23,8 @@ from django.utils.translation import ugettext_lazy as _
 class ImagemAdmin(admin.ModelAdmin):
     fieldsets = (
         (_(u'Informações do usuário'), {'fields': ('perfil',)}),
-        (_('Image'), {'fields': ('is_active', 'is_profile_image', 'imagem', 'data_envio')}),
+        (_('Image'), {'fields': ('is_active', 'is_profile_image', 'imagem', 'thumbnail', 'thumbnail_home',
+                                 'thumbnail_perfil', 'data_envio')}),
     )
 
     list_display = ('perfil', 'imagem', 'data_envio', 'is_profile_image', 'is_active')
