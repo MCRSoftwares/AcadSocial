@@ -19,6 +19,10 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from grupos.models import GrupoModel, MembroModel
 from django.contrib.auth.decorators import login_required
+from mainAcad.models import ImagemModel
+from mainAcad.forms import UsuarioSearchForm
+from contas.models import PerfilModel
+from grupos.models import InteresseModel
 
 
 @login_required
@@ -38,6 +42,8 @@ def view_pagina_grupo(request, gid):
 
     args['membro'] = membro
     args['grupo'] = grupo
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+    args['perfil'] = PerfilModel.objects.get(usuario=request.user)
 
     return render(request, 'grupos/pagina_grupo.html', args)
 
@@ -76,3 +82,46 @@ def view_entrar_grupo(request, gid):
         membro.save()
 
     return HttpResponseRedirect('/grupo/' + gid + '/')
+
+
+@login_required
+def view_lista_grupos(request):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+
+    return render(request, 'grupos/lista_grupos.html', args)
+
+
+@login_required
+def view_pagina_interesse(request, iid):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    interesse = InteresseModel.objects.get(iid=iid)
+
+    args['interesse'] = interesse
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+
+    return render(request, 'grupos/interesse.html', args)
+
+
+def view_interesses(request):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+
+    return render(request, 'grupos/lista_interesses.html', args)

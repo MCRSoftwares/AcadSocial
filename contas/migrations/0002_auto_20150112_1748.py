@@ -9,20 +9,20 @@ from django.utils.timezone import utc
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contas', '0002_auto_20150105_1637'),
+        ('contas', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='tokenmodel',
             name='data_expiracao',
-            field=models.DateTimeField(default=datetime.datetime(2015, 1, 6, 21, 51, 13, 286000, tzinfo=utc), verbose_name='expiration date'),
+            field=models.DateTimeField(default=datetime.datetime(2015, 1, 13, 20, 48, 46, 211000, tzinfo=utc), verbose_name='expiration date'),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='tokenmodel',
             name='data_request',
-            field=models.DateTimeField(default=datetime.datetime(2015, 1, 5, 21, 51, 13, 286000, tzinfo=utc), verbose_name='request date'),
+            field=models.DateTimeField(default=datetime.datetime(2015, 1, 12, 20, 48, 46, 211000, tzinfo=utc), verbose_name='request date'),
             preserve_default=True,
         ),
     ]

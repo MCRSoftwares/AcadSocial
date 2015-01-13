@@ -19,13 +19,14 @@ from django.contrib import admin
 from grupos.models import GrupoModel, EventoModel, MembroModel, ParticipaEventoModel
 from grupos.models import InteresseModel, UsuarioInteresseModel, GrupoInteresseModel
 from grupos.models import ConviteEventoModel, ConviteGrupoModel
+from grupos.models import ComentarioGrupoModel, ComentarioEventoModel, PostagemEventoModel, PostagemGrupoModel
 from django.utils.translation import ugettext_lazy as _
 
 
 class GrupoAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do grupo'), {'fields': ('nome', 'descricao')}),
+        (_(u'Informações do grupo'), {'fields': ('nome', 'descricao',)}),
         (_(u'Criação'), {'fields': ('criado_por', 'data_criacao')}),
     )
 
@@ -116,6 +117,54 @@ class ConviteEventoAdmin(admin.ModelAdmin):
     search_fields = ('evento', 'usuario', 'convidado', 'data_envio',)
 
 
+class PostagemGrupoAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_(u'Informações do usuário'), {'fields': ('criado_por',)}),
+        (_(u'Informações da postagem'), {'fields': ('ativo', 'grupo',
+                                                    'titulo', 'conteudo', 'data_criacao',)}),
+    )
+
+    list_display = ('grupo', 'criado_por', 'data_criacao', 'ativo',)
+    search_fields = ('ativo', 'grupo', 'titulo', 'conteudo', 'data_criacao', 'criado_por',)
+
+
+class PostagemEventoAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_(u'Informações do usuário'), {'fields': ('criado_por',)}),
+        (_(u'Informações da postagem'), {'fields': ('ativo', 'grupo', 'evento',
+                                                    'titulo', 'conteudo', 'data_criacao',)}),
+    )
+
+    list_display = ('grupo', 'evento', 'criado_por', 'data_criacao', 'ativo',)
+    search_fields = ('ativo', 'grupo', 'evento', 'titulo', 'conteudo', 'data_criacao', 'criado_por',)
+
+
+class ComentarioGrupoAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_(u'Informações do usuário'), {'fields': ('criado_por',)}),
+        (_(u'Informações do comentário'), {'fields': ('ativo', 'postagem',
+                                                      'conteudo', 'data_criacao',)}),
+    )
+
+    list_display = ('postagem', 'criado_por', 'data_criacao', 'ativo',)
+    search_fields = ('ativo', 'postagem', 'conteudo', 'data_criacao', 'criado_por',)
+
+
+class ComentarioEventoAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (_(u'Informações do usuário'), {'fields': ('criado_por',)}),
+        (_(u'Informações do comentário'), {'fields': ('ativo', 'postagem',
+                                                      'conteudo', 'data_criacao',)}),
+    )
+
+    list_display = ('postagem', 'criado_por', 'data_criacao', 'ativo',)
+    search_fields = ('ativo', 'postagem', 'conteudo', 'data_criacao', 'criado_por',)
+
+
 admin.site.register(GrupoModel, GrupoAdmin)
 admin.site.register(EventoModel, EventoAdmin)
 admin.site.register(InteresseModel, InteresseAdmin)
@@ -125,3 +174,7 @@ admin.site.register(UsuarioInteresseModel, UsuarioInteresseAdmin)
 admin.site.register(GrupoInteresseModel, GrupoInteresseAdmin)
 admin.site.register(ConviteGrupoModel, ConviteGrupoAdmin)
 admin.site.register(ConviteEventoModel, ConviteEventoAdmin)
+admin.site.register(PostagemGrupoModel, PostagemGrupoAdmin)
+admin.site.register(PostagemEventoModel, PostagemEventoAdmin)
+admin.site.register(ComentarioGrupoModel, ComentarioGrupoAdmin)
+admin.site.register(ComentarioEventoModel, ComentarioEventoAdmin)

@@ -25,9 +25,9 @@
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 
-    {% block head %} {% endblock %}
+    {% block base-head %} {% endblock %}
     </head>
-    <body {% block body-style %}{% endblock %}>
+    <body>
 
         <div class="navbar navbar-default navbar-static-top">
 
@@ -39,10 +39,10 @@
 
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-left">
-                        {% block navbar-left %} {% endblock %}
+                        {% block base-navbar-left %} {% endblock %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        {% block navbar-right %} {% endblock %}
+                        {% block base-navbar-right %} {% endblock %}
                     </ul>
                 </div>
 
@@ -51,7 +51,7 @@
         </div>
 
         <div class="container">
-            {% block body %} {% endblock %}
+            {% block base-body %} {% endblock %}
         </div>
 
     </body>

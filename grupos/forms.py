@@ -16,3 +16,11 @@ Descrição:
 """
 
 from django import forms
+from grupos.models import ComentarioGrupoModel
+
+
+class ComentarioGrupoForm(forms.ModelForm):
+
+    class Meta:
+        model = ComentarioGrupoModel
+        fields = ()

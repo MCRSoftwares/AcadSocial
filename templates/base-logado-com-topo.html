@@ -24,6 +24,18 @@
         <script src="{% static 'jquery/1.11.1/jquery.min.js' %}"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'jquery/1.11.1/plugins/cookie-master/jquery.cookie.js' %}"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $(document).scrollTop($.cookie("scroll"));
+
+                $(window).on("scroll", function() {
+                    $.cookie("scroll", $(document).scrollTop());
+                });
+
+            });
+        </script>
 
     {% block head %} {% endblock %}
     </head>
@@ -44,37 +56,51 @@
                             <form method="get" action="{% url 'search' %}" enctype="multipart/form-data">
                                 {{ pesquisa_form.q }}
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default"><b class="glyphicon glyphicon-search"></b></button>
+                                    <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
                                 </span>
                             </form>
+                        </li>
+                        <li class="dropdown pos-search-bar">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span class="notifications-icon"> 10</span>
+                            </a>
+                            <div class="dropdown-menu panel panel-default notifications-dropdown">
+                            </div>
                         </li>
 
                         {% block navbar-left %} {% endblock %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span><b class="caret"></b></a>
-                            <ul class="dropdown-menu panel panel-default text-center">
-                                <li>
-                                    <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
-                                        <i class="fa fa-user"></i>
-                                        <span class="col-xs-offset-2 text-center">Meu Perfil</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-edit"></i>
-                                        <span class="col-xs-offset-2">Editar Perfil</span>
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="{% url 'logout' %}">
-                                        <i class="fa fa-power-off"></i>
-                                        <span class="col-xs-offset-2">Sair</span>
-                                    </a>
-                                </li>
-                            </ul>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-cog"></span>
+                                <b class="caret"></b>
+                            </a>
+                            <div class="dropdown-menu panel-dropdown">
+                                <ul class="panel-list">
+                                    <li>
+                                        <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
+                                            <span class="col-xs-0">
+                                                <i class="fa fa-user"></i>
+                                            </span>
+                                            <span class="col-xs-0">Meu Perfil</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-edit"></i>
+                                            <span>Editar Perfil</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'logout' %}">
+                                            <i class="fa fa-power-off"></i>
+                                            <span>Sair</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                         {% block navbar-right %} {% endblock %}
                     </ul>
@@ -97,8 +123,15 @@
 
                     </ul>
                     <ul class="nav navbar-nav navbar-right info-topo-lista">
-                        {% block top-navbar-right %} {% endblock %}
-
+                        <li class="divider-vertical"></li>
+                        <li {% block home-active %}{% endblock %}><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+                        <li class="divider-vertical"></li>
+                        <li {% block groups-active %}{% endblock %}><a href="{% url 'grupos-lista' %}"><i class="fa fa-users"></i> Grupos</a></li>
+                        <li class="divider-vertical"></li>
+                        <li {% block interests-active %}{% endblock %}><a href="{% url 'interesses' %}"><i class="fa fa-paint-brush"></i> Interesses</a></li>
+                        <li class="divider-vertical"></li>
+                        <li {% block friends-active %}{% endblock %}><a href="{% url 'amigos' %}"><i class="fa fa-comments"></i> Amigos</a></li>
+                        <li class="divider-vertical"></li>
                     </ul>
                 </div>
             </div>

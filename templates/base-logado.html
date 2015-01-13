@@ -44,16 +44,26 @@
                             <form method="get" action="{% url 'search' %}" enctype="multipart/form-data">
                                 {{ pesquisa_form.q }}
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default"><b class="glyphicon glyphicon-search"></b></button>
+                                    <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
                                 </span>
                             </form>
+                        </li>
+                        <li class="dropdown pos-search-bar">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span class="notifications-icon"> 10</span>
+                            </a>
+                            <div class="dropdown-menu panel panel-default notifications-dropdown">
+                            </div>
                         </li>
 
                         {% block navbar-left %} {% endblock %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span><b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-cog"></span>
+                                <b class="caret"></b></a>
                             <ul class="dropdown-menu panel panel-default text-center">
                                 <li>
                                     <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
@@ -64,7 +74,7 @@
                                 <li>
                                     <a href="#">
                                         <i class="fa fa-edit"></i>
-                                        <span class="col-xs-offset-2">Editar Perfil</span>
+                                        <span class="col-xs-offset-2 text-center">Editar Perfil</span>
                                     </a>
                                 </li>
                                 <li class="divider"></li>

@@ -55,7 +55,7 @@ class ImagemModel(models.Model):
             imagem = Image.open(temp_imagem)
             self.thumbnail_perfil = gerar_thumbnail(imagem, temp_imagem, '_thumbnail120', (120, 120))
             self.thumbnail_home = gerar_thumbnail(imagem, temp_imagem, '_thumbnail68', (68, 68))
-            self.thumbnail = gerar_thumbnail(imagem, temp_imagem, '_thumbnail50', (50, 50))
+            self.thumbnail = gerar_thumbnail(imagem, temp_imagem, '_thumbnail45', (45, 45))
 
         super(ImagemModel, self).save(*args, **kwargs)
 

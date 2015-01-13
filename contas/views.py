@@ -31,6 +31,8 @@ from django.contrib.auth.decorators import login_required
 from contas.constants import TOKEN_TYPE
 from mainAcad.forms import UsuarioSearchForm, ImagemUploadForm
 from mainAcad.models import ImagemModel
+from grupos.models import UsuarioInteresseModel, MembroModel, PostagemGrupoModel, ComentarioGrupoModel, GrupoModel
+from grupos.forms import ComentarioGrupoForm
 
 
 def view_cadastrar_usuario(request):
@@ -174,9 +176,50 @@ def view_pagina_inicial_logada(request):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
 
+    grupos_participa = MembroModel.objects.filter(usuario=request.user).order_by('data_entrada')
+    grupos = GrupoModel.objects.filter(membromodel__in=grupos_participa)
+    postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos).order_by('data_criacao')
+    comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens).order_by('data_criacao')
+
+    comentarios_fotos = []
+    postagens_fotos = []
+
+    for comentario in comentarios:
+        comentarios_fotos.append(ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                                         perfil__usuario=comentario.criado_por))
+
+    for postagem in postagens:
+        postagens_fotos.append(ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                                       perfil__usuario=postagem.criado_por))
+
+    if request.method == 'POST':
+        comentario_form = ComentarioGrupoForm()
+
+        for postagem in postagens:
+            if 'postagem-' + str(postagem.pid) in request.POST:
+                comentario_form = ComentarioGrupoForm(data=request.POST)
+
+                if comentario_form.is_valid():
+                    comentario = comentario_form.save(commit=False)
+
+                    comentario.criado_por = request.user
+                    comentario.conteudo = request.POST['comentario']
+                    comentario.postagem = postagem
+
+                    comentario.save()
+
+                    return HttpResponseRedirect('/')
+    else:
+        comentario_form = ComentarioGrupoForm()
+
+    args['comentario_form'] = comentario_form
     args['foto'] = foto
     args['perfil'] = perfil
     args['pesquisa_form'] = UsuarioSearchForm(request.GET)
+    args['interesses_possui'] = UsuarioInteresseModel.objects.filter(usuario=request.user).order_by('data_criacao')
+    args['grupos_participa'] = grupos_participa
+    args['postagens'] = zip(postagens, postagens_fotos)
+    args['comentarios'] = zip(comentarios, comentarios_fotos)
 
     return render(request, 'contas/home.html', args)
 
@@ -469,3 +512,5 @@ def view_desativar_perfil(request):
     # TODO view para desativar perfil com: desativação de todos os tokens +
     # TODO confirmação da desativação reinformando e-mail e senha
     pass
+
+

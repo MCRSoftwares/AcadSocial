@@ -24,6 +24,21 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 
+class GrupoModel(models.Model):
+    gid = models.AutoField(_('grupo ID'), primary_key=True)
+    nome = models.CharField(max_length=128)
+    descricao = models.TextField(_(u'descrição'), max_length=1024)
+    criado_por = models.ForeignKey(UsuarioModel, related_name='criador_grupo')
+    data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
+
+    def __unicode__(self):
+        return self.nome + ' (' + str(self.criado_por) + ')'
+
+    class Meta:
+        verbose_name = _('grupo')
+        verbose_name_plural = _('grupos')
+
+
 class InteresseModel(models.Model):
     iid = models.AutoField(_('interesse ID'), primary_key=True)
     interesse = models.CharField(max_length=96)
@@ -48,21 +63,6 @@ class UsuarioInteresseModel(models.Model):
     class Meta:
         verbose_name = _(u'relação Usuário-Interesse')
         verbose_name_plural = _(u'relações Usuário-Interesse')
-
-
-class GrupoModel(models.Model):
-    gid = models.AutoField(_('grupo ID'), primary_key=True)
-    nome = models.CharField(max_length=128)
-    descricao = models.TextField(_(u'descrição'), max_length=1024)
-    criado_por = models.ForeignKey(UsuarioModel)
-    data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
-
-    def __unicode__(self):
-        return self.nome + ' (' + str(self.criado_por) + ')'
-
-    class Meta:
-        verbose_name = _('grupo')
-        verbose_name_plural = _('grupos')
 
 
 class GrupoInteresseModel(models.Model):
@@ -151,3 +151,67 @@ class ConviteEventoModel(models.Model):
     class Meta:
         verbose_name = _('convite (Evento)')
         verbose_name_plural = _('convites (Evento)')
+
+
+class PostagemGrupoModel(models.Model):
+    criado_por = models.ForeignKey(UsuarioModel, related_name='grupo_criador_postagem')
+    titulo = models.CharField(_(u'título'), max_length=64)
+    conteudo = models.TextField(_(u'conteúdo'), max_length=2048)
+    ativo = models.BooleanField(default=True)
+    data_criacao = models.DateTimeField(default=timezone.now())
+    grupo = models.ForeignKey(GrupoModel)
+    pid = models.AutoField(primary_key=True)
+
+    def __unicode__(self):
+        return str(self.grupo) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+
+    class Meta:
+        verbose_name = _('postagem (Grupo)')
+        verbose_name_plural = _('postagens (Grupo)')
+
+
+class PostagemEventoModel(models.Model):
+    criado_por = models.ForeignKey(UsuarioModel, related_name='evento_criador_postagem')
+    titulo = models.CharField(_(u'título'), max_length=64)
+    conteudo = models.TextField(_(u'conteúdo'), max_length=2048)
+    ativo = models.BooleanField(default=True)
+    data_criacao = models.DateTimeField(default=timezone.now())
+    grupo = models.ForeignKey(GrupoModel)
+    evento = models.ForeignKey(EventoModel)
+
+    def __unicode__(self):
+        return str(self.evento) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+
+    class Meta:
+        verbose_name = _('postagem (Evento)')
+        verbose_name_plural = _('postagens (Evento)')
+
+
+class ComentarioGrupoModel(models.Model):
+    criado_por = models.ForeignKey(UsuarioModel)
+    conteudo = models.TextField(_(u'conteúdo'))
+    ativo = models.BooleanField(default=True)
+    data_criacao = models.DateTimeField(default=timezone.now())
+    postagem = models.ForeignKey(PostagemGrupoModel)
+
+    def __unicode__(self):
+        return str(self.postagem) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+
+    class Meta:
+        verbose_name = _(u'comentário (Grupo)')
+        verbose_name_plural = _(u'comentários (Grupo)')
+
+
+class ComentarioEventoModel(models.Model):
+    criado_por = models.ForeignKey(UsuarioModel)
+    conteudo = models.TextField(_(u'conteúdo'))
+    ativo = models.BooleanField(default=True)
+    data_criacao = models.DateTimeField(default=timezone.now())
+    postagem = models.ForeignKey(PostagemEventoModel)
+
+    def __unicode__(self):
+        return str(self.postagem) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+
+    class Meta:
+        verbose_name = _(u'comentário (Evento)')
+        verbose_name_plural = _(u'comentários (Evento)')

@@ -20,5 +20,7 @@ from django.conf.urls import patterns, include, url
 from mainAcad import views
 
 urlpatterns = patterns('',
+
                        url(r'search/', views.view_usuario_search, name='search'),
+                       url(r'^amigos/$', views.view_lista_amigos, name='amigos'),
                        )

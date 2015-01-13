@@ -14,3 +14,7 @@ Caso(s) de Uso: -
 Descrição:
     Definição das mensagens de erro relacionados à aplicação de grupos e eventos.
 """
+
+erro_comentario = {
+    'comentario_vazio': 'Não é possível fazer um comentário vazio.'
+}

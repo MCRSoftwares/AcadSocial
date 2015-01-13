@@ -21,7 +21,7 @@ from contas.models import PerfilModel, UsuarioModel
 from grupos.models import GrupoModel
 from universidades.models import UniversidadeModel, CursoModel
 from django.db.models import Q
-
+from mainAcad.models import ImagemModel
 
 def view_usuario_search(request):
     args = {}
@@ -60,3 +60,16 @@ def view_usuario_search(request):
     args['perfil'] = PerfilModel.objects.get(usuario=request.user)
 
     return render(request, 'mainAcad/search.html', args)
+
+
+def view_lista_amigos(request):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+
+    return render(request, 'mainAcad/lista_amigos.html', args)
