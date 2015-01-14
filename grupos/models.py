@@ -56,6 +56,7 @@ class UsuarioInteresseModel(models.Model):
     interesse = models.ForeignKey(InteresseModel)
     usuario = models.ForeignKey(UsuarioModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
+    iid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.interesse) + ' - ' + str(self.usuario)
@@ -69,6 +70,7 @@ class GrupoInteresseModel(models.Model):
     interesse = models.ForeignKey(InteresseModel)
     grupo = models.ForeignKey(GrupoModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
+    iid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.interesse) + ' - ' + str(self.grupo)
@@ -83,6 +85,7 @@ class MembroModel(models.Model):
     grupo = models.ForeignKey(GrupoModel)
     data_entrada = models.DateTimeField(_('data de entrada'), default=timezone.now())
     is_admin = models.BooleanField(_('administrador'), default=False)
+    mid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.grupo) + ' - ' + str(self.usuario)
@@ -99,6 +102,7 @@ class EventoModel(models.Model):
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
     data_evento = models.DateTimeField(_('data do evento'))
     criado_por = models.ForeignKey(UsuarioModel)
+    eid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return self.titulo + ' (' + str(self.criado_por) + ')'
@@ -112,6 +116,7 @@ class ParticipaEventoModel(models.Model):
     evento = models.ForeignKey(EventoModel)
     usuario = models.ForeignKey(UsuarioModel)
     data_participacao = models.DateTimeField(_(u'data de participação'), default=timezone.now())
+    eid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.evento) + ' - ' + str(self.usuario)
@@ -128,6 +133,7 @@ class ConviteGrupoModel(models.Model):
     grupo = models.ForeignKey(GrupoModel)
     ativo = models.BooleanField(default=True)
     aceito = models.BooleanField(default=False)
+    cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.grupo) + ' (' + str(self.usuario) + ': ' + str(self.convidado) + ')'
@@ -144,6 +150,7 @@ class ConviteEventoModel(models.Model):
     evento = models.ForeignKey(EventoModel)
     ativo = models.BooleanField(default=True)
     aceito = models.BooleanField(default=False)
+    cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.evento) + ' (' + str(self.usuario) + ': ' + str(self.convidado) + ')'
@@ -178,6 +185,7 @@ class PostagemEventoModel(models.Model):
     data_criacao = models.DateTimeField(default=timezone.now())
     grupo = models.ForeignKey(GrupoModel)
     evento = models.ForeignKey(EventoModel)
+    pid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.evento) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
@@ -193,6 +201,7 @@ class ComentarioGrupoModel(models.Model):
     ativo = models.BooleanField(default=True)
     data_criacao = models.DateTimeField(default=timezone.now())
     postagem = models.ForeignKey(PostagemGrupoModel)
+    cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.postagem) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
@@ -208,6 +217,7 @@ class ComentarioEventoModel(models.Model):
     ativo = models.BooleanField(default=True)
     data_criacao = models.DateTimeField(default=timezone.now())
     postagem = models.ForeignKey(PostagemEventoModel)
+    cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return str(self.postagem) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
