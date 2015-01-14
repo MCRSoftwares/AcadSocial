@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v006a
+Versão do Código: 01v007a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -20,7 +20,7 @@ from contas.forms import EnviarTokenForm, SenhaResetForm
 from universidades.models import UniversidadeModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.contrib.auth import login, logout
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -33,6 +33,7 @@ from mainAcad.forms import UsuarioSearchForm, ImagemUploadForm
 from mainAcad.models import ImagemModel
 from grupos.models import UsuarioInteresseModel, MembroModel, PostagemGrupoModel, ComentarioGrupoModel, GrupoModel
 from grupos.forms import ComentarioGrupoForm
+from django.template import RequestContext
 
 
 def view_cadastrar_usuario(request):
@@ -176,24 +177,61 @@ def view_pagina_inicial_logada(request):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
 
+    interesses = UsuarioInteresseModel.objects.filter(usuario=request.user).order_by('data_criacao')
     grupos_participa = MembroModel.objects.filter(usuario=request.user).order_by('data_entrada')
     grupos = GrupoModel.objects.filter(membromodel__in=grupos_participa)
-    postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos).order_by('data_criacao')
-    comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens).order_by('data_criacao')
+    postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos, ativo=True).order_by('data_criacao')
+    comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True).order_by('-data_criacao')
 
-    comentarios_fotos = []
-    postagens_fotos = []
+    fotos_comentarios = {}
+    fotos_postagens = {}
+    perfis_comentarios = {}
+    perfis_postagens = {}
 
     for comentario in comentarios:
-        comentarios_fotos.append(ImagemModel.objects.get(is_profile_image=True, is_active=True,
-                                                         perfil__usuario=comentario.criado_por))
+        if comentario.criado_por not in fotos_comentarios:
+            fotos_comentarios[comentario.criado_por] = \
+                ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                        perfil__usuario=comentario.criado_por).thumbnail
+
+        if comentario.criado_por not in perfis_comentarios:
+            perfis_comentarios[comentario.criado_por] = PerfilModel.objects.get(usuario=comentario.criado_por)
 
     for postagem in postagens:
-        postagens_fotos.append(ImagemModel.objects.get(is_profile_image=True, is_active=True,
-                                                       perfil__usuario=postagem.criado_por))
+        if postagem.criado_por not in fotos_postagens:
+            fotos_postagens[postagem.criado_por] = \
+                ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                        perfil__usuario=postagem.criado_por).thumbnail_home
+
+        if postagem.criado_por not in perfis_postagens:
+            perfis_postagens[postagem.criado_por] = PerfilModel.objects.get(usuario=postagem.criado_por)
 
     if request.method == 'POST':
-        comentario_form = ComentarioGrupoForm()
+
+        if 'deleteComment' in request.POST:
+            pcid = request.POST['deleteComment'].split('-')
+
+            pid = int(pcid[0])
+            cid = int(pcid[1])
+
+            try:
+                comentario = ComentarioGrupoModel.objects.get(postagem__pid=pid, cid=cid, criado_por=request.user)
+                comentario.ativo = False
+                comentario.save()
+
+            except ComentarioGrupoModel.DoesNotExist:
+                pass
+
+        if 'deletePost' in request.POST:
+            pid = int(request.POST['deletePost'])
+
+            try:
+                postagem = PostagemGrupoModel.objects.get(pid=pid, criado_por=request.user)
+                postagem.ativo = False
+                postagem.save()
+
+            except PostagemGrupoModel.DoesNotExist:
+                pass
 
         for postagem in postagens:
             if 'postagem-' + str(postagem.pid) in request.POST:
@@ -205,10 +243,10 @@ def view_pagina_inicial_logada(request):
                     comentario.criado_por = request.user
                     comentario.conteudo = request.POST['comentario']
                     comentario.postagem = postagem
-
+                    comentario.data_criacao = timezone.now()
                     comentario.save()
 
-                    return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/')
     else:
         comentario_form = ComentarioGrupoForm()
 
@@ -216,10 +254,15 @@ def view_pagina_inicial_logada(request):
     args['foto'] = foto
     args['perfil'] = perfil
     args['pesquisa_form'] = UsuarioSearchForm(request.GET)
-    args['interesses_possui'] = UsuarioInteresseModel.objects.filter(usuario=request.user).order_by('data_criacao')
+    args['interesses_possui'] = interesses
     args['grupos_participa'] = grupos_participa
-    args['postagens'] = zip(postagens, postagens_fotos)
-    args['comentarios'] = zip(comentarios, comentarios_fotos)
+    args['postagens'] = postagens
+    args['comentarios'] = ComentarioGrupoModel.objects.filter(postagem__in=postagens,
+                                                              ativo=True).order_by('-data_criacao')
+    args['fotos_comentarios'] = fotos_comentarios
+    args['fotos_postagens'] = fotos_postagens
+    args['perfis_postagens'] = perfis_postagens
+    args['perfis_comentarios'] = perfis_comentarios
 
     return render(request, 'contas/home.html', args)
 
