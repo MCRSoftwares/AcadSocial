@@ -20,10 +20,11 @@ from grupos import views
 
 
 urlpatterns = patterns('',
-                       url(r'^grupos/lista/$', views.view_lista_grupos, name='grupos-lista'),
-                       url(r'^grupos/(?P<gid>\w+)/$', views.view_pagina_grupo, name='grupo-index'),
-                       url(r'^grupos/(?P<gid>\w+)/editar/$', views.view_editar_grupo, name='grupo-editar'),
-                       url(r'^grupos/(?P<gid>\w+)/entrar/$', views.view_entrar_grupo, name='grupo-entrar'),
+                       url(r'^grupo/lista/$', views.view_lista_grupos, name='grupos-lista'),
+                       url(r'^grupo/(?P<gid>\w+)/post/(?P<pid>\w+)/$', views.view_postagem_grupo, name='grupo-post'),
+                       url(r'^grupo/(?P<gid>\w+)/$', views.view_pagina_grupo, name='grupo-index'),
+                       url(r'^grupo/(?P<gid>\w+)/editar/$', views.view_editar_grupo, name='grupo-editar'),
+                       url(r'^grupo/(?P<gid>\w+)/entrar/$', views.view_entrar_grupo, name='grupo-entrar'),
                        url(r'^interesses/$', views.view_interesses, name='interesses'),
                        url(r'^interesses/(?P<iid>\w+)/$', views.view_pagina_interesse, name='interesse-index'),
                        )

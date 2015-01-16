@@ -20,7 +20,7 @@ from contas.forms import EnviarTokenForm, SenhaResetForm
 from universidades.models import UniversidadeModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -33,7 +33,7 @@ from mainAcad.forms import UsuarioSearchForm, ImagemUploadForm
 from mainAcad.models import ImagemModel
 from grupos.models import UsuarioInteresseModel, MembroModel, PostagemGrupoModel, ComentarioGrupoModel, GrupoModel
 from grupos.forms import ComentarioGrupoForm
-from django.template import RequestContext
+from django.db.models import Q
 
 
 def view_cadastrar_usuario(request):
@@ -181,12 +181,14 @@ def view_pagina_inicial_logada(request):
     grupos_participa = MembroModel.objects.filter(usuario=request.user).order_by('data_entrada')
     grupos = GrupoModel.objects.filter(membromodel__in=grupos_participa)
     postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos, ativo=True).order_by('data_criacao')
-    comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True).order_by('-data_criacao')
+    comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True)
 
+    comentario_postagem = {}
     fotos_comentarios = {}
     fotos_postagens = {}
     perfis_comentarios = {}
     perfis_postagens = {}
+    qtd_comentarios = {}
 
     for comentario in comentarios:
         if comentario.criado_por not in fotos_comentarios:
@@ -206,6 +208,14 @@ def view_pagina_inicial_logada(request):
         if postagem.criado_por not in perfis_postagens:
             perfis_postagens[postagem.criado_por] = PerfilModel.objects.get(usuario=postagem.criado_por)
 
+        if postagem.pid not in qtd_comentarios:
+            qtd = ComentarioGrupoModel.objects.filter(postagem=postagem, ativo=True)
+            qtd_comentarios[postagem.pid] = len(qtd)
+
+        if postagem.pid not in comentario_postagem:
+            comentario_postagem[postagem.pid] = ComentarioGrupoModel.objects.filter(ativo=True, postagem=postagem)\
+                .order_by('-data_criacao')
+
     if request.method == 'POST':
 
         if 'deleteComment' in request.POST:
@@ -214,8 +224,14 @@ def view_pagina_inicial_logada(request):
             pid = int(pcid[0])
             cid = int(pcid[1])
 
+            print cid
+
             try:
-                comentario = ComentarioGrupoModel.objects.get(postagem__pid=pid, cid=cid, criado_por=request.user)
+                postagem = PostagemGrupoModel.objects.get(pid=pid)
+                custom_query = Q(criado_por=request.user) | Q(postagem__criado_por=postagem.criado_por)
+
+                comentario = ComentarioGrupoModel.objects.get(Q(postagem__pid=pid), Q(cid=cid), custom_query)
+
                 comentario.ativo = False
                 comentario.save()
 
@@ -250,6 +266,7 @@ def view_pagina_inicial_logada(request):
     else:
         comentario_form = ComentarioGrupoForm()
 
+    args['qtd_comentarios'] = qtd_comentarios
     args['comentario_form'] = comentario_form
     args['foto'] = foto
     args['perfil'] = perfil
@@ -257,12 +274,11 @@ def view_pagina_inicial_logada(request):
     args['interesses_possui'] = interesses
     args['grupos_participa'] = grupos_participa
     args['postagens'] = postagens
-    args['comentarios'] = ComentarioGrupoModel.objects.filter(postagem__in=postagens,
-                                                              ativo=True).order_by('-data_criacao')
     args['fotos_comentarios'] = fotos_comentarios
     args['fotos_postagens'] = fotos_postagens
     args['perfis_postagens'] = perfis_postagens
     args['perfis_comentarios'] = perfis_comentarios
+    args['comentario_postagem'] = comentario_postagem
 
     return render(request, 'contas/home.html', args)
 
@@ -555,5 +571,3 @@ def view_desativar_perfil(request):
     # TODO view para desativar perfil com: desativação de todos os tokens +
     # TODO confirmação da desativação reinformando e-mail e senha
     pass
-
-

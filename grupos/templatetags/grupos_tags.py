@@ -33,3 +33,8 @@ def get_perfil_link(dictionary, key):
 @register.filter(name="univ_sigla")
 def get_univ_sigla(dictionary, key):
     return dictionary.get(key).universidade.sigla
+
+
+@register.filter(name="first_five")
+def get_first_five(dictionary, key):
+    return dictionary.get(key)[:5]

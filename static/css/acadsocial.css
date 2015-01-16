@@ -478,10 +478,6 @@ textarea.form-control {
     font-size: 10pt;
 }
 
-.pos-search-bar {
-    margin-left: 40px;
-}
-
 .no-padding {
     padding: 0;
 }
@@ -557,10 +553,11 @@ textarea.form-control {
     overflow:hidden;
 }
 
-.truncate {
+.truncate-line {
     max-width: 100%;
     text-overflow: ellipsis;
     overflow:hidden;
+    word-wrap: break-word;
 }
 
 .feed-link {
@@ -608,4 +605,81 @@ textarea.comment-bar {
 
 .comment-datetime {
     font-size: 8pt;
+}
+
+.pagination {
+    border-radius: 0;
+    font-weight: 700;
+    font-size: 12pt;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    font-family: Josefin Sans, sans-serif;
+    font-size: 11pt;
+    float: none;
+    color: #7C0B1F;
+    background-color: #fff;
+    border: 1px solid #e7e7e7;
+}
+
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+    border-radius: 0;
+    font-family: Josefin Sans, sans-serif;
+}
+
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+    border-radius: 0;
+    font-family: Josefin Sans, sans-serif;
+}
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+    color: #999;
+    background-color: #fff;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    font-family: Josefin Sans, sans-serif;
+    font-size: 11pt;
+    background-color: #7C0B1F;
+    border-color: #7C0B1F;
+}
+
+.pagination > .disabled > span,
+.pagination > .disabled > span:hover,
+.pagination > .disabled > span:focus,
+.pagination > .disabled > a,
+.pagination > .disabled > a:hover,
+.pagination > .disabled > a:focus {
+    font-family: Josefin Sans, sans-serif;
+    font-size: 11pt;
+    color: #555;
+    cursor: default;
+}
+
+.panel-bordeless .panel-list .lista-active > a {
+    border-left: 5px solid #7C0B1F;
+    border-radius: 0;
+    color: #7C0B1F;
+    font-weight: 700;
+}
+
+.search-error {
+    font-size: 20pt;
+    font-family: Josefin Sans, sans-serif;
+    font-weight: 700;
+    padding: 10px 20px 20px 20px;
+}
+
+.search-error-data {
+    color: #7C0B1F;
 }

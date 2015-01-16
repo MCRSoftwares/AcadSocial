@@ -1,32 +1,195 @@
-{% extends 'base-logado.html' %}
-{% load staticfiles %}
+{% extends 'base-logado-topo-vazio.html' %}
 
-{% block title %} Bem-vindo! {% endblock %}
+{% block title %} AcadSocial {% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href=""><i class="fa fa-search"></i> Resultados</a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
 
 {% block body %}
-    Usuários:<br>
-    {% for uperfil in perfis %}
-        <A href="{% url 'perfil' uperfil.universidade.sigla uperfil.perfil_link %}">
-        {{ uperfil.usuario.first_name }} {{ uperfil.usuario.last_name }}
-        </a>
-        <br>
-    {% endfor %}
-    <br>
-    Universidades:<br>
-    {% for universidade in universidades %}
-        {{ universidade.sigla }} - {{ universidade.nome }}
-        <br>
-    {% endfor %}
-    <br>
-    Cursos:<br>
-    {% for curso in cursos %}
-        {{ curso.universidade.sigla }} - {{ curso.nome }}
-        <br>
-    {% endfor %}
-    <br>
-    Grupos:<br>
-    {% for grupo in grupos %}
-        <a href="{% url 'grupo-index' grupo.gid %}">{{ grupo.nome }}</a>
-        <br>
-    {% endfor %}
+  <div class="vertical-space">
+      <div class="col-xs-3">
+        <div class="panel panel-default panel-bordeless">
+            <div class="panel-heading text-center">
+                <i class="fa fa-tags"></i> Filtros de Pesquisa
+            </div>
+            <ul class="panel-list">
+                <li {% if not filtro or filtro == '0' %} class="lista-active" {% endif %}>
+                    <a href="?q={{ pesquisa }}&f=0"><span class="fa fa-globe"></span> &nbspTodos</a>
+                </li>
+                <li {% if filtro == '1' %} class="lista-active" {% endif %}>
+                    <a href="?q={{ pesquisa }}&f=1"><span class="fa fa-user"></span> &nbspUsuários</a>
+                </li>
+                <li {% if filtro == '2' %} class="lista-active" {% endif %}>
+                    <a href="?q={{ pesquisa }}&f=2"><span class="fa fa-group"></span> &nbspGrupos</a>
+                </li>
+                <li {% if filtro == '3' %} class="lista-active" {% endif %}>
+                    <a href="?q={{ pesquisa }}&f=3"><span class="fa fa-paint-brush"></span> &nbspInteresses</a>
+                </li>
+                <li {% if filtro == '4' %} class="lista-active" {% endif %}>
+                    <a href="?q={{ pesquisa }}&f=4"><span class="fa fa-calendar"></span> &nbspEventos</a>
+                </li>
+                <li {% if filtro == '5' %} class="lista-active" {% endif %}>
+                    <a href="?q={{ pesquisa }}&f=5"><span class="glyphicon glyphicon-edit"></span> &nbspPostagens</a>
+                </li>
+            </ul>
+            <a href="{% url 'index' %}" class="panel-footer text-center">Voltar</a>
+        </div>
+      </div>
+      <div class="col-xs-9">
+          {% if not resultado %}
+              <div class="panel panel-default panel-bordeless">
+                  <div class="panel-heading text-center">
+                      Nada foi encontrado!
+                  </div>
+                  <div class="panel-body text-center">
+                      <span class="fa fa-frown-o" style="font-size:200pt;"></span>
+                      <div class="search-error">
+                        Não foi possível encontrar nenhuma referência à pesquisa
+                          "<span class="search-error-data">{{ pesquisa }}</span>"
+                      </div>
+                  </div>
+              </div>
+          {% else %}
+              {% if not filtro or filtro == '0' or filtro == '1' %}
+                  {% for item, item_foto in perfis.iteritems %}
+                      <div class="col-xs-6">
+                          <div class="panel panel-default panel-bordeless">
+                              <div class="panel-heading text-center">
+                                  <span class="fa fa-user"></span> &nbspUsuário
+                              </div>
+                              <div class="panel-body text-center">
+                                  <a href="{% url 'perfil' item.universidade.sigla item.perfil_link %}" class="feed-link">
+                                      <img src="/media/{{ item_foto.thumbnail_perfil }}" class="profile-image">
+                                      <br>
+                                      {{ item.usuario.full_name|capfirst }}
+                                      <br>
+                                  </a>
+                                  <span class="feed-datetime">
+                                      {{ item.perfil_link|capfirst }}
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                  {% endfor %}
+              {% endif %}
+
+              {% if not filtro or filtro == '0' or filtro == '2' %}
+                  {% for item in grupos %}
+                      <div class="col-xs-6">
+                          <div class="panel panel-default panel-bordeless">
+                              <div class="panel-heading text-center">
+                                  <span class="fa fa-group"></span> &nbspGrupo
+                              </div>
+                              <div class="panel-body text-center">
+                                  <a href="{% url 'grupo-index' item.gid %}" class="feed-link">
+                                      <span class="profile-image fa fa-group" style="font-size:90pt;"></span>
+                                      <br>
+                                      {{ item.nome|capfirst }}
+                                      <br>
+                                  </a>
+                                  <span class="feed-datetime">
+                                      {{ item.descricao|capfirst }}
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                  {% endfor %}
+              {% endif %}
+
+              {% if not filtro or filtro == '0' or filtro == '3' %}
+                  {% for item in interesses %}
+                      <div class="col-xs-6">
+                          <div class="panel panel-default panel-bordeless">
+                              <div class="panel-heading text-center">
+                                  <span class="fa fa-paint-brush"></span> &nbspInteresse
+                              </div>
+                              <div class="panel-body text-center">
+                                  <a href="{% url 'interesse-index' item.iid %}" class="feed-link">
+                                      <span class="profile-image fa fa-paint-brush" style="font-size:90pt;"></span>
+                                      <br>
+                                      {{ item.interesse|capfirst }}
+                                  </a>
+                                  <span class="feed-datetime">
+                                      {{ item.data_criacao }}
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                  {% endfor %}
+              {% endif %}
+
+              {% if not filtro or filtro == '0' or filtro == '4' %}
+                  {% for item in eventos %}
+                      <div class="col-xs-6">
+                          <div class="panel panel-default panel-bordeless">
+                              <div class="panel-heading text-center">
+                                  <span class="fa fa-calendar"></span> &nbspEvento
+                              </div>
+                              <div class="panel-body text-center">
+                                  <a href="" class="feed-link">
+                                      <span class="profile-image fa fa-calendar" style="font-size:90pt;"></span>
+                                      <br>
+                                      {{ item.titulo|capfirst }}
+                                      <br>
+                                  </a>
+                                  <span class="feed-datetime">
+                                      {{ item.descricao|capfirst }}
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                  {% endfor %}
+              {% endif %}
+
+              {% if not filtro or filtro == '0' or filtro == '5' %}
+                  {% for item in postagens_grupos %}
+                      <div class="col-xs-6">
+                          <div class="panel panel-default panel-bordeless">
+                              <div class="panel-heading text-center">
+                                  <span class="glyphicon glyphicon-edit"></span> &nbspPostagem ({{ item.grupo.nome }})
+                              </div>
+                              <div class="panel-body text-center">
+                                  <a href="{% url 'grupo-post' item.grupo.gid item.pid %}" class="feed-link">
+                                      <span class="profile-image glyphicon glyphicon-edit" style="font-size:90pt;"></span>
+                                      <br>
+                                      {{ item.titulo|capfirst }}
+                                      <br>
+                                  </a>
+                                  <span class="feed-datetime">
+                                      {{ item.conteudo|capfirst }}
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                  {% endfor %}
+
+                  {% for item in postagens_eventos %}
+                      <div class="col-xs-6">
+                          <div class="panel panel-default panel-bordeless">
+                              <div class="panel-heading text-center">
+                                  Postagem (Evento)
+                              </div>
+                              <div class="panel-body text-center">
+                                  <a href="" class="feed-link">
+                                      <span class="profile-image glyphicon glyphicon-edit" style="font-size:90pt;"></span>
+                                      <br>
+                                      {{ item.titulo|capfirst }}
+                                      <br>
+                                  </a>
+                                  <span class="feed-datetime">
+                                      {{ item.conteudo|capfirst }}
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                  {% endfor %}
+              {% endif %}
+      {% endif %}
+      </div>
+  </div>
 {% endblock %}

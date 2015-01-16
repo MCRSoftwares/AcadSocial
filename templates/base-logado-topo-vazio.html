@@ -114,15 +114,8 @@
 
                     </ul>
                     <ul class="nav navbar-nav navbar-right info-topo-lista">
-                        <li class="divider-vertical"></li>
-                        <li {% block home-active %}{% endblock %}><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
-                        <li class="divider-vertical"></li>
-                        <li {% block groups-active %}{% endblock %}><a href="{% url 'grupos-lista' %}"><i class="fa fa-users"></i> Grupos</a></li>
-                        <li class="divider-vertical"></li>
-                        <li {% block interests-active %}{% endblock %}><a href="{% url 'interesses' %}"><i class="fa fa-paint-brush"></i> Interesses</a></li>
-                        <li class="divider-vertical"></li>
-                        <li {% block friends-active %}{% endblock %}><a href="{% url 'amigos' %}"><i class="fa fa-comments"></i> Amigos</a></li>
-                        <li class="divider-vertical"></li>
+                        {% block top-navbar-right %}
+                        {% endblock %}
                     </ul>
                 </div>
             </div>

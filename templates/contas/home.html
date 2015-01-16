@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load grupos_tags %}
 
-{% block title %} {% endblock %}
+{% block title %}AcadSocial{% endblock %}
 
 {% block head %}
     <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
@@ -21,10 +21,21 @@
         sendCommentForm = function(formID) {
             $(formID).keypress(function(e) {
                 if(e.which == 13 && !e.shiftKey) {
+                    e.preventDefault();
                     this.form.submit();
                 }
             });
         };
+
+        setInterval(function() {
+                $.ajax({
+                    url: '{% url 'index' %}',
+                    success: function(data) {
+                        var qtd = $('#qtdComments', data).html();
+                        $('#qtdComments').html(qtd);
+                    }
+                });
+            }, 2500);
 
         deleteElement = function(elID, formID) {
             $(elID).hide();
@@ -86,13 +97,13 @@
         </div>
 
         <div class="col-xs-8" id="feed">
-            {% for postagem in postagens %}
+            {% for postagem in postagens|slice:':10' %}
                 <span id="postagem-{{ postagem.pid }}">
                     <div class="col-xs-8 no-right-padding no-left-padding">
                         <div class="panel panel-default panel-bordeless feed">
                             <div class="panel-heading truncate">
                                 <div class="col-xs-11 no-padding">
-                                    <a href="#">
+                                    <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}">
                                         <span class="glyphicon glyphicon-edit"></span> {{ postagem.titulo }}
                                     </a>
                                 </div>
@@ -123,44 +134,49 @@
                                     </div>
                                 </form>
                             </div>
-                            {% for comentario in comentarios %}
-                                {% if comentario.postagem == postagem %}
+                            <span id="commentSession">
+                                {% for comentario in comentario_postagem|first_five:postagem.pid %}
                                     <span id="comment-{{ postagem.pid }}-{{ comentario.cid }}">
                                         <div class="panel-body comment-start" style="padding:10px;">
                                             <div class="col-xs-1" style="padding:0;">
                                                 <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
-                                                    <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}" class="profile-image">
-                                                </a>
+                                                    <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}" class="profile-image"></a>
                                             </div>
                                             <div class="col-xs-10 comment-user no-padding" style="padding-left:20px;">
-                                                &nbsp&nbsp&nbsp
+                                                &nbsp
                                                 <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
                                                     {{ comentario.criado_por.full_name }}
                                                 </a>
                                                 <br>
-                                                <div class="col-xs-offset-0" style="padding-left:15px;">
+                                                <div class="col-xs-offset-0 truncate-line" style="padding-left:15px;">
                                                     {{ comentario.conteudo }}
                                                 </div>
                                                 <div class="col-xs-12 text-right no-padding comment-datetime">
                                                     <br>
-                                                    {{ comentario.data_criacao|date:"d/m/Y - H:i" }}
+                                                    {{ comentario.data_criacao|date:"d/m/Y - H:i:s" }}
                                                 </div>
                                             </div>
                                             <div class="col-xs-1 no-padding" style="margin-top:-5px;">
                                                 {% if comentario.criado_por == user or postagem.criado_por == user %}
-                                                    <form method="post" action="" id="commentForm-{{ postagem.pid }}-{{ comentario.pid }}">
+                                                    <form method="post" action="" id="commentForm-{{ postagem.pid }}-{{ comentario.cid }}">
                                                         {% csrf_token %}
                                                         <button class="close" type="button" style="font-size:11pt;"
                                                                 onclick="deleteElement('#comment-{{ postagem.pid }}-{{ comentario.cid }}',
-                                                                        '#commentForm-{{ postagem.pid }}-{{ comentario.pid }}')">×</button>
+                                                                        '#commentForm-{{ postagem.pid }}-{{ comentario.cid }}')">×</button>
                                                         <input type="text" name="deleteComment" value="{{ postagem.pid }}-{{ comentario.cid }}" style="display: none;">
                                                     </form>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </span>
+                                {% endfor %}
+                                {% if qtd_comentarios|item:postagem.pid > 0 %}
+                                    <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}" class="panel-footer btn btn-default" style="border:0;margin-top:4px;">
+                                         <span class="fa fa-comments"></span><span id="qtdComments"> {{ qtd_comentarios|item:postagem.pid }}</span>
+                                         {% if qtd_comentarios|item:postagem.pid == 1 %}Comentário{% else %}Comentários{% endif %}
+                                    </a>
                                 {% endif %}
-                            {% endfor %}
+                            </span>
                         </div>
                     </div>
                     <div class="col-xs-4">
@@ -175,7 +191,7 @@
                                     {{ postagem.criado_por.full_name }}
                                 </a>
                                 <br>
-                                <span class="feed-datetime">{{ postagem.data_criacao|date:"d/m/Y - H:i" }}</span>
+                                <span class="feed-datetime">{{ postagem.data_criacao|date:"d/m/Y - H:i:s" }}</span>
                             </div>
                         </div>
                     </div>

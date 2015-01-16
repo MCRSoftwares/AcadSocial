@@ -40,11 +40,13 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-left">
                         <li class="blank-divider-vertical"></li>
-                        <li class="input-group search-bar">
+                        <li class="search-bar">
                             <form method="get" action="{% url 'search' %}" enctype="multipart/form-data">
-                                {{ pesquisa_form.q }}
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                                <span class="input-group">
+                                    {{ pesquisa_form.q }}
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
                                 </span>
                             </form>
                         </li>

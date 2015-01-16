@@ -15,14 +15,18 @@ Descrição:
     Definição das views relacionadas à aplicação de grupos e eventos.
 """
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from grupos.models import GrupoModel, MembroModel
 from django.contrib.auth.decorators import login_required
 from mainAcad.models import ImagemModel
 from mainAcad.forms import UsuarioSearchForm
 from contas.models import PerfilModel
-from grupos.models import InteresseModel
+from grupos.models import InteresseModel, PostagemGrupoModel, ComentarioGrupoModel
+from grupos.forms import ComentarioGrupoForm
+from django.utils import timezone
+from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 @login_required
@@ -114,6 +118,7 @@ def view_pagina_interesse(request, iid):
     return render(request, 'grupos/interesse.html', args)
 
 
+@login_required
 def view_interesses(request):
     args = {}
 
@@ -125,3 +130,110 @@ def view_interesses(request):
     args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
 
     return render(request, 'grupos/lista_interesses.html', args)
+
+
+@login_required
+def view_postagem_grupo(request, gid, pid):
+    args = {}
+
+    try:
+        grupo = GrupoModel.objects.get(gid=gid)
+        MembroModel.objects.get(grupo=grupo, usuario=request.user)
+
+    except GrupoModel.DoesNotExist:
+        return HttpResponseRedirect('/')
+
+    except MembroModel.DoesNotExist:
+        return HttpResponseRedirect('/grupo/' + gid + '/')
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    postagem = get_object_or_404(PostagemGrupoModel, grupo__gid=gid, pid=pid, ativo=True)
+    comentarios = ComentarioGrupoModel.objects.filter(postagem=postagem,
+                                                      ativo=True).order_by('-data_criacao')
+
+    foto_postagem = ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                            perfil__usuario=postagem.criado_por).thumbnail_perfil
+    perfil_postagem = PerfilModel.objects.get(usuario=postagem.criado_por)
+
+    fotos_comentarios = {}
+    perfis_comentarios = {}
+
+    qtd_comentarios = len(comentarios)
+    paginas = Paginator(comentarios, 10)
+
+    for comentario in comentarios:
+        if comentario.criado_por not in fotos_comentarios:
+            fotos_comentarios[comentario.criado_por] = \
+                ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                        perfil__usuario=comentario.criado_por).thumbnail
+
+        if comentario.criado_por not in perfis_comentarios:
+            perfis_comentarios[comentario.criado_por] = PerfilModel.objects.get(usuario=comentario.criado_por)
+
+    if request.method == 'GET':
+        pagina = request.GET.get('page')
+
+        try:
+            comentarios = paginas.page(pagina)
+        except PageNotAnInteger:
+            comentarios = paginas.page(1)
+        except EmptyPage:
+            comentarios = paginas.page(paginas.num_pages)
+
+    if request.method == 'POST':
+
+        if 'deleteComment' in request.POST:
+            cid = int(request.POST['deleteComment'])
+
+            try:
+                custom_query = Q(criado_por=request.user) | Q(criado_por=postagem.criado_por)
+                comentario = ComentarioGrupoModel.objects.get(Q(postagem__pid=pid), Q(cid=cid), custom_query)
+                comentario.ativo = False
+                comentario.save()
+
+            except ComentarioGrupoModel.DoesNotExist:
+                pass
+
+        if 'deletePost' in request.POST:
+
+            try:
+                postagem.ativo = False
+                postagem.save()
+
+                return HttpResponseRedirect('/grupo/' + gid)
+
+            except PostagemGrupoModel.DoesNotExist:
+                pass
+
+        if 'comment' in request.POST:
+            comentario_form = ComentarioGrupoForm(data=request.POST)
+
+            if comentario_form.is_valid():
+                comentario = comentario_form.save(commit=False)
+
+                comentario.criado_por = request.user
+                comentario.conteudo = request.POST['comentario']
+                comentario.postagem = postagem
+                comentario.data_criacao = timezone.now()
+                comentario.save()
+
+        return HttpResponseRedirect('/grupo/' + gid + '/post/' + pid)
+
+    else:
+        comentario_form = ComentarioGrupoForm()
+
+    args['qtd_comentarios'] = qtd_comentarios
+    args['comentario_form'] = comentario_form
+    args['comentarios'] = comentarios
+    args['postagem'] = postagem
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+
+    args['perfil_postagem'] = perfil_postagem
+    args['foto_postagem'] = foto_postagem
+    args['perfis_comentarios'] = perfis_comentarios
+    args['fotos_comentarios'] = fotos_comentarios
+
+    return render(request, 'grupos/postagem.html', args)
