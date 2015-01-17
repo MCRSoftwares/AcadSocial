@@ -32,7 +32,7 @@ class GrupoModel(models.Model):
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
 
     def __unicode__(self):
-        return self.nome + ' (' + str(self.criado_por) + ')'
+        return self.nome + ' (' + unicode(self.criado_por) + ')'
 
     class Meta:
         verbose_name = _('grupo')
@@ -43,6 +43,7 @@ class InteresseModel(models.Model):
     iid = models.AutoField(_('interesse ID'), primary_key=True)
     interesse = models.CharField(max_length=96)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
+    criado_por = models.ForeignKey(UsuarioModel)
 
     def __unicode__(self):
         return self.interesse
@@ -59,7 +60,7 @@ class UsuarioInteresseModel(models.Model):
     iid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.interesse) + ' - ' + str(self.usuario)
+        return unicode(self.interesse) + ' - ' + unicode(self.usuario)
 
     class Meta:
         verbose_name = _(u'relação Usuário-Interesse')
@@ -73,7 +74,7 @@ class GrupoInteresseModel(models.Model):
     iid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.interesse) + ' - ' + str(self.grupo)
+        return unicode(self.interesse) + ' - ' + unicode(self.grupo)
 
     class Meta:
         verbose_name = _(u'relação Grupo-Interesse')
@@ -88,7 +89,7 @@ class MembroModel(models.Model):
     mid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.grupo) + ' - ' + str(self.usuario)
+        return unicode(self.grupo) + ' - ' + unicode(self.usuario)
 
     class Meta:
         verbose_name = _('membro')
@@ -105,7 +106,7 @@ class EventoModel(models.Model):
     eid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return self.titulo + ' (' + str(self.criado_por) + ')'
+        return self.titulo + ' (' + unicode(self.criado_por) + ')'
 
     class Meta:
         verbose_name = _('evento')
@@ -119,7 +120,7 @@ class ParticipaEventoModel(models.Model):
     eid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.evento) + ' - ' + str(self.usuario)
+        return unicode(self.evento) + ' - ' + unicode(self.usuario)
 
     class Meta:
         verbose_name = _(u'relaçao Usuário-Evento')
@@ -136,7 +137,7 @@ class ConviteGrupoModel(models.Model):
     cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.grupo) + ' (' + str(self.usuario) + ': ' + str(self.convidado) + ')'
+        return unicode(self.grupo) + ' (' + unicode(self.usuario) + ': ' + unicode(self.convidado) + ')'
 
     class Meta:
         verbose_name = _('convite (Grupo)')
@@ -153,7 +154,7 @@ class ConviteEventoModel(models.Model):
     cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.evento) + ' (' + str(self.usuario) + ': ' + str(self.convidado) + ')'
+        return unicode(self.evento) + ' (' + unicode(self.usuario) + ': ' + unicode(self.convidado) + ')'
 
     class Meta:
         verbose_name = _('convite (Evento)')
@@ -170,7 +171,7 @@ class PostagemGrupoModel(models.Model):
     pid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.grupo) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+        return unicode(self.grupo) + ' (' + unicode(self.criado_por) + ': ' + unicode(self.data_criacao) + ')'
 
     class Meta:
         verbose_name = _('postagem (Grupo)')
@@ -188,7 +189,7 @@ class PostagemEventoModel(models.Model):
     pid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.evento) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+        return unicode(self.evento) + ' (' + unicode(self.criado_por) + ': ' + unicode(self.data_criacao) + ')'
 
     class Meta:
         verbose_name = _('postagem (Evento)')
@@ -204,7 +205,7 @@ class ComentarioGrupoModel(models.Model):
     cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.postagem) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+        return unicode(self.postagem) + ' (' + unicode(self.criado_por) + ': ' + unicode(self.data_criacao) + ')'
 
     class Meta:
         verbose_name = _(u'comentário (Grupo)')
@@ -220,7 +221,7 @@ class ComentarioEventoModel(models.Model):
     cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
-        return str(self.postagem) + ' (' + str(self.criado_por) + ': ' + str(self.data_criacao) + ')'
+        return unicode(self.postagem) + ' (' + unicode(self.criado_por) + ': ' + unicode(self.data_criacao) + ')'
 
     class Meta:
         verbose_name = _(u'comentário (Evento)')

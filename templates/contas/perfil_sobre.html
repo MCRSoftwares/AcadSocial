@@ -1,0 +1,121 @@
+{% extends 'base-logado-topo-vazio.html' %}
+
+{% block title %}
+    {{ usuario.full_name }} - AcadSocial
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}">
+        <i class="fa fa-user"></i> Perfil de {{ pag_perfil.usuario.first_name }}</a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href=""><i class="fa fa-info-circle"></i> Sobre {{ pag_perfil.usuario.first_name }}</a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    @ {{ pag_perfil.perfil_link }}
+                </div>
+                <div class="panel-body text-center truncate-line border-sides">
+                    <img src="/media/{{ pag_foto.thumbnail_perfil }}" class="profile-image-big">
+                    <br>
+                    <a href="" class="feed-link"><span class="fa fa-user"></span> {{ usuario.full_name }}</a>
+                </div>
+                <div class="panel-heading perfil-about-heading">
+                    <span class="fa fa-info-circle"></span> Sobre
+                </div>
+                <div class="panel-heading perfil-about-body">
+                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla }}
+                </div>
+                <div class="panel-heading perfil-about-body">
+                    <span class="fa fa-book"></span> {{ pag_perfil.curso }}
+                </div>
+                <div class="panel-heading perfil-about-body">
+                    <span class="fa fa-birthday-cake"></span> {{ aniversario }} &nbsp({{ idade }} anos)
+                </div>
+                {% if perfil != pag_perfil and not amigo and not convite_amigo %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button class="panel-footer text-center" style="margin-top:0;" name="adicionarAmigo">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Adicionar
+                        </button>
+                    </form>
+                {% elif perfil == pag_perfil %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Este é o seu perfil
+                    </div>
+                {% elif convite_amigo and not amigo %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você adicionou {{ pag_perfil.usuario.first_name }}
+                    </div>
+                {% elif amigo %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        {{ pag_perfil.usuario.first_name }} é seu amigo
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-paint-brush"></span> Interesses de {{ usuario.first_name }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+
+                    </div>
+                    <div class="panel-body">
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-group"></span> Grupos de {{ usuario.first_name }}
+                    </div>
+                </div>
+            </div>
+             <div class="col-xs-6">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+
+                    </div>
+                    <div class="panel-body">
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-comments"></span> Amigos de {{ usuario.first_name }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+
+                    </div>
+                    <div class="panel-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

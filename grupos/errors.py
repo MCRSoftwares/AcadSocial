@@ -15,6 +15,7 @@ Descrição:
     Definição das mensagens de erro relacionados à aplicação de grupos e eventos.
 """
 
-erro_comentario = {
-    'comentario_vazio': 'Não é possível fazer um comentário vazio.'
+erro_interesse = {
+    'interesse_ja_existente': 'Este interesse já está cadastrado!',
+    'interesse_invalido': 'Não é possível criar um interesse com este nome!',
 }

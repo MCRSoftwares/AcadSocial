@@ -38,13 +38,3 @@ def get_univ_sigla(dictionary, key):
 @register.filter(name="first_five")
 def get_first_five(dictionary, key):
     return dictionary.get(key)[:5]
-
-
-@register.filter(name="get_interesses")
-def get_interesse_in(lista):
-    interesses = []
-
-    for valor in lista:
-        interesses.append(valor.interesse)
-
-    return interesses

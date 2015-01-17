@@ -62,3 +62,31 @@ class ImagemModel(models.Model):
     class Meta:
         verbose_name = _('imagem')
         verbose_name_plural = _('imagens')
+
+
+class AmigoModel(models.Model):
+    perfil = models.ForeignKey(PerfilModel, related_name='perfil')
+    amigo = models.ForeignKey(PerfilModel, related_name='amigo')
+    data_criacao = models.DateTimeField(default=timezone.now())
+    ativo = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.perfil.usuario.email + u' é amigo de ' + self.amigo.usuario.email
+
+    class Meta:
+        verbose_name = _('amigo')
+        verbose_name_plural = _('amigos')
+
+
+class ConviteAmigoModel(models.Model):
+    perfil = models.ForeignKey(PerfilModel, related_name='perfil_convite')
+    amigo = models.ForeignKey(PerfilModel, related_name='amigo_convite')
+    data_criacao = models.DateTimeField(default=timezone.now())
+    ativo = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.perfil.usuario.email + ' quer ser amigo de ' + self.amigo.usuario.email
+
+    class Meta:
+        verbose_name = _('convite (Amigo)')
+        verbose_name_plural = _('convites (Amigo)')

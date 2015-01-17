@@ -1,5 +1,169 @@
 {% extends 'base-logado-com-topo.html' %}
+{% load grupos_tags %}
+
+{% block title %}
+    Meus Interesses - AcadSocial
+{% endblock %}
 
 {% block interests-active %}
     class='lista-active'
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#criarInteresse').hide();
+
+            $("#interesseQry").keyup(function(e) {
+                if (e.which != 0) {
+                    var interesse = $('#interesseQry');
+
+                    $('#interesseField').val(interesse.val());
+
+                    $.ajax({
+                        url: '{% url 'interesses' %}?iq=' + interesse.val(),
+                        success: function(data) {
+                            var qtd = $('#pesquisaInteresse', data).html();
+                            $('#pesquisaInteresse').html(qtd);
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4 no-right-padding">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-paint-brush"></span> Meus Interesses
+                </div>
+                {% if perfil_interesses|length == 0 %}
+                    <ul class="panel-list">
+                        <li class="text-center not-link-list">Você não possui interesses!</li>
+                    </ul>
+
+                {% else %}
+                    <ul class="panel-list">
+                        {% for interesse in perfil_interesses %}
+                            <li>
+                                <a href="{% url 'interesse-index' interesse.iid %}" style="padding-left: 10px;">
+                                    <span class="glyphicon glyphicon-cog"></span> &nbsp{{ interesse.interesse|capfirst }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <ul class="text-center">
+                    <li><button type="submit" class="panel-footer">
+                        Criar Interesse
+                    </button></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="col-xs-8">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading">
+                        <div class="search-bar" style="margin-top:0;width:100%">
+                            <form method="get" action="">
+                                <span class="input-group">
+                                    {{ pesquisa_interesse_form.iq }}
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post" action="">
+                <div class="col-xs-4 no-left-padding">
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        {% csrf_token %}
+                        {{ interesse_form.criarInteresse }}
+                        <button class="panel-heading text-center" type="submit" style="height:50px;width:100%;" id="criarInteresseBtn">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Criar Interesse
+                        </button>
+
+                    </div>
+                </div>
+                {% if interesse_form.non_field_errors %}
+                    {% for error in interesse_form.non_field_errors %}
+                        <div class="col-xs-12" style="margin-top: -20px;">
+                            <div style="margin-bottom: 10px;">
+                                <span class="help-block alert alert-danger alert-dismissable" id="cursoWError">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {{ error }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </form>
+
+            <span id="pesquisaInteresse">
+                {% if not data or data|length == 0 %}
+                    <div class="col-xs-12">
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center">
+                                Pesquise por um interesse para começar.
+                            </div>
+                        </div>
+                    </div>
+                {% elif data|length == 1 %}
+                    <div class="col-xs-12">
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center">
+                                Não foi possível encontrar nenhum interesse relacionado à "{{ data_list }}"
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% for interesse in interesses %}
+                        <div class="col-xs-6">
+                            <div class="panel panel-default panel-bordeless">
+                                <div class="panel-heading text-center">
+                                    <a href="{% url 'interesse-index' interesse.iid %}">{{ interesse|capfirst }}</a>
+                                </div>
+                                <div class="panel-body text-center">
+                                    <a href="{% url 'interesse-index' interesse.iid %}" class="feed-link">
+                                        <span class="profile-image-big fa fa-paint-brush" style="font-size:90pt;"></span>
+                                    </a>
+                                    <br>
+                                    <div class="feed-datetime" style="margin-top:10px;">
+                                        Adicionado por:
+                                    </div>
+                                    <a href="{% url 'perfil' interesse.criado_por.perfilmodel.universidade.sigla interesse.criado_por.perfilmodel.perfil_link %}" class="feed-link">
+                                        {{ interesse.criado_por.full_name }}
+                                    </a>
+                                    <br>
+                                    <span class="feed-datetime">
+                                        {{ interesse.data_criacao }}
+                                    </span>
+                                </div>
+
+                                {% if interesse in perfil_interesses|get_interesses %}
+                                    <div class="panel-footer text-center">
+                                        Você já possui este interesse
+                                    </div>
+                                {% else %}
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <button class="panel-footer" type="submit" name="addInteresse" value="{{ interesse.iid }}">Adicionar Interesse</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </span>
+        </div>
+    </div>
 {% endblock %}

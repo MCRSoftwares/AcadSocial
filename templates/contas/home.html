@@ -6,6 +6,7 @@
 
 {% block head %}
     <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
+
     <script type="text/javascript">
         $(document).ready(function(){
             $('textarea').autosize();
@@ -16,13 +17,15 @@
                 $.cookie("scroll", $(document).scrollTop());
             });
 
+
+
         });
 
-        sendCommentForm = function(formID) {
-            $(formID).keypress(function(e) {
+        sendCommentForm = function(elID, pID) {
+            $(elID).keypress(function(e) {
                 if(e.which == 13 && !e.shiftKey) {
                     e.preventDefault();
-                    this.form.submit();
+                    $(pID).click();
                 }
             });
         };
@@ -123,18 +126,18 @@
                                  {{ postagem.conteudo }}
                             </div>
                             <div class="panel-footer">
-                                <form method="post" action="">
+                                <form method="post" action="" id="commentForm-{{ postagem.pid }}">
                                     {% csrf_token %}
                                     <div class="form-group">
                                         <textarea name="comentario" class="comment-bar form-control comment-bar-focus"
                                                   id="commentTA-{{ postagem.pid }}" maxlength="256"
                                                   placeholder="Comentar..."
-                                                  onkeypress="sendCommentForm('#commentTA-{{ postagem.pid }}')"></textarea>
-                                        <input name="postagem-{{ postagem.pid }}" type="text" style="display: none;">
+                                                  onkeypress="sendCommentForm('#commentTA-{{ postagem.pid }}', '#submitComment-{{ postagem.pid }}')"></textarea>
+                                        <button name="postagem-{{ postagem.pid }}" type="submit" style="display: none;" id="submitComment-{{ postagem.pid }}"></button>
                                     </div>
                                 </form>
                             </div>
-                            <span id="commentSession">
+                            <span id="commentSession-{{ postagem.pid }}">
                                 {% for comentario in comentario_postagem|first_five:postagem.pid %}
                                     <span id="comment-{{ postagem.pid }}-{{ comentario.cid }}">
                                         <div class="panel-body comment-start" style="padding:10px;">

@@ -22,8 +22,10 @@ from grupos.models import GrupoModel, InteresseModel, EventoModel
 from grupos.models import PostagemGrupoModel, PostagemEventoModel
 from django.db.models import Q
 from mainAcad.models import ImagemModel
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def view_usuario_search(request):
     args = {}
 
@@ -36,7 +38,7 @@ def view_usuario_search(request):
         if pesquisa_form.is_valid():
             data = pesquisa_form.cleaned_data['q']
             lista = data.split(' ')
-            
+
             data_list = filter(None, lista)
 
             resultado = False
@@ -49,13 +51,13 @@ def view_usuario_search(request):
 
             for item in data_list:
 
-                if request.GET.get('f'):
+                if request.GET.get('f') and not request.GET.get('f') == '0':
                     filtro = request.GET.get('f')
                     args['filtro'] = filtro
 
                     if filtro == '1':
                         perfil_query = Q(usuario__first_name__contains=item) | Q(usuario__last_name__contains=item)
-                        perfis = PerfilModel.objects.filter(perfil_query).order_by('usuario_id')
+                        perfis = PerfilModel.objects.filter(perfil_query)
 
                         if perfis:
                             resultado = True
@@ -88,7 +90,7 @@ def view_usuario_search(request):
                         postagens_grupos = PostagemGrupoModel.objects.filter(postagem_query)
                         postagens_eventos = PostagemEventoModel.objects.filter(postagem_query)
 
-                        if postagens_eventos and postagens_grupos:
+                        if postagens_eventos or postagens_grupos:
                             resultado = True
 
                 elif not request.GET.get('f') or request.GET.get('f') == '0':
@@ -98,7 +100,7 @@ def view_usuario_search(request):
                     evento_query = Q(titulo__contains=item) | Q(descricao__contains=item)
                     postagem_query = Q(titulo__contains=item) | Q(conteudo__contains=item)
 
-                    perfis = PerfilModel.objects.filter(perfil_query).order_by('usuario_id')
+                    perfis = PerfilModel.objects.filter(perfil_query)
 
                     if perfis:
                         for perfil in perfis:
@@ -132,6 +134,7 @@ def view_usuario_search(request):
     return render(request, 'mainAcad/search.html', args)
 
 
+@login_required
 def view_lista_amigos(request):
     args = {}
 

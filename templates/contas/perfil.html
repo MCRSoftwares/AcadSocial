@@ -1,29 +1,323 @@
-{% extends 'base-logado.html' %}
+{% extends 'base-logado-topo-vazio.html' %}
 {% load staticfiles %}
+{% load grupos_tags %}
 
 {% block title %}
-    {{ usuario.first_name }} {{ usuario.last_name }}
+    {{ usuario.full_name }} - AcadSocial
 {% endblock %}
 
 {% block head %}
+       <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('textarea').autosize();
+        });
+
+        sendCommentForm = function(elID, pID) {
+            $(elID).keypress(function(e) {
+                if(e.which == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    $(pID).click();
+                }
+            });
+        };
+
+        setInterval(function() {
+                $.ajax({
+                    url: '{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}',
+                    success: function(data) {
+                        var qtd = $('#qtdComments', data).html();
+                        $('#qtdComments').html(qtd);
+                    }
+                });
+            }, 2500);
+
+        deleteElement = function(elID, formID) {
+            $(elID).hide();
+            $(formID)[0].submit();
+        }
+
+    </script>
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}">
+        <i class="fa fa-user"></i> Perfil de {{ pag_perfil.usuario.first_name }}</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'perfil-sobre' pag_perfil.universidade.sigla pag_perfil.perfil_link %}"><i class="fa fa-info-circle"></i> Sobre {{ pag_perfil.usuario.first_name }}</a></li>
+    <li class="divider-vertical"></li>
 {% endblock %}
 
 {% block body %}
-{% if usuario %}
-    <img src="/media/{{ foto }}" width="5%" height="5%">
-    {{ usuario.first_name }} {{ usuario.last_name }}
-    {% if user == usuario %}
-        (Você)
-    {% endif %}
-    <br>
-    Idade: {{ idade }}
-    <br>
-    Aniversário: {{ aniversario }}
-    <br>
-    {{ perfil.universidade }} - {{ perfil.universidade.nome }}
-    <br>
-    Curso: {{ perfil.curso }}
-{% else %}
-    Essa conta está inativa!
-{% endif %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    @ {{ pag_perfil.perfil_link }}
+                </div>
+                <div class="panel-body text-center truncate-line border-sides">
+                    <img src="/media/{{ pag_foto.thumbnail_perfil }}" class="profile-image-big">
+                    <br>
+                    <a href="" class="feed-link"><span class="fa fa-user"></span> {{ usuario.full_name }}</a>
+                </div>
+                <div class="panel-heading perfil-about-heading">
+                    <span class="fa fa-info-circle"></span> Sobre
+                </div>
+                <div class="panel-heading perfil-about-body">
+                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla }}
+                </div>
+                <div class="panel-heading perfil-about-body">
+                    <span class="fa fa-book"></span> {{ pag_perfil.curso }}
+                </div>
+                <div class="panel-heading perfil-about-body">
+                    <span class="fa fa-birthday-cake"></span> {{ aniversario }} &nbsp({{ idade }} anos)
+                </div>
+                {% if perfil != pag_perfil and not amigo and not convite_amigo %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button class="panel-footer text-center" style="margin-top:0;" name="adicionarAmigo">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Adicionar
+                        </button>
+                    </form>
+                {% elif perfil == pag_perfil %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Este é o seu perfil
+                    </div>
+                {% elif convite_amigo and not amigo %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você adicionou {{ pag_perfil.usuario.first_name }}
+                    </div>
+                {% elif amigo %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        {{ pag_perfil.usuario.first_name }} é seu amigo
+                    </div>
+                {% endif %}
+            </div>
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-paint-brush"></span> Interesses
+                </div>
+                {% if interesses_possui|length == 0 %}
+                    <ul class="panel-list">
+                        <li class="text-center not-link-list">{{ usuario.first_name }} não possui interesses!</li>
+                    </ul>
+                    <div class="panel-footer text-center">
+                        &nbsp
+                    </div>
+                {% else %}
+                    <ul class="panel-list">
+                        {% for possui in interesses_possui|slice:':5' %}
+                            <li>
+                                <a href="{% url 'interesse-index' possui.interesse.iid %}">{{ possui.interesse.interesse }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="" class="panel-footer text-center">Ver Todos</a>
+                {% endif %}
+            </div>
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-group"></span> Grupos
+                </div>
+                {% if grupos_participa|length == 0 %}
+                    <ul class="panel-list">
+                        <li class="text-center not-link-list">{{ usuario.first_name }} não tem/participa de nenhum
+                            grupo!
+                        </li>
+                    </ul>
+                    <div class="panel-footer text-center">
+                        &nbsp
+                    </div>
+                {% else %}
+                    <ul class="panel-list">
+                        {% for participa in grupos_participa|slice:':5' %}
+                            <li><a href="{% url 'grupo-index' participa.grupo.gid %}">{{ participa.grupo.nome }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="" class="panel-footer text-center">Ver Todos</a>
+                {% endif %}
+
+            </div>
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-paint-brush"></span> Amigos
+                </div>
+                {% if amigos|length == 0 %}
+                    <ul class="panel-list">
+                        <li class="text-center not-link-list">{{ usuario.first_name }} não possui amigos!</li>
+                    </ul>
+                    <div class="panel-footer text-center">
+                        &nbsp
+                    </div>
+                {% else %}
+                    <ul class="panel-list panel-list-friends">
+                        {% for amigo, amigo_foto in amigos.iteritems|slice:':5' %}
+                            <li>
+                                <a href="{% url 'perfil' amigo.amigo.universidade.sigla amigo.amigo.perfil_link %}"
+                                   style="padding-left: 0;">
+                                    <img style="border-right:3px solid #e7e7e7" src="/media/{{ amigo_foto.thumbnail }}">
+                                    &nbsp&nbsp{{ amigo.amigo.usuario.full_name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="" class="panel-footer text-center">Ver Todos</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-8">
+        <div class="col-xs-12 no-left-padding">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="glyphicon glyphicon-edit"></span> &nbspPostagens de {{ usuario.full_name }}
+                </div>
+            </div>
+        </div>
+        {% if postagens|length == 0 %}
+            <div class="col-xs-12 no-left-padding top-margin-10">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-body" style="padding:40px;">
+                        <div style="font-size:20pt;color:#7C0B1F;font-family: Josefin Sans, sans-serif">
+                            <div class="col-xs-4 text-center">
+                                <span class="glyphicon glyphicon-edit" style="font-size:100pt;"></span>
+                            </div>
+                            <div class="col-xs-8 text-left">
+                                {{ usuario.first_name }} não possui nenhuma postagem que possa ser vizualizada por você!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 no-left-padding top-margin-10">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        &nbsp
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            {% for postagem in postagens|slice:':10' %}
+                <span id="postagem-{{ postagem.pid }}">
+                    <div class="col-xs-8 no-right-padding no-left-padding">
+                        <div class="panel panel-default panel-bordeless feed">
+                            <div class="panel-heading truncate">
+                                <div class="col-xs-11 no-padding">
+                                    <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}">
+                                        <span class="glyphicon glyphicon-edit"></span> {{ postagem.titulo }}
+                                    </a>
+                                </div>
+                                <div class="col-xs-1 no-padding">
+                                    {% if postagem.criado_por == user %}
+                                        <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}" id="postagemForm-{{ postagem.pid }}">
+                                            {% csrf_token %}
+                                            <button class="close" type="button"
+                                                    style="font-size:11pt;font-family: Open Sans, sans-serif;"
+                                                    onclick="deleteElement('#postagem-{{ postagem.pid }}',
+                                                            '#postagemForm-{{ postagem.pid }}')">×
+                                            </button>
+                                            <input type="text" name="deletePost" value="{{ postagem.pid }}"
+                                                   style="display: none;">
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="panel-body text-left truncate-line feed-group">
+                                {{ postagem.conteudo }}
+                            </div>
+                            <div class="panel-footer">
+                                <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}" id="commentForm-{{ postagem.pid }}">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <textarea name="comentario" class="comment-bar form-control comment-bar-focus"
+                                                  id="commentTA-{{ postagem.pid }}" maxlength="256"
+                                                  placeholder="Comentar..."
+                                                  onkeypress="sendCommentForm('#commentTA-{{ postagem.pid }}', '#submitComment-{{ postagem.pid }}')"></textarea>
+                                        <button name="postagem-{{ postagem.pid }}" type="submit" style="display: none;"
+                                                id="submitComment-{{ postagem.pid }}"></button>
+                                    </div>
+                                </form>
+                            </div>
+                            <span id="commentSession-{{ postagem.pid }}">
+                                {% for comentario in comentario_postagem|first_five:postagem.pid %}
+                                    <span id="comment-{{ postagem.pid }}-{{ comentario.cid }}">
+                                        <div class="panel-body comment-start" style="padding:10px;">
+                                            <div class="col-xs-1" style="padding:0;">
+                                                <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
+                                                    <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}"
+                                                         class="profile-image">
+                                                </a>
+                                            </div>
+                                            <div class="col-xs-10 comment-user no-padding" style="padding-left:20px;">
+                                                &nbsp
+                                                <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
+                                                    {{ comentario.criado_por.full_name }}
+                                                </a>
+                                                <br>
+                                                <div class="col-xs-offset-0 truncate-line" style="padding-left:15px;">
+                                                    {{ comentario.conteudo }}
+                                                </div>
+                                                <div class="col-xs-12 text-right no-padding comment-datetime">
+                                                    <br>
+                                                    {{ comentario.data_criacao|date:"d/m/Y - H:i:s" }}
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-1 no-padding" style="margin-top:-5px;">
+                                                {% if comentario.criado_por == user or postagem.criado_por == user %}
+                                                    <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}"
+                                                          id="commentForm-{{ postagem.pid }}-{{ comentario.cid }}">
+                                                        {% csrf_token %}
+                                                        <button class="close" type="button" style="font-size:11pt;"
+                                                                onclick="deleteElement('#comment-{{ postagem.pid }}-{{ comentario.cid }}',
+                                                                        '#commentForm-{{ postagem.pid }}-{{ comentario.cid }}')">×
+                                                        </button>
+                                                        <input type="text" name="deleteComment"
+                                                               value="{{ postagem.pid }}-{{ comentario.cid }}"
+                                                               style="display: none;">
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </span>
+                                {% endfor %}
+
+                                {% if qtd_comentarios|item:postagem.pid > 0 %}
+                                    <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}"
+                                       class="panel-footer btn btn-default" style="border:0;margin-top:4px;">
+                                        <span class="fa fa-comments"></span><span
+                                            id="qtdComments"> {{ qtd_comentarios|item:postagem.pid }}</span>
+                                        {% if qtd_comentarios|item:postagem.pid == 1 %}Comentário{% else %}
+                                            Comentários{% endif %}
+                                    </a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                        <div class="col-xs-4">
+                            <div class="panel panel-default panel-bordeless">
+                                <div class="panel-heading truncate text-center">
+                                    <a href="{% url 'grupo-index' postagem.grupo.gid %}"><span
+                                            class="fa fa-group"></span> {{ postagem.grupo.nome }}</a>
+                                </div>
+                                <div class="panel-body text-center truncate">
+                                    <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}"
+                                       class="feed-link">
+                                        <img src="/media/{{ fotos_postagens|item:postagem.criado_por }}" class="profile-image">
+                                        <br>
+                                        {{ postagem.criado_por.full_name }}
+                                    </a>
+                                    <br>
+                                    <span class="feed-datetime">{{ postagem.data_criacao|date:"d/m/Y - H:i:s" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+            {% endfor %}
+        {% endif %}
+    </div>
 {% endblock %}

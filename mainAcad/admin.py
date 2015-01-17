@@ -16,7 +16,7 @@ Descrição:
 """
 
 from django.contrib import admin
-from mainAcad.models import ImagemModel
+from mainAcad.models import ImagemModel, AmigoModel, ConviteAmigoModel
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -32,4 +32,24 @@ class ImagemAdmin(admin.ModelAdmin):
                      'perfil__usuario__email', 'data_envio',)
 
 
+class AmigoAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (_(u'Informações da amizade'), {'fields': ('perfil', 'amigo', 'data_criacao', 'ativo')}),
+    )
+
+    list_display = ('perfil', 'amigo', 'data_criacao', 'ativo',)
+    search_fields = ('perfil', 'amigo', 'data_criacao', 'ativo',)
+
+
+class ConviteAmigoAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (_(u'Informações da amizade'), {'fields': ('perfil', 'amigo', 'data_criacao', 'ativo')}),
+    )
+
+    list_display = ('perfil', 'amigo', 'data_criacao', 'ativo',)
+    search_fields = ('perfil', 'amigo', 'data_criacao', 'ativo',)
+
+
 admin.site.register(ImagemModel, ImagemAdmin)
+admin.site.register(AmigoModel, AmigoAdmin)
+admin.site.register(ConviteAmigoModel, ConviteAmigoAdmin)

@@ -21,7 +21,6 @@ from mainAcad.models import ImagemModel
 from mainAcad.constants import MAX_IMAGE_SIZE
 from mainAcad.errors import erro_imagem
 
-
 class UsuarioSearchForm(forms.ModelForm):
 
     pesquisa_attrs = {'placeholder': 'Pesquisar...', 'class': 'form-control'}

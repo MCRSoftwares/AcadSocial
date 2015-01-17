@@ -22,8 +22,8 @@ from django.contrib.auth.decorators import login_required
 from mainAcad.models import ImagemModel
 from mainAcad.forms import UsuarioSearchForm
 from contas.models import PerfilModel
-from grupos.models import InteresseModel, PostagemGrupoModel, ComentarioGrupoModel
-from grupos.forms import ComentarioGrupoForm
+from grupos.models import InteresseModel, PostagemGrupoModel, ComentarioGrupoModel, UsuarioInteresseModel
+from grupos.forms import ComentarioGrupoForm, AdicionarInteresseForm, InteresseSearchForm
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -124,10 +124,75 @@ def view_interesses(request):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    perfil_interesses = UsuarioInteresseModel.objects.filter(usuario=perfil.usuario)
 
+    interesses = []
+
+    if request.GET.get('iq'):
+        processed_data = ['da2sipg34xlc4a5fop4rek5u2']
+        lista = request.GET.get('iq').split(' ')
+        data_list = filter(None, lista)
+
+        args['data_list'] = request.GET.get('iq')
+
+        for data in data_list:
+
+            if data not in processed_data:
+
+                try:
+                    query = InteresseModel.objects.filter(interesse__contains=data)
+                    interesses = interesses + list(query)
+
+                    if query:
+                        processed_data.append(data)
+
+                except InteresseModel.DoesNotExist:
+                    pass
+
+        interesses = list(set(interesses))
+
+        args['data'] = processed_data
+
+    if request.method == 'POST':
+
+        if 'criarInteresse' in request.POST:
+            interesse_form = AdicionarInteresseForm(data=request.POST)
+
+            if interesse_form.is_valid():
+                interesse = interesse_form.save(commit=False)
+
+                interesse.interesse = interesse_form.cleaned_data['criarInteresse']
+                interesse.criado_por = request.user
+                interesse.save()
+
+                usuario_interesse = UsuarioInteresseModel()
+                usuario_interesse.interesse = interesse
+                usuario_interesse.usuario = request.user
+                usuario_interesse.save()
+
+                return HttpResponseRedirect('/interesse/')
+
+        if 'addInteresse' in request.POST:
+            interesse_id = request.POST.get('addInteresse')
+            interesse_obj = InteresseModel.objects.get(iid=interesse_id)
+
+            usuario_interesse = UsuarioInteresseModel()
+            usuario_interesse.interesse = interesse_obj
+            usuario_interesse.usuario = request.user
+            usuario_interesse.save()
+
+            return HttpResponseRedirect('/interesse/')
+
+    else:
+        interesse_form = AdicionarInteresseForm()
+
+    args['pesquisa_interesse_form'] = InteresseSearchForm()
+    args['interesse_form'] = interesse_form
+    args['perfil_interesses'] = perfil_interesses
+    args['interesses'] = interesses
     args['foto'] = foto
     args['perfil'] = perfil
-    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+    args['pesquisa_form'] = UsuarioSearchForm()
 
     return render(request, 'grupos/lista_interesses.html', args)
 

@@ -48,11 +48,11 @@ class EventoAdmin(admin.ModelAdmin):
 class InteresseAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do interesse'), {'fields': ('interesse', 'data_criacao',)}),
+        (_(u'Informações do interesse'), {'fields': ('interesse', 'criado_por', 'data_criacao',)}),
     )
 
-    list_display = ('interesse', 'data_criacao',)
-    search_fields = ('interesse', 'data_criacao',)
+    list_display = ('interesse', 'criado_por', 'data_criacao',)
+    search_fields = ('interesse', 'criado_por', 'data_criacao',)
 
 
 class MembroAdmin(admin.ModelAdmin):

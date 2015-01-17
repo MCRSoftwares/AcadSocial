@@ -17,7 +17,7 @@ Descrição:
 
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm
 from contas.forms import EnviarTokenForm, SenhaResetForm
-from universidades.models import UniversidadeModel
+from universidades.models import UniversidadeModel, CursoModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
@@ -30,7 +30,7 @@ from contas.methods import redirecionar_para, enviar_email_senha_reset, calcular
 from django.contrib.auth.decorators import login_required
 from contas.constants import TOKEN_TYPE
 from mainAcad.forms import UsuarioSearchForm, ImagemUploadForm
-from mainAcad.models import ImagemModel
+from mainAcad.models import ImagemModel, AmigoModel, ConviteAmigoModel
 from grupos.models import UsuarioInteresseModel, MembroModel, PostagemGrupoModel, ComentarioGrupoModel, GrupoModel
 from grupos.forms import ComentarioGrupoForm
 from django.db.models import Q
@@ -553,20 +553,182 @@ def view_perfil_usuario(request, sigla, perfil_link):
     sigla = sigla.upper()
 
     universidade = get_object_or_404(UniversidadeModel, sigla=sigla)
-    perfil = get_object_or_404(PerfilModel, perfil_link=perfil_link, universidade=universidade)
-    imagem = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    pag_perfil = get_object_or_404(PerfilModel, perfil_link=perfil_link, universidade=universidade)
+    imagem = ImagemModel.objects.get(perfil=pag_perfil, is_profile_image=True)
+    perfil = PerfilModel.objects.get(usuario=request.user)
 
-    args['foto'] = imagem
-    args['usuario'] = perfil.usuario
+    user_membro = MembroModel.objects.filter(usuario=request.user)
+
+    membro = MembroModel.objects.filter(usuario=pag_perfil.usuario)
+    interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario)
+    amigos = AmigoModel.objects.filter(perfil=pag_perfil)
+
+    amigos_dict = {}
+
+    for amigo in amigos:
+        amigos_dict[amigo] = ImagemModel.objects.get(perfil=amigo.amigo)
+
+    postagens = PostagemGrupoModel.objects.filter(criado_por=pag_perfil.usuario, ativo=True,
+                                                  grupo__membromodel__in=user_membro).order_by('data_criacao')
+    comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True)
+
+    comentario_postagem = {}
+    fotos_comentarios = {}
+    fotos_postagens = {}
+    perfis_comentarios = {}
+    perfis_postagens = {}
+    qtd_comentarios = {}
+
+    for comentario in comentarios:
+        if comentario.criado_por not in fotos_comentarios:
+            fotos_comentarios[comentario.criado_por] = \
+                ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                        perfil__usuario=comentario.criado_por).thumbnail
+
+        if comentario.criado_por not in perfis_comentarios:
+            perfis_comentarios[comentario.criado_por] = PerfilModel.objects.get(usuario=comentario.criado_por)
+
+    for postagem in postagens:
+        if postagem.criado_por not in fotos_postagens:
+            fotos_postagens[postagem.criado_por] = \
+                ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                        perfil__usuario=postagem.criado_por).thumbnail_home
+
+        if postagem.criado_por not in perfis_postagens:
+            perfis_postagens[postagem.criado_por] = PerfilModel.objects.get(usuario=postagem.criado_por)
+
+        if postagem.pid not in qtd_comentarios:
+            qtd = ComentarioGrupoModel.objects.filter(postagem=postagem, ativo=True)
+            qtd_comentarios[postagem.pid] = len(qtd)
+
+        if postagem.pid not in comentario_postagem:
+            comentario_postagem[postagem.pid] = ComentarioGrupoModel.objects.filter(ativo=True, postagem=postagem)\
+                .order_by('-data_criacao')
+
+    try:
+        amigo = AmigoModel.objects.get(perfil=perfil, amigo=pag_perfil, ativo=True)
+
+    except AmigoModel.DoesNotExist:
+        amigo = None
+
+    try:
+        convite_amigo = ConviteAmigoModel.objects.get(perfil=perfil, amigo=pag_perfil, ativo=True)
+
+    except ConviteAmigoModel.DoesNotExist:
+        convite_amigo = None
+
+    if request.method == 'POST':
+
+        if 'adicionarAmigo' in request.POST and not convite_amigo and not amigo:
+            convite = ConviteAmigoModel()
+
+            convite.perfil = perfil
+            convite.amigo = pag_perfil
+            convite.save()
+
+        if 'deleteComment' in request.POST:
+            pcid = request.POST['deleteComment'].split('-')
+
+            pid = int(pcid[0])
+            cid = int(pcid[1])
+
+            print cid
+
+            try:
+                postagem = PostagemGrupoModel.objects.get(pid=pid)
+                custom_query = Q(criado_por=request.user) | Q(postagem__criado_por=postagem.criado_por)
+
+                comentario = ComentarioGrupoModel.objects.get(Q(postagem__pid=pid), Q(cid=cid), custom_query)
+
+                comentario.ativo = False
+                comentario.save()
+
+            except ComentarioGrupoModel.DoesNotExist:
+                pass
+
+        if 'deletePost' in request.POST:
+            pid = int(request.POST['deletePost'])
+
+            try:
+                postagem = PostagemGrupoModel.objects.get(pid=pid, criado_por=request.user)
+                postagem.ativo = False
+                postagem.save()
+
+            except PostagemGrupoModel.DoesNotExist:
+                pass
+
+        for postagem in postagens:
+            if 'postagem-' + str(postagem.pid) in request.POST:
+                comentario_form = ComentarioGrupoForm(data=request.POST)
+
+                if comentario_form.is_valid():
+                    comentario = comentario_form.save(commit=False)
+
+                    comentario.criado_por = request.user
+                    comentario.conteudo = request.POST['comentario']
+                    comentario.postagem = postagem
+                    comentario.data_criacao = timezone.now()
+                    comentario.save()
+
+        return HttpResponseRedirect('/perfil/' + universidade.sigla + '/' + pag_perfil.perfil_link)
+    else:
+        comentario_form = ComentarioGrupoForm()
+
+    args['convite_amigo'] = convite_amigo
+    args['amigo'] = amigo
+    args['qtd_comentarios'] = qtd_comentarios
+    args['comentario_form'] = comentario_form
+    args['pesquisa_form'] = UsuarioSearchForm(request.GET)
+    args['interesses_possui'] = interesses
+    args['grupos_participa'] = membro
+    args['postagens'] = postagens
+    args['fotos_comentarios'] = fotos_comentarios
+    args['fotos_postagens'] = fotos_postagens
+    args['perfis_postagens'] = perfis_postagens
+    args['perfis_comentarios'] = perfis_comentarios
+    args['comentario_postagem'] = comentario_postagem
+    args['amigos'] = amigos_dict
     args['perfil'] = perfil
-    args['idade'] = calcular_idade(perfil.data_nascimento)
-    args['aniversario'] = calcular_aniversario(perfil.data_nascimento)
+    args['foto'] = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    args['universidade'] = universidade
+    args['grupos_participa'] = membro
+    args['interesses_possui'] = interesses
+    args['pag_foto'] = imagem
+    args['usuario'] = pag_perfil.usuario
+    args['pag_perfil'] = pag_perfil
+    args['idade'] = calcular_idade(pag_perfil.data_nascimento)
+    args['aniversario'] = calcular_aniversario(pag_perfil.data_nascimento)
 
     args['pesquisa_form'] = UsuarioSearchForm(request.GET)
 
     return render(request, 'contas/perfil.html', args)
 
 
+@login_required
+def view_perfil_usuario_sobre(request, sigla, perfil_link):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_active=True, is_profile_image=True)
+
+    pag_perfil = PerfilModel.objects.get(perfil_link=perfil_link, universidade__sigla=sigla)
+    pag_foto = ImagemModel.objects.get(perfil=pag_perfil, is_active=True, is_profile_image=True)
+
+    args['pag_foto'] = pag_foto
+    args['pag_perfil'] = pag_perfil
+    args['usuario'] = pag_perfil.usuario
+    args['universidade'] = pag_perfil.universidade
+    args['idade'] = calcular_idade(pag_perfil.data_nascimento)
+    args['aniversario'] = calcular_aniversario(pag_perfil.data_nascimento)
+
+    args['perfil'] = perfil
+    args['foto'] = foto
+    args['pesquisa_form'] = UsuarioSearchForm()
+
+    return render(request, 'contas/perfil_sobre.html', args)
+
+
+@login_required
 def view_desativar_perfil(request):
     # TODO view para desativar perfil com: desativação de todos os tokens +
     # TODO confirmação da desativação reinformando e-mail e senha
