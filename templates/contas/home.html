@@ -68,13 +68,11 @@
                         {% endfor %}
                     {% endif %}
                 </ul>
-                <ul class="text-center">
-                    {% if grupos_participa|length == 0 %}
-                        <li><a href="{% url 'grupos-lista' %}" class="panel-footer">Criar/Participar de Grupos</a></li>
-                    {% else %}
-                        <li><a href="{% url 'grupos-lista' %}" class="panel-footer">Ver Todos</a></li>
-                    {% endif %}
-                </ul>
+                {% if grupos_participa|length == 0 %}
+                    <a href="{% url 'grupos-lista' %}" class="panel-footer text-center">Criar/Participar de Grupos</a>
+                {% else %}
+                    <a href="{% url 'grupos-lista' %}" class="panel-footer text-center">Ver Todos</a>
+                {% endif %}
             </div>
             <div class="panel panel-default panel-bordeless">
                 <div class="panel-heading">
@@ -89,13 +87,11 @@
                         {% endfor %}
                     {% endif %}
                 </ul>
-                <ul class="text-center">
-                    {% if interesses_possui|length == 0 %}
-                        <li><a href="{% url 'interesses' %}" class="panel-footer">Adicionar Interesses</a></li>
-                    {% else %}
-                        <li><a href="{% url 'interesses' %}" class="panel-footer">Ver Todos</a></li>
-                    {% endif %}
-                </ul>
+                {% if interesses_possui|length == 0 %}
+                    <a href="{% url 'interesses' %}" class="panel-footer text-center">Adicionar Interesses</a>
+                {% else %}
+                    <a href="{% url 'interesses' %}" class="panel-footer text-center">Ver Todos</a>
+                {% endif %}
             </div>
         </div>
 

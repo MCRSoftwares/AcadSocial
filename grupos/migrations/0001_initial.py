@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('conteudo', models.TextField(verbose_name='conte\xfado')),
                 ('ativo', models.BooleanField(default=True)),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 510000, tzinfo=utc))),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 989000, tzinfo=utc))),
                 ('cid', models.AutoField(serialize=False, primary_key=True)),
                 ('criado_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('conteudo', models.TextField(verbose_name='conte\xfado')),
                 ('ativo', models.BooleanField(default=True)),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 510000, tzinfo=utc))),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 988000, tzinfo=utc))),
                 ('cid', models.AutoField(serialize=False, primary_key=True)),
                 ('criado_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ConviteEventoModel',
             fields=[
-                ('data_envio', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 507000, tzinfo=utc), verbose_name='data de envio')),
+                ('data_envio', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 985000, tzinfo=utc), verbose_name='data de envio')),
                 ('ativo', models.BooleanField(default=True)),
                 ('aceito', models.BooleanField(default=False)),
                 ('cid', models.AutoField(serialize=False, primary_key=True)),
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ConviteGrupoModel',
             fields=[
-                ('data_envio', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 507000, tzinfo=utc), verbose_name='data de envio')),
+                ('data_envio', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 985000, tzinfo=utc), verbose_name='data de envio')),
                 ('ativo', models.BooleanField(default=True)),
                 ('aceito', models.BooleanField(default=False)),
                 ('cid', models.AutoField(serialize=False, primary_key=True)),
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('titulo', models.CharField(max_length=128, verbose_name='t\xedtulo')),
                 ('descricao', models.TextField(max_length=1024, verbose_name='descri\xe7\xe3o')),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 505000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 983000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
                 ('data_evento', models.DateTimeField(verbose_name='data do evento')),
                 ('eid', models.AutoField(serialize=False, primary_key=True)),
                 ('criado_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GrupoInteresseModel',
             fields=[
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 504000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 982000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
                 ('iid', models.AutoField(serialize=False, primary_key=True)),
             ],
             options={
@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
                 ('gid', models.AutoField(serialize=False, verbose_name='grupo ID', primary_key=True)),
                 ('nome', models.CharField(max_length=128)),
                 ('descricao', models.TextField(max_length=1024, verbose_name='descri\xe7\xe3o')),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 502000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 980000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
                 ('criado_por', models.ForeignKey(related_name='criador_grupo', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('iid', models.AutoField(serialize=False, verbose_name='interesse ID', primary_key=True)),
                 ('interesse', models.CharField(max_length=96)),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 503000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 981000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
                 ('criado_por', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -134,7 +134,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MembroModel',
             fields=[
-                ('data_entrada', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 505000, tzinfo=utc), verbose_name='data de entrada')),
+                ('data_entrada', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 983000, tzinfo=utc), verbose_name='data de entrada')),
                 ('is_admin', models.BooleanField(default=False, verbose_name='administrador')),
                 ('mid', models.AutoField(serialize=False, primary_key=True)),
                 ('grupo', models.ForeignKey(to='grupos.GrupoModel')),
@@ -149,7 +149,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ParticipaEventoModel',
             fields=[
-                ('data_participacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 506000, tzinfo=utc), verbose_name='data de participa\xe7\xe3o')),
+                ('data_participacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 984000, tzinfo=utc), verbose_name='data de participa\xe7\xe3o')),
                 ('eid', models.AutoField(serialize=False, primary_key=True)),
                 ('evento', models.ForeignKey(to='grupos.EventoModel')),
                 ('usuario', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
@@ -166,7 +166,7 @@ class Migration(migrations.Migration):
                 ('titulo', models.CharField(max_length=64, verbose_name='t\xedtulo')),
                 ('conteudo', models.TextField(max_length=2048, verbose_name='conte\xfado')),
                 ('ativo', models.BooleanField(default=True)),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 509000, tzinfo=utc))),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 987000, tzinfo=utc))),
                 ('pid', models.AutoField(serialize=False, primary_key=True)),
                 ('criado_por', models.ForeignKey(related_name='evento_criador_postagem', to=settings.AUTH_USER_MODEL)),
                 ('evento', models.ForeignKey(to='grupos.EventoModel')),
@@ -184,7 +184,7 @@ class Migration(migrations.Migration):
                 ('titulo', models.CharField(max_length=64, verbose_name='t\xedtulo')),
                 ('conteudo', models.TextField(max_length=2048, verbose_name='conte\xfado')),
                 ('ativo', models.BooleanField(default=True)),
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 508000, tzinfo=utc))),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 986000, tzinfo=utc))),
                 ('pid', models.AutoField(serialize=False, primary_key=True)),
                 ('criado_por', models.ForeignKey(related_name='grupo_criador_postagem', to=settings.AUTH_USER_MODEL)),
                 ('grupo', models.ForeignKey(to='grupos.GrupoModel')),
@@ -198,7 +198,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UsuarioInteresseModel',
             fields=[
-                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 16, 20, 34, 49, 503000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
+                ('data_criacao', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 26, 981000, tzinfo=utc), verbose_name='data de cria\xe7\xe3o')),
                 ('iid', models.AutoField(serialize=False, primary_key=True)),
                 ('interesse', models.ForeignKey(to='grupos.InteresseModel')),
                 ('usuario', models.ForeignKey(to=settings.AUTH_USER_MODEL)),

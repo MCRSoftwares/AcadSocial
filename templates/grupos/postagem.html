@@ -57,7 +57,7 @@
                 </div>
                 <div class="panel-body text-center truncate">
                     <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}" class="feed-link">
-                        <img src="/media/{{ foto_postagem }}" class="profile-image">
+                        <img src="/media/{{ foto_postagem }}" class="profile-image-big">
                         <br>
                         {{ postagem.criado_por.full_name }}
                     </a>
@@ -142,7 +142,7 @@
                             </span>
                         {% endif %}
                     {% endfor %}
-                        <ul class="panel-footer pagination text-center" style="margin-top:5px;">
+                        <ul class="panel-footer pagination text-center" style="margin-top:5px;margin-bottom:0;">
                             {% if not comentarios.has_previous %}
                                 <li class="disabled" ><a href=""><<</a></li>
                             {% else %}

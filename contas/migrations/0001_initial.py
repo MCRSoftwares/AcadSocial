@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0001_initial'),
-        ('universidades', '0001_initial'),
+        ('universidades', '__first__'),
     ]
 
     operations = [
@@ -61,8 +61,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('tipo', models.CharField(max_length=128)),
                 ('token', models.CharField(max_length=128, verbose_name='token', blank=True)),
-                ('data_request', models.DateTimeField(default=datetime.datetime(2015, 1, 12, 20, 48, 30, 882000, tzinfo=utc), verbose_name='request date')),
-                ('data_expiracao', models.DateTimeField(default=datetime.datetime(2015, 1, 13, 20, 48, 30, 882000, tzinfo=utc), verbose_name='expiration date')),
+                ('data_request', models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 30, 397000, tzinfo=utc), verbose_name='request date')),
+                ('data_expiracao', models.DateTimeField(default=datetime.datetime(2015, 1, 19, 16, 16, 30, 397000, tzinfo=utc), verbose_name='expiration date')),
                 ('active', models.BooleanField(default=True, help_text='Designates whether this token should be treated as active. An inactive token is a token that expired before being used. Unselect this instead of deleting tokens.', verbose_name='active')),
                 ('valid', models.BooleanField(default=True, help_text='Designates whether this token should be treated as valid. An invalid token cannot be accessed. Unselect this instead of deleting tokens.', verbose_name='valid')),
                 ('usuario', models.ForeignKey(to=settings.AUTH_USER_MODEL)),

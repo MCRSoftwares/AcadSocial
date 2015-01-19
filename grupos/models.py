@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -15,7 +15,8 @@ Descrição:
     Definição dos modelos relacionados à aplicação de grupos e eventos.
     Inclui os modelos: GrupoModel, EventoModel, MembroModel, ParticipaEventoModel,
                        InteresseModel, UsuarioInteresseModel, GrupoInteresseModel,
-                       ConviteGrupoModel, ConviteEventoModel.
+                       ConviteGrupoModel, ConviteEventoModel, PostagemGrupoModel,
+                       PostagemEventoModel, ComentarioGrupoModel, ComentarioEventoModel.
 """
 
 from django.db import models

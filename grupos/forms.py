@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -56,18 +56,16 @@ class AdicionarInteresseForm(forms.ModelForm):
 
     def clean(self):
         interesse = self.cleaned_data.get('criarInteresse')
+        interesse = ' '.join(unicode(interesse).split())
 
         if not interesse or not ''.join(unicode(interesse).split()):
             raise forms.ValidationError(erro_interesse['interesse_invalido'], code='interesse_invalido')
 
-        while unicode(interesse).startswith(' '):
+        if unicode(interesse).startswith(' '):
             interesse = interesse[1:]
 
-        interesse = interesse.lower()
-
         try:
-            InteresseModel.objects.get(interesse=interesse)
-
+            InteresseModel.objects.get(interesse__iexact=interesse)
             raise forms.ValidationError(erro_interesse['interesse_ja_existente'], code='interesse_ja_existente')
         except InteresseModel.DoesNotExist:
             return self.cleaned_data

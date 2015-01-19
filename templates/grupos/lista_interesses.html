@@ -52,18 +52,15 @@
                     <ul class="panel-list">
                         {% for interesse in perfil_interesses %}
                             <li>
-                                <a href="{% url 'interesse-index' interesse.iid %}" style="padding-left: 10px;">
+                                <a href="{% url 'interesse-index' interesse.interesse.iid %}" style="padding-left: 10px;">
                                     <span class="glyphicon glyphicon-cog"></span> &nbsp{{ interesse.interesse|capfirst }}
                                 </a>
                             </li>
                         {% endfor %}
                     </ul>
                 {% endif %}
-                <ul class="text-center">
-                    <li><button type="submit" class="panel-footer">
-                        Criar Interesse
-                    </button></li>
-                </ul>
+                <div class="text-center panel-footer">
+                </div>
             </div>
         </div>
         <div class="col-xs-8">
@@ -109,7 +106,7 @@
             </form>
 
             <span id="pesquisaInteresse">
-                {% if not data or data|length == 0 %}
+                {% if not data %}
                     <div class="col-xs-12">
                         <div class="panel panel-default panel-bordeless">
                             <div class="panel-heading text-center">

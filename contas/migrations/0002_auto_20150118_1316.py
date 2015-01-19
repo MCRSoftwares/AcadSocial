@@ -16,13 +16,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tokenmodel',
             name='data_expiracao',
-            field=models.DateTimeField(default=datetime.datetime(2015, 1, 13, 20, 48, 46, 211000, tzinfo=utc), verbose_name='expiration date'),
+            field=models.DateTimeField(default=datetime.datetime(2015, 1, 19, 16, 16, 34, 506000, tzinfo=utc), verbose_name='expiration date'),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='tokenmodel',
             name='data_request',
-            field=models.DateTimeField(default=datetime.datetime(2015, 1, 12, 20, 48, 46, 211000, tzinfo=utc), verbose_name='request date'),
+            field=models.DateTimeField(default=datetime.datetime(2015, 1, 18, 16, 16, 34, 506000, tzinfo=utc), verbose_name='request date'),
             preserve_default=True,
         ),
     ]

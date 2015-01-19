@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -129,31 +129,46 @@ def view_interesses(request):
     interesses = []
 
     if request.GET.get('iq'):
-        processed_data = ['da2sipg34xlc4a5fop4rek5u2']
-        lista = request.GET.get('iq').split(' ')
-        data_list = filter(None, lista)
+        interesse_search_form = InteresseSearchForm(data=request.GET)
 
-        args['data_list'] = request.GET.get('iq')
+        if interesse_search_form.is_valid():
+            processed_data = ['da2sipg34xlc4a5fop4rek5u2']
+            query_data = interesse_search_form.cleaned_data.get('iq')
+            args['data_list'] = query_data
 
-        for data in data_list:
+            aspas = query_data.count('\"')
 
-            if data not in processed_data:
+            if aspas > 0:
+                if aspas % 2 == 0:
+                    data_list = [data for data in query_data.split('\"') if data.strip()]
+                else:
+                    data_list = [query_data.replace('\"', '')]
 
-                try:
-                    query = InteresseModel.objects.filter(interesse__contains=data)
-                    interesses = interesses + list(query)
+            else:
+                data_list = [query_data]
 
-                    if query:
-                        processed_data.append(data)
+            for data in data_list:
 
-                except InteresseModel.DoesNotExist:
-                    pass
+                if data not in processed_data:
 
-        interesses = list(set(interesses))
+                    try:
+                        query = InteresseModel.objects.filter(interesse__icontains=data)
+                        interesses = interesses + list(query)
 
-        args['data'] = processed_data
+                        if query:
+                            processed_data.append(data)
+
+                    except InteresseModel.DoesNotExist:
+                        pass
+
+            interesses = list(set(interesses))
+
+            args['data'] = processed_data
+    else:
+        interesse_search_form = InteresseSearchForm()
 
     if request.method == 'POST':
+        interesse_form = AdicionarInteresseForm()
 
         if 'criarInteresse' in request.POST:
             interesse_form = AdicionarInteresseForm(data=request.POST)
@@ -161,7 +176,10 @@ def view_interesses(request):
             if interesse_form.is_valid():
                 interesse = interesse_form.save(commit=False)
 
-                interesse.interesse = interesse_form.cleaned_data['criarInteresse']
+                interesse_tmp = interesse_form.cleaned_data['criarInteresse']
+                interesse_tmp = ' '.join(unicode(interesse_tmp).split())
+
+                interesse.interesse = interesse_tmp.title()
                 interesse.criado_por = request.user
                 interesse.save()
 
@@ -186,7 +204,7 @@ def view_interesses(request):
     else:
         interesse_form = AdicionarInteresseForm()
 
-    args['pesquisa_interesse_form'] = InteresseSearchForm()
+    args['pesquisa_interesse_form'] = interesse_search_form
     args['interesse_form'] = interesse_form
     args['perfil_interesses'] = perfil_interesses
     args['interesses'] = interesses

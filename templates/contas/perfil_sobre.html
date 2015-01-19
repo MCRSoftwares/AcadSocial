@@ -65,57 +65,67 @@
             </div>
         </div>
         <div class="col-xs-8">
-            <div class="col-xs-12">
-                <div class="panel panel-default panel-bordeless">
-                    <div class="panel-heading text-center">
-                        <span class="fa fa-paint-brush"></span> Interesses de {{ usuario.first_name }}
+            {% if interesses|length > 0 %}
+                <div class="col-xs-12">
+                    <div class="panel panel-default panel-bordeless">
+                        <div class="panel-heading text-center">
+                            <span class="fa fa-paint-brush"></span> Interesses de {{ usuario.first_name }}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="panel panel-default panel-bordeless">
-                    <div class="panel-heading text-center">
-
+                {% for item in interesses %}
+                    <div class="col-xs-6" style="margin-top:-5px;">
+                        <div class="panel panel-default panel-bordeless">
+                            <ul class="panel-list" style="margin-bottom:0;">
+                               <li><a href="{% url 'interesse-index' item.interesse.iid %}" style="padding-left:10px;">
+                                    <span class="fa fa-paint-brush" style="color: #7C0B1F;"></span> &nbsp{{ item.interesse|capfirst }}
+                               </a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="panel panel-default panel-bordeless">
-                    <div class="panel-heading text-center">
-                        <span class="fa fa-group"></span> Grupos de {{ usuario.first_name }}
-                    </div>
-                </div>
-            </div>
-             <div class="col-xs-6">
-                <div class="panel panel-default panel-bordeless">
-                    <div class="panel-heading text-center">
-
-                    </div>
-                    <div class="panel-body">
-
+                {% endfor %}
+            {% endif %}
+            {% if grupos|length > 0 %}
+                <div class="col-xs-12">
+                    <div class="panel panel-default panel-bordeless">
+                        <div class="panel-heading text-center">
+                            <span class="fa fa-group"></span> Grupos de {{ usuario.first_name }}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="panel panel-default panel-bordeless">
-                    <div class="panel-heading text-center">
-                        <span class="fa fa-comments"></span> Amigos de {{ usuario.first_name }}
+                {% for item in grupos %}
+                    <div class="col-xs-6" style="margin-top:-5px;">
+                        <div class="panel panel-default panel-bordeless">
+                            <ul class="panel-list" style="margin-bottom:0;">
+                               <li><a href="{% url 'grupo-index' item.grupo.gid %}" style="padding-left:10px;">
+                                    <span class="fa fa-group" style="color: #7C0B1F;"></span> &nbsp{{ item.grupo.nome|capfirst }}
+                               </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if amigos.iteritems|length > 0 %}
+                <div class="col-xs-12">
+                    <div class="panel panel-default panel-bordeless">
+                        <div class="panel-heading text-center">
+                            <span class="fa fa-comments"></span> Amigos de {{ usuario.first_name }}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="panel panel-default panel-bordeless">
-                    <div class="panel-heading text-center">
-
+                {% for amizade, amigo_foto in amigos.iteritems %}
+                    <div class="col-xs-6" style="margin-top:-5px;">
+                        <div class="panel panel-default panel-bordeless">
+                            <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
+                               <li><a href="{% url 'perfil' amizade.amigo.universidade.sigla amizade.amigo.perfil_link %}" style="padding-left:0;">
+                                   <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
+                                   &nbsp&nbsp{{ amizade.amigo.usuario.full_name|capfirst }}
+                               </a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-            </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

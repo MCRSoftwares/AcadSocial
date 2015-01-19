@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -23,11 +23,11 @@ from django.utils.translation import ugettext_lazy as _
 class UniversidadeAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_('Info'), {'fields': ('sigla', 'nome')}),
+        (_('Info'), {'fields': ('sigla', 'nome', 'campus')}),
     )
     
-    list_display = ('sigla', 'nome')
-    search_fields = ('sigla', 'nome')
+    list_display = ('sigla', 'nome', 'campus')
+    search_fields = ('sigla', 'nome', 'campus')
     ordering = ('sigla',)
 
 
@@ -38,7 +38,7 @@ class CursoAdmin(admin.ModelAdmin):
     )
     
     list_display = ('nome', 'universidade')
-    search_fields = ('nome', 'universidade')
+    search_fields = ('nome', 'universidade', 'campus')
     ordering = ('nome',)
 
 admin.site.register(UniversidadeModel, UniversidadeAdmin)

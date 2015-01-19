@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v007a
+Versão do Código: 01v008a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -713,7 +713,19 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
 
     pag_perfil = PerfilModel.objects.get(perfil_link=perfil_link, universidade__sigla=sigla)
     pag_foto = ImagemModel.objects.get(perfil=pag_perfil, is_active=True, is_profile_image=True)
+    interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario)
+    grupos = MembroModel.objects.filter(usuario=pag_perfil.usuario)
+    amigos = AmigoModel.objects.filter(perfil=pag_perfil)
 
+    amigos_dict = {}
+
+    for amizade in amigos:
+        if amizade not in amigos_dict:
+            amigos_dict[amizade] = ImagemModel.objects.get(perfil=amizade.amigo)
+
+    args['interesses'] = interesses
+    args['grupos'] = grupos
+    args['amigos'] = amigos_dict
     args['pag_foto'] = pag_foto
     args['pag_perfil'] = pag_perfil
     args['usuario'] = pag_perfil.usuario

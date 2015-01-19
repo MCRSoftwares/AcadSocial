@@ -116,7 +116,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <a href="" class="panel-footer text-center">Ver Todos</a>
+                    <a href="{% url 'perfil-sobre' universidade.sigla pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
                 {% endif %}
             </div>
             <div class="panel panel-default panel-bordeless">
@@ -139,7 +139,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <a href="" class="panel-footer text-center">Ver Todos</a>
+                    <a href="{% url 'perfil-sobre' universidade.sigla pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
                 {% endif %}
 
             </div>
@@ -158,15 +158,14 @@
                     <ul class="panel-list panel-list-friends">
                         {% for amigo, amigo_foto in amigos.iteritems|slice:':5' %}
                             <li>
-                                <a href="{% url 'perfil' amigo.amigo.universidade.sigla amigo.amigo.perfil_link %}"
-                                   style="padding-left: 0;">
-                                    <img style="border-right:3px solid #e7e7e7" src="/media/{{ amigo_foto.thumbnail }}">
+                                <a href="{% url 'perfil' amigo.amigo.universidade.sigla amigo.amigo.perfil_link %}" style="padding-left: 0;">
+                                    <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
                                     &nbsp&nbsp{{ amigo.amigo.usuario.full_name }}
                                 </a>
                             </li>
                         {% endfor %}
                     </ul>
-                    <a href="" class="panel-footer text-center">Ver Todos</a>
+                    <a href="{% url 'perfil-sobre' universidade.sigla pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
                 {% endif %}
             </div>
         </div>

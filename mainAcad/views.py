@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v001a
+Versão do Código: 01v002a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -36,10 +36,19 @@ def view_usuario_search(request):
         pesquisa_form = UsuarioSearchForm(data=request.GET)
 
         if pesquisa_form.is_valid():
-            data = pesquisa_form.cleaned_data['q']
-            lista = data.split(' ')
+            data = pesquisa_form.cleaned_data.get('q')
+            args['data_list'] = data
 
-            data_list = filter(None, lista)
+            aspas = data.count('\"')
+
+            if aspas > 0:
+                if aspas % 2 == 0:
+                    data_list = [q_data for q_data in data.split('\"') if q_data.strip()]
+                else:
+                    data_list = [data.replace('\"', '')]
+
+            else:
+                data_list = [data]
 
             resultado = False
             perfis_dict = {}
@@ -56,7 +65,7 @@ def view_usuario_search(request):
                     args['filtro'] = filtro
 
                     if filtro == '1':
-                        perfil_query = Q(usuario__first_name__contains=item) | Q(usuario__last_name__contains=item)
+                        perfil_query = Q(usuario__full_name__icontains=item)
                         perfis = PerfilModel.objects.filter(perfil_query)
 
                         if perfis:
@@ -65,28 +74,28 @@ def view_usuario_search(request):
                                 perfis_dict[perfil] = ImagemModel.objects.get(perfil=perfil)
 
                     elif filtro == '2':
-                        grupo_query = Q(nome__contains=item) | Q(descricao__contains=item)
+                        grupo_query = Q(nome__icontains=item)
                         grupos = GrupoModel.objects.filter(grupo_query)
 
                         if grupos:
                             resultado = True
 
                     elif filtro == '3':
-                        interesse_query = Q(interesse__contains=item)
+                        interesse_query = Q(interesse__icontains=item)
                         interesses = InteresseModel.objects.filter(interesse_query)
 
                         if interesses:
                             resultado = True
 
                     elif filtro == '4':
-                        evento_query = Q(titulo__contains=item) | Q(descricao__contains=item)
+                        evento_query = Q(titulo__icontains=item)
                         eventos = EventoModel.objects.filter(evento_query)
 
                         if eventos:
                             resultado = True
 
                     elif filtro == '5':
-                        postagem_query = Q(titulo__contains=item) | Q(conteudo__contains=item)
+                        postagem_query = Q(titulo__icontains=item)
                         postagens_grupos = PostagemGrupoModel.objects.filter(postagem_query)
                         postagens_eventos = PostagemEventoModel.objects.filter(postagem_query)
 
@@ -94,11 +103,11 @@ def view_usuario_search(request):
                             resultado = True
 
                 elif not request.GET.get('f') or request.GET.get('f') == '0':
-                    perfil_query = Q(usuario__first_name__contains=item) | Q(usuario__last_name__contains=item)
-                    grupo_query = Q(nome__contains=item) | Q(descricao__contains=item)
-                    interesse_query = Q(interesse__contains=item)
-                    evento_query = Q(titulo__contains=item) | Q(descricao__contains=item)
-                    postagem_query = Q(titulo__contains=item) | Q(conteudo__contains=item)
+                    perfil_query = Q(usuario__full_name__icontains=item)
+                    grupo_query = Q(nome__icontains=item)
+                    interesse_query = Q(interesse__icontains=item)
+                    evento_query = Q(titulo__icontains=item)
+                    postagem_query = Q(titulo__icontains=item)
 
                     perfis = PerfilModel.objects.filter(perfil_query)
 

@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -21,11 +21,12 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class UniversidadeModel(models.Model):
-    sigla = models.CharField(max_length=10)
-    nome = models.CharField(max_length=200)
+    sigla = models.CharField(max_length=20)
+    nome = models.CharField(max_length=256)
+    campus = models.CharField(max_length=128)
 
     def __unicode__(self):
-        return self.sigla + ' - ' + self.nome
+        return self.sigla + ' (' + self.campus + ')'
 
     class Meta:
         verbose_name = _('universidade')
