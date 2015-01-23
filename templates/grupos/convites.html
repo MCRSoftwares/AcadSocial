@@ -1,0 +1,176 @@
+{% extends 'base-logado-com-topo.html' %}
+
+{% block title %} Convites - AcadSocial {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block convites-active %}
+    class="lista-active"
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center truncate">
+                    <span class="fa fa-envelope"></span> Meus Convites
+                </div>
+                <div class="panel-body text-center">
+                    <a href="{% url 'convites' %}" class="feed-link">
+                        <span class="profile-image-big fa fa-envelope" style="font-size:90pt;"></span>
+                        <br><br>
+                         {% if qtd_convites > 1 %}
+                            Você possui {{ qtd_convites }} convites!
+                        {% elif qtd_convites == 1 %}
+                            Você possui 1 convite!
+                         {% else %}
+                             Você não possui convites!
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="panel-footer text-center" style="margin-top:0;">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            {% if qtd_convites == 0 %}
+                <div class="col-xs-12">
+                    <div class="panel panel-default panel-bordeless">
+                        <div class="panel-heading text-center">
+                            Nada foi encontrado!
+                        </div>
+                        <div class="panel-body text-center">
+                            <span class="fa fa-frown-o" style="font-size:200pt;"></span>
+                            <div class="search-error">
+                                Você não possui convites!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                {% if convites_amigos|length > 0 %}
+                    <div class="col-xs-12">
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center">
+                                <span class="fa fa-envelope"></span> Pedidos de Amizade
+                            </div>
+                        </div>
+                    </div>
+                    {% for convite, convite_foto in convites_amigos.iteritems %}
+                        <div class="col-xs-6">
+                            <div class="panel panel-default panel-bordeless" style="padding:0;">
+                                <form method="POST" class="form-horizontal" id="conviteAmigoPg-{{ convite.cid }}">
+                                    {% csrf_token %}
+                                    <div class="panel-body" style="padding:10px;border-bottom:1px solid #f2f2f2;">
+                                        <div class="col-xs-1 no-padding">
+                                            <a href="{% url 'perfil' convite.perfil.universidade.sigla convite.perfil.perfil_link %}" style="padding-left:0;">
+                                                <img class="profile-image" src="/media/{{ convite_foto.thumbnail }}">
+                                            </a>
+                                        </div>
+
+                                        <input type="text" style="display:none" id="conviteAmigoActionPg-{{ convite.cid }}" name="conviteAmigoFormPg" value="{{ convite.cid }}">
+                                        <div class="col-xs-10 comment-user" style="padding-top:5px;padding-left:40px;">
+                                            <a href="{% url 'perfil' convite.perfil.universidade.sigla convite.perfil.perfil_link %}">
+                                                {{ convite.perfil.usuario.full_name }}
+                                            </a>
+                                            adicionou você como amigo!<br><br>
+                                        </div>
+                                        <div class="col-xs-1 no-padding">
+                                            <button class="close" type="button" style="font-size:8pt;"
+                                                    onclick="sendConviteForm('#conviteAmigoActionPg-{{ convite.cid }}','recusar', '#conviteAmigoPg-{{ convite.cid }}');">Recusar</button>
+                                        </div>
+                                    </div>
+                                    <button class="panel-footer" type="button"
+                                            onclick="sendConviteForm('#conviteAmigoActionPg-{{ convite.cid }}','aceitar', '#conviteAmigoPg-{{ convite.cid }}');">Aceitar</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if convites_grupos|length > 0 %}
+                    <div class="col-xs-12">
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center">
+                                <span class="fa fa-envelope"></span> Convites para Grupos
+                            </div>
+                        </div>
+                    </div>
+                    {% for convite, convite_foto in convites_grupos.iteritems %}
+                        <div class="col-xs-6">
+                            <div class="panel panel-default panel-bordeless" style="padding:0;">
+                                <form method="POST" class="form-horizontal" id="conviteGrupoPg-{{ convite.cid }}">
+                                    {% csrf_token %}
+                                    <div class="panel-body" style="padding:10px;border-bottom:1px solid #f2f2f2;">
+                                        <div class="col-xs-1 no-padding">
+                                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                                <img class="profile-image" src="/media/{{ convite_foto.thumbnail }}">
+                                            </a>
+                                        </div>
+
+                                        <input type="text" style="display:none" id="conviteGrupoActionPg-{{ convite.cid }}" name="conviteGrupoFormPg" value="{{ convite.cid }}">
+                                        <div class="col-xs-10 comment-user" style="padding-top:5px;padding-left:40px;">
+                                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}">
+                                                {{ convite.usuario.full_name }}
+                                            </a>
+                                            convidou você para participar do grupo
+                                            <a href="{% url 'grupo-index' convite.grupo.gid %}">
+                                                {{ convite.grupo.nome }}
+                                            </a>!<br><br>
+                                        </div>
+                                        <div class="col-xs-1 no-padding">
+                                            <button class="close" type="button" style="font-size:8pt;"
+                                                    onclick="sendConviteForm('#conviteGrupoActionPg-{{ convite.cid }}','recusar', '#conviteGrupoPg-{{ convite.cid }}');">Recusar</button>
+                                        </div>
+                                    </div>
+                                    <button class="panel-footer" type="button"
+                                            onclick="sendConviteForm('#conviteGrupoActionPg-{{ convite.cid }}','aceitar', '#conviteGrupoPg-{{ convite.cid }}');">Participar</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if convites_eventos|length > 0 %}
+                    <div class="col-xs-12">
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center">
+                                <span class="fa fa-envelope"></span> Convites para Eventos
+                            </div>
+                        </div>
+                    </div>
+                    {% for convite, convite_foto in convites_eventos.iteritems %}
+                        <div class="col-xs-6">
+                            <div class="panel panel-default panel-bordeless" style="padding:0;">
+                                <form method="POST" class="form-horizontal">
+                                    {% csrf_token %}
+                                    <div class="panel-body" style="padding:10px;border-bottom:1px solid #f2f2f2;">
+                                        <div class="col-xs-1 no-padding">
+                                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                                <img class="profile-image" src="/media/{{ convite_foto.thumbnail }}">
+                                            </a>
+                                        </div>
+
+                                        <input type="text" style="display:none" id="conviteEventoActionPg" name="conviteEventoFormPg" value="{{ convite.cid }}">
+                                        <div class="col-xs-10 comment-user" style="padding-top:5px;padding-left:40px;">
+                                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}">
+                                                {{ convite.usuario.full_name }}
+                                            </a>
+                                            convidou você para participar do evento
+                                            <a href="{% url 'grupo-evento' convite.grupo.gid convite.evento.eid %}">
+                                                {{ convite.grupo.evento.nome }}
+                                            </a>!<br><br>
+                                        </div>
+                                        <div class="col-xs-1 no-padding">
+                                            <button class="close" type="button" style="font-size:8pt;" id="recusarConviteEventoPg">Recusar</button>
+                                        </div>
+                                    </div>
+                                    <button class="panel-footer" type="button" id="aceitarConviteEventoPg">Participar</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

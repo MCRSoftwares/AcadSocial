@@ -234,8 +234,8 @@ legend {
 }
 
 .panel-bordeless .panel-list-friends > li > a {
-    height: 45px;
-    line-height: 46px;
+    height: 42px;
+    line-height: 43px;
 }
 
 .btn-default {
@@ -483,6 +483,7 @@ textarea.form-control {
 
 .notifications-dropdown {
     width:400px;
+    padding: 0;
 }
 
 .notifications-icon {
@@ -732,4 +733,15 @@ textarea.comment-bar {
     font-size: 10pt;
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
+}
+
+.btn-link:hover {
+    text-decoration: none;
+}
+
+.btn-link {
+    padding:0 5px 5px 0;
+    font-weight: 700;
+    font-family: Josefin Sans, sans-serif;
+    color: #7C0B1F;
 }

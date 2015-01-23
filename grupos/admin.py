@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -78,11 +78,11 @@ class ParticipaEventoAdmin(admin.ModelAdmin):
 class UsuarioInteresseAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações da relação'), {'fields': ('usuario', 'interesse', 'data_criacao')}),
+        (_(u'Informações da relação'), {'fields': ('usuario', 'interesse', 'ativo', 'data_criacao')}),
     )
 
-    list_display = ('interesse', 'usuario', 'data_criacao',)
-    search_fields = ('interesse', 'usuario', 'data_criacao',)
+    list_display = ('interesse', 'usuario', 'data_criacao', 'ativo')
+    search_fields = ('interesse', 'usuario', 'data_criacao', 'ativo')
 
 
 class GrupoInteresseAdmin(admin.ModelAdmin):

@@ -138,12 +138,12 @@
                                     <span id="comment-{{ postagem.pid }}-{{ comentario.cid }}">
                                         <div class="panel-body comment-start" style="padding:10px;">
                                             <div class="col-xs-1" style="padding:0;">
-                                                <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
+                                                <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
                                                     <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}" class="profile-image"></a>
                                             </div>
                                             <div class="col-xs-10 comment-user no-padding" style="padding-left:20px;">
                                                 &nbsp
-                                                <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
+                                                <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
                                                     {{ comentario.criado_por.full_name }}
                                                 </a>
                                                 <br>

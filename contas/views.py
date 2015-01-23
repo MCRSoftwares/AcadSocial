@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v008a
+Versão do Código: 01v009a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -15,9 +15,11 @@ Descrição:
     Definição das views relacionadas à aplicação de contas (cadastro/login).
 """
 
+# TODO Configurar views que possuem notificações
+
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm
 from contas.forms import EnviarTokenForm, SenhaResetForm
-from universidades.models import UniversidadeModel, CursoModel
+from universidades.models import UniversidadeModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
@@ -32,6 +34,8 @@ from contas.constants import TOKEN_TYPE
 from mainAcad.forms import UsuarioSearchForm, ImagemUploadForm
 from mainAcad.models import ImagemModel, AmigoModel, ConviteAmigoModel
 from grupos.models import UsuarioInteresseModel, MembroModel, PostagemGrupoModel, ComentarioGrupoModel, GrupoModel
+from grupos.methods import load_convites_grupos, load_convites_amigos, load_convites_eventos
+from grupos.methods import convites_amigos_post, convites_grupos_post, convites_eventos_post
 from grupos.forms import ComentarioGrupoForm
 from django.db.models import Q
 
@@ -177,9 +181,9 @@ def view_pagina_inicial_logada(request):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
 
-    interesses = UsuarioInteresseModel.objects.filter(usuario=request.user).order_by('data_criacao')
-    grupos_participa = MembroModel.objects.filter(usuario=request.user).order_by('data_entrada')
-    grupos = GrupoModel.objects.filter(membromodel__in=grupos_participa)
+    interesses = UsuarioInteresseModel.objects.filter(usuario=request.user, ativo=True).order_by('data_criacao')
+    grupos_participa = MembroModel.objects.filter(usuario=request.user, ativo=True).order_by('data_entrada')
+    grupos = GrupoModel.objects.filter(membromodel__in=grupos_participa, ativo=True)
     postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos, ativo=True).order_by('data_criacao')
     comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True)
 
@@ -218,13 +222,15 @@ def view_pagina_inicial_logada(request):
 
     if request.method == 'POST':
 
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
         if 'deleteComment' in request.POST:
             pcid = request.POST['deleteComment'].split('-')
 
             pid = int(pcid[0])
             cid = int(pcid[1])
-
-            print cid
 
             try:
                 postagem = PostagemGrupoModel.objects.get(pid=pid)
@@ -266,6 +272,9 @@ def view_pagina_inicial_logada(request):
     else:
         comentario_form = ComentarioGrupoForm()
 
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
     args['qtd_comentarios'] = qtd_comentarios
     args['comentario_form'] = comentario_form
     args['foto'] = foto
@@ -557,10 +566,10 @@ def view_perfil_usuario(request, sigla, perfil_link):
     imagem = ImagemModel.objects.get(perfil=pag_perfil, is_profile_image=True)
     perfil = PerfilModel.objects.get(usuario=request.user)
 
-    user_membro = MembroModel.objects.filter(usuario=request.user)
+    user_membro = MembroModel.objects.filter(usuario=request.user, ativo=True)
 
     membro = MembroModel.objects.filter(usuario=pag_perfil.usuario)
-    interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario)
+    interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
     amigos = AmigoModel.objects.filter(perfil=pag_perfil)
 
     amigos_dict = {}
@@ -619,6 +628,20 @@ def view_perfil_usuario(request, sigla, perfil_link):
 
     if request.method == 'POST':
 
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'removerAmigo' in request.POST:
+            amigo_rem1 = AmigoModel.objects.get(perfil=perfil, amigo=pag_perfil)
+            amigo_rem2 = AmigoModel.objects.get(perfil=pag_perfil, amigo=perfil)
+
+            amigo_rem1.ativo = False
+            amigo_rem1.save()
+
+            amigo_rem2.ativo = False
+            amigo_rem2.save()
+
         if 'adicionarAmigo' in request.POST and not convite_amigo and not amigo:
             convite = ConviteAmigoModel()
 
@@ -674,6 +697,9 @@ def view_perfil_usuario(request, sigla, perfil_link):
     else:
         comentario_form = ComentarioGrupoForm()
 
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
     args['convite_amigo'] = convite_amigo
     args['amigo'] = amigo
     args['qtd_comentarios'] = qtd_comentarios
@@ -713,8 +739,8 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
 
     pag_perfil = PerfilModel.objects.get(perfil_link=perfil_link, universidade__sigla=sigla)
     pag_foto = ImagemModel.objects.get(perfil=pag_perfil, is_active=True, is_profile_image=True)
-    interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario)
-    grupos = MembroModel.objects.filter(usuario=pag_perfil.usuario)
+    interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
+    grupos = MembroModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
     amigos = AmigoModel.objects.filter(perfil=pag_perfil)
 
     amigos_dict = {}

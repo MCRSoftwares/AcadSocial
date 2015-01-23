@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v004a
+Versão do Código: 01v005a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -15,6 +15,8 @@ Descrição:
     Definição das views relacionadas à aplicação de grupos e eventos.
 """
 
+# TODO Configurar views que possuem notificações
+
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from grupos.models import GrupoModel, MembroModel
@@ -22,11 +24,14 @@ from django.contrib.auth.decorators import login_required
 from mainAcad.models import ImagemModel
 from mainAcad.forms import UsuarioSearchForm
 from contas.models import PerfilModel
-from grupos.models import InteresseModel, PostagemGrupoModel, ComentarioGrupoModel, UsuarioInteresseModel
+from grupos.models import InteresseModel, PostagemGrupoModel, ComentarioGrupoModel
+from grupos.models import UsuarioInteresseModel, GrupoInteresseModel
 from grupos.forms import ComentarioGrupoForm, AdicionarInteresseForm, InteresseSearchForm
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from grupos.methods import load_convites_amigos, load_convites_eventos, load_convites_grupos
+from grupos.methods import convites_amigos_post, convites_grupos_post, convites_eventos_post
 
 
 @login_required
@@ -36,7 +41,7 @@ def view_pagina_grupo(request, gid):
 
     try:
         grupo = GrupoModel.objects.get(gid=gid)
-        membro = MembroModel.objects.get(grupo=grupo, usuario=request.user)
+        membro = MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
         return HttpResponseRedirect('/')
@@ -44,6 +49,18 @@ def view_pagina_grupo(request, gid):
     except MembroModel.DoesNotExist:
         membro = None
 
+    perfil = PerfilModel.objects.get(usuario=request.user)
+
+    if request.method == 'POST':
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        return HttpResponseRedirect('/grupo/' + gid)
+
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
     args['membro'] = membro
     args['grupo'] = grupo
     args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
@@ -108,8 +125,47 @@ def view_pagina_interesse(request, iid):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    interesse = InteresseModel.objects.get(iid=iid)
+    interesse = InteresseModel.objects.get(iid=iid, ativo=True)
+    usuarios_interesse = UsuarioInteresseModel.objects.filter(interesse=interesse, ativo=True)
+    grupos_interesse = GrupoInteresseModel.objects.filter(interesse=interesse, ativo=True)
 
+    usuarios = {}
+
+    for u_interesse in usuarios_interesse:
+        if u_interesse.usuario not in usuarios:
+            usuarios[u_interesse.usuario] = ImagemModel.objects.get(perfil=u_interesse.usuario.perfilmodel)
+
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'adicionarInteresse' in request.POST:
+
+            try:
+                usuario_interesse = UsuarioInteresseModel.objects.get(interesse=interesse, usuario=request.user)
+                usuario_interesse.ativo = True
+            except UsuarioInteresseModel.DoesNotExist:
+                usuario_interesse = UsuarioInteresseModel()
+                usuario_interesse.usuario = request.user
+                usuario_interesse.interesse = interesse
+
+            usuario_interesse.save()
+
+        if 'removerInteresse' in request.POST:
+            usuario_interesse = UsuarioInteresseModel.objects.get(interesse=interesse, usuario=request.user)
+            usuario_interesse.ativo = False
+            usuario_interesse.save()
+
+        return HttpResponseRedirect('/interesse/'+str(interesse.iid))
+
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['grupos_interesse'] = grupos_interesse
+    args['usuarios_interesse'] = usuarios_interesse
+    args['usuarios'] = usuarios
     args['interesse'] = interesse
     args['foto'] = foto
     args['perfil'] = perfil
@@ -124,7 +180,7 @@ def view_interesses(request):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    perfil_interesses = UsuarioInteresseModel.objects.filter(usuario=perfil.usuario)
+    perfil_interesses = UsuarioInteresseModel.objects.filter(usuario=perfil.usuario, ativo=True)
 
     interesses = []
 
@@ -170,6 +226,10 @@ def view_interesses(request):
     if request.method == 'POST':
         interesse_form = AdicionarInteresseForm()
 
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
         if 'criarInteresse' in request.POST:
             interesse_form = AdicionarInteresseForm(data=request.POST)
 
@@ -204,6 +264,9 @@ def view_interesses(request):
     else:
         interesse_form = AdicionarInteresseForm()
 
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
     args['pesquisa_interesse_form'] = interesse_search_form
     args['interesse_form'] = interesse_form
     args['perfil_interesses'] = perfil_interesses
@@ -221,7 +284,7 @@ def view_postagem_grupo(request, gid, pid):
 
     try:
         grupo = GrupoModel.objects.get(gid=gid)
-        MembroModel.objects.get(grupo=grupo, usuario=request.user)
+        MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
         return HttpResponseRedirect('/')
@@ -266,6 +329,10 @@ def view_postagem_grupo(request, gid, pid):
 
     if request.method == 'POST':
 
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
         if 'deleteComment' in request.POST:
             cid = int(request.POST['deleteComment'])
 
@@ -306,6 +373,9 @@ def view_postagem_grupo(request, gid, pid):
     else:
         comentario_form = ComentarioGrupoForm()
 
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
     args['qtd_comentarios'] = qtd_comentarios
     args['comentario_form'] = comentario_form
     args['comentarios'] = comentarios
@@ -320,3 +390,45 @@ def view_postagem_grupo(request, gid, pid):
     args['fotos_comentarios'] = fotos_comentarios
 
     return render(request, 'grupos/postagem.html', args)
+
+
+@login_required
+def view_evento_grupo(request, gid, eid):
+    args = {}
+
+    return render(request, 'grupos/evento.html', args)
+
+
+@login_required
+def view_convites(request):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
+
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_amigos_post(request, 'conviteAmigoFormPg')
+        convites_grupos_post(request, 'conviteGrupoForm')
+        convites_grupos_post(request, 'conviteGrupoFormPg')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_eventos_post(request, 'conviteEventoFormPg')
+
+        return HttpResponseRedirect('/convites/')
+
+    convites_grupos = load_convites_grupos(request)
+    convites_eventos = load_convites_eventos(request)
+    convites_amigos = load_convites_amigos(perfil)
+
+    qtd_convites = len(convites_grupos) + len(convites_eventos) + len(convites_amigos)
+
+    args['qtd_convites'] = qtd_convites
+    args['convites_grupos'] = convites_grupos
+    args['convites_eventos'] = convites_eventos
+    args['convites_amigos'] = convites_amigos
+    args['perfil'] = perfil
+    args['foto'] = foto
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+
+    return render(request, 'grupos/convites.html', args)

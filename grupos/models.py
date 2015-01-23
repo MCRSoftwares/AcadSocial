@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v004a
+Versão do Código: 01v005a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -31,6 +31,7 @@ class GrupoModel(models.Model):
     descricao = models.TextField(_(u'descrição'), max_length=1024)
     criado_por = models.ForeignKey(UsuarioModel, related_name='criador_grupo')
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
+    ativo = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.nome + ' (' + unicode(self.criado_por) + ')'
@@ -45,6 +46,7 @@ class InteresseModel(models.Model):
     interesse = models.CharField(max_length=96)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
     criado_por = models.ForeignKey(UsuarioModel)
+    ativo = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.interesse
@@ -58,6 +60,7 @@ class UsuarioInteresseModel(models.Model):
     interesse = models.ForeignKey(InteresseModel)
     usuario = models.ForeignKey(UsuarioModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
+    ativo = models.BooleanField(default=True)
     iid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
@@ -73,6 +76,7 @@ class GrupoInteresseModel(models.Model):
     grupo = models.ForeignKey(GrupoModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
     iid = models.AutoField(primary_key=True)
+    ativo = models.BooleanField(default=True)
 
     def __unicode__(self):
         return unicode(self.interesse) + ' - ' + unicode(self.grupo)
@@ -88,6 +92,7 @@ class MembroModel(models.Model):
     data_entrada = models.DateTimeField(_('data de entrada'), default=timezone.now())
     is_admin = models.BooleanField(_('administrador'), default=False)
     mid = models.AutoField(primary_key=True)
+    ativo = models.BooleanField(default=True)
 
     def __unicode__(self):
         return unicode(self.grupo) + ' - ' + unicode(self.usuario)
@@ -105,6 +110,7 @@ class EventoModel(models.Model):
     data_evento = models.DateTimeField(_('data do evento'))
     criado_por = models.ForeignKey(UsuarioModel)
     eid = models.AutoField(primary_key=True)
+    ativo = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.titulo + ' (' + unicode(self.criado_por) + ')'
@@ -119,6 +125,7 @@ class ParticipaEventoModel(models.Model):
     usuario = models.ForeignKey(UsuarioModel)
     data_participacao = models.DateTimeField(_(u'data de participação'), default=timezone.now())
     eid = models.AutoField(primary_key=True)
+    ativo = models.BooleanField(default=True)
 
     def __unicode__(self):
         return unicode(self.evento) + ' - ' + unicode(self.usuario)

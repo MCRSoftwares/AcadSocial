@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -21,8 +21,11 @@ from contas.models import PerfilModel
 from grupos.models import GrupoModel, InteresseModel, EventoModel
 from grupos.models import PostagemGrupoModel, PostagemEventoModel
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 from mainAcad.models import ImagemModel
 from django.contrib.auth.decorators import login_required
+from grupos.methods import load_convites_grupos, load_convites_amigos, load_convites_eventos
+from grupos.methods import convites_amigos_post, convites_grupos_post, convites_eventos_post
 
 
 @login_required
@@ -136,22 +139,21 @@ def view_usuario_search(request):
     else:
         pesquisa_form = UsuarioSearchForm()
 
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        return HttpResponseRedirect('/search/?q='+request.GET.get('q'))
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
     args['pesquisa_form'] = pesquisa_form
-    args['perfil'] = PerfilModel.objects.get(usuario=request.user)
+    args['perfil'] = perfil
     args['foto'] = ImagemModel.objects.get(perfil__usuario=request.user, is_profile_image=True)
 
     return render(request, 'mainAcad/search.html', args)
-
-
-@login_required
-def view_lista_amigos(request):
-    args = {}
-
-    perfil = PerfilModel.objects.get(usuario=request.user)
-    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-
-    args['foto'] = foto
-    args['perfil'] = perfil
-    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
-
-    return render(request, 'mainAcad/lista_amigos.html', args)

@@ -1,6 +1,131 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block title %}Bem-vindo! {% endblock %}
 
-{% block body %}
+{% block empty %}
+    <div class="video">
+		<p><b></br></br><h1 class="content-section text-center" >O que é o AcadSocial?</h1></b></p>
+		<div align="center">
+		<iframe  width="900" height="500"  src="http://www.youtube.com/embed/SLXBjJrtj3Q"></iframe>
+		</div>
+	</div>
+
+
+	 <section id="download" class="content-section text-center">
+        <div class="container grupos ">
+            <div class="row">
+				<h1><b>No AcadSocial voce pode criar e participar de grupos e clubes</b></h1>
+
+                <div class="col-lg-12 text-center">
+                   <h2 class="row"><b>Grupos</b></h2>
+					<h3><b>Os grupos são para propositos mais academico. que esteja diretamente ligado a alguma  gradução na UFPE</b></h3>
+
+
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="{% static  'images/index/abacus.png' %}"  alt="">
+
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="{% static  'images/index/test-tube.png' %}"  alt="">
+
+
+                    </div>
+                </div>
+
+				<div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="{% static  'images/index/rocket.png' %}"  alt="">
+
+                    </div>
+                </div>
+
+
+				<h2 class="row"><b>Clubes</b></h2>
+				<h3><b>Os clubes estão mais relacionados para atividades extra curriculares que possam ser executadas no campus da UFPE</b></h3>
+
+
+			 </div>
+				<div class="row">
+
+
+
+				<div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="{% static  'images/index/chess-game.png' %}"  alt="Xadrez">
+
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="{% static  'images/index/magic-hat.png' %}"  alt="">
+
+                    </div>
+                </div>
+
+
+				 <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="{% static  'images/index/color-palette.png' %}"  alt="">
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </section>
+
+
+
+	<div class= "cadastrese container">
+
+			<h1 class = " text-center"><b> Testanto essa bagaça aqui</b><h1>
+
+
+
+	</div>
+
+
+
+
+
+	 <footer class="text-center">
+
+        <div class="rodape">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; MCRSoftwares 2014
+                    </div>
+                </div>
+
+				<div align="right" >
+				<p><a href="#" class="linkrodape" title="">Contato</a></p>
+				<p><a href="#" class="linkrodape" title="">Reporte um bug</a></p>
+				<p><a href="#" class="linkrodape" title="">Termos e Condições</a></p>
+
+				</div>
+
+
+
+
+            </div>
+        </div>
+    </footer>
 {% endblock %}

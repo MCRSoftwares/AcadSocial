@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -22,9 +22,11 @@ from grupos import views
 urlpatterns = patterns('',
                        url(r'^grupo/lista/$', views.view_lista_grupos, name='grupos-lista'),
                        url(r'^grupo/(?P<gid>\w+)/post/(?P<pid>\w+)/$', views.view_postagem_grupo, name='grupo-post'),
+                       url(r'^grupo/(?P<gid>\w+)/evento/(?P<eid>\w+)/$', views.view_evento_grupo, name='grupo-evento'),
                        url(r'^grupo/(?P<gid>\w+)/$', views.view_pagina_grupo, name='grupo-index'),
                        url(r'^grupo/(?P<gid>\w+)/editar/$', views.view_editar_grupo, name='grupo-editar'),
                        url(r'^grupo/(?P<gid>\w+)/entrar/$', views.view_entrar_grupo, name='grupo-entrar'),
                        url(r'^interesse/$', views.view_interesses, name='interesses'),
                        url(r'^interesse/(?P<iid>\w+)/$', views.view_pagina_interesse, name='interesse-index'),
+                       url(r'^convites/$', views.view_convites, name='convites'),
                        )

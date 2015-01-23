@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -83,6 +83,7 @@ class ConviteAmigoModel(models.Model):
     amigo = models.ForeignKey(PerfilModel, related_name='amigo_convite')
     data_criacao = models.DateTimeField(default=timezone.now())
     ativo = models.BooleanField(default=True)
+    cid = models.AutoField(primary_key=True)
 
     def __unicode__(self):
         return self.perfil.usuario.email + ' quer ser amigo de ' + self.amigo.usuario.email

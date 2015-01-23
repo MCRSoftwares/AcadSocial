@@ -68,7 +68,7 @@
                     <span class="fa fa-info-circle"></span> Sobre
                 </div>
                 <div class="panel-heading perfil-about-body">
-                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla }}
+                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla }} ({{ universidade.campus }})
                 </div>
                 <div class="panel-heading perfil-about-body">
                     <span class="fa fa-book"></span> {{ pag_perfil.curso }}
@@ -97,6 +97,16 @@
                     </div>
                 {% endif %}
             </div>
+            {% if perfil != pag_perfil and amigo %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        <button class="panel-heading text-center" style="width:100%;" name="removerAmigo">
+                            <span class="glyphicon glyphicon-remove"></span> Excluir Amigo
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
             <div class="panel panel-default panel-bordeless">
                 <div class="panel-heading text-center">
                     <span class="fa fa-paint-brush"></span> Interesses
@@ -247,14 +257,14 @@
                                     <span id="comment-{{ postagem.pid }}-{{ comentario.cid }}">
                                         <div class="panel-body comment-start" style="padding:10px;">
                                             <div class="col-xs-1" style="padding:0;">
-                                                <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
+                                                <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
                                                     <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}"
                                                          class="profile-image">
                                                 </a>
                                             </div>
                                             <div class="col-xs-10 comment-user no-padding" style="padding-left:20px;">
                                                 &nbsp
-                                                <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}">
+                                                <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
                                                     {{ comentario.criado_por.full_name }}
                                                 </a>
                                                 <br>
