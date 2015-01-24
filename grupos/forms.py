@@ -16,8 +16,8 @@ Descrição:
 """
 
 from django import forms
-from grupos.errors import erro_interesse
-from grupos.models import ComentarioGrupoModel, InteresseModel
+from grupos.errors import erro_interesse, erro_grupo
+from grupos.models import ComentarioGrupoModel, InteresseModel, GrupoModel, PostagemGrupoModel
 
 
 class ComentarioGrupoForm(forms.ModelForm):
@@ -30,13 +30,13 @@ class ComentarioGrupoForm(forms.ModelForm):
 class InteresseSearchForm(forms.ModelForm):
 
     pesquisa_attrs = {
-        'placeholder': 'Pesquisar Interesse...',
+        'placeholder': 'Criar/Pesquisar Interesses...',
         'class': 'form-control search-bar-interesse',
         'id': 'interesseQry',
         'autocomplete': 'off',
     }
 
-    iq = forms.CharField(max_length=128, widget=forms.TextInput(attrs=pesquisa_attrs))
+    iq = forms.CharField(max_length=64, widget=forms.TextInput(attrs=pesquisa_attrs))
 
     class Meta:
         model = InteresseModel
@@ -46,13 +46,10 @@ class InteresseSearchForm(forms.ModelForm):
 class AdicionarInteresseForm(forms.ModelForm):
 
     interesse_attrs = {
-        'placeholder': 'Nomear Interesse...',
-        'class': 'form-control search-bar-interesse',
         'id': 'interesseField',
-        'autocomplete': 'off',
     }
 
-    criarInteresse = forms.CharField(max_length=128, widget=forms.HiddenInput(attrs=interesse_attrs))
+    criarInteresse = forms.CharField(max_length=64, widget=forms.HiddenInput(attrs=interesse_attrs))
 
     def clean(self):
         interesse = self.cleaned_data.get('criarInteresse')
@@ -66,6 +63,7 @@ class AdicionarInteresseForm(forms.ModelForm):
 
         try:
             InteresseModel.objects.get(interesse__iexact=interesse)
+
             raise forms.ValidationError(erro_interesse['interesse_ja_existente'], code='interesse_ja_existente')
         except InteresseModel.DoesNotExist:
             return self.cleaned_data
@@ -73,3 +71,117 @@ class AdicionarInteresseForm(forms.ModelForm):
     class Meta:
         model = InteresseModel
         fields = ('criarInteresse', )
+
+
+class GrupoSearchForm(forms.ModelForm):
+
+    pesquisa_attrs = {
+        'placeholder': 'Criar/Pesquisar Grupos...',
+        'class': 'form-control search-bar-interesse',
+        'id': 'grupoQry',
+        'autocomplete': 'off',
+    }
+
+    gq = forms.CharField(max_length=64, widget=forms.TextInput(attrs=pesquisa_attrs))
+
+    class Meta:
+        model = GrupoModel
+        fields = ('gq', )
+
+
+class AdicionarGrupoForm(forms.ModelForm):
+
+    grupo_attrs = {
+        'id': 'grupoField'
+    }
+
+    criarGrupo = forms.CharField(max_length=64, widget=forms.HiddenInput(attrs=grupo_attrs))
+
+    def clean(self):
+        grupo = self.cleaned_data.get('criarGrupo')
+        grupo = ' '.join(unicode(grupo).split())
+
+        if not grupo or not ''.join(unicode(grupo).split()):
+            raise forms.ValidationError(erro_grupo['grupo_invalido'], code='grupo_invalido')
+
+        if unicode(grupo).startswith(' '):
+            grupo = grupo[1:]
+
+        try:
+            GrupoModel.objects.get(nome__iexact=grupo)
+
+            raise forms.ValidationError(erro_grupo['grupo_ja_existente'], code='grupo_ja_existente')
+        except GrupoModel.DoesNotExist:
+            return self.cleaned_data
+
+    class Meta:
+        model = GrupoModel
+        fields = ('criarGrupo', )
+
+
+class PostagemGrupoForm(forms.ModelForm):
+
+    titulo_attrs = {
+        'class': 'form-control form-panel',
+        'placeholder': u'Título...',
+    }
+
+    conteudo_attrs = {
+        'class': 'form-control form-panel',
+        'placeholder': u'Conteúdo...',
+        'maxlength': '256',
+        'rows': '1',
+    }
+
+    titulo = forms.CharField(max_length=32, widget=forms.TextInput(attrs=titulo_attrs), required=True)
+    conteudo = forms.CharField(widget=forms.Textarea(attrs=conteudo_attrs), required=True)
+
+    class Meta:
+        model = PostagemGrupoModel
+        fields = ('titulo', 'conteudo', )
+
+
+class MembroSearchForm(forms.ModelForm):
+
+    pesquisa_attrs = {
+        'placeholder': 'Pesquisar Usuários...',
+        'class': 'form-control search-bar-interesse',
+        'id': 'usuarioQry',
+        'autocomplete': 'off',
+    }
+
+    aq = forms.CharField(max_length=64, widget=forms.TextInput(attrs=pesquisa_attrs))
+
+    class Meta:
+        model = GrupoModel
+        fields = ('aq', )
+
+
+class ConvidarGrupoForm(forms.ModelForm):
+
+    grupo_attrs = {
+        'id': 'grupoField'
+    }
+
+    convidarGrupo = forms.CharField(max_length=64, widget=forms.HiddenInput(attrs=grupo_attrs))
+
+    def clean(self):
+        grupo = self.cleaned_data.get('criarGrupo')
+        grupo = ' '.join(unicode(grupo).split())
+
+        if not grupo or not ''.join(unicode(grupo).split()):
+            raise forms.ValidationError(erro_grupo['grupo_invalido'], code='grupo_invalido')
+
+        if unicode(grupo).startswith(' '):
+            grupo = grupo[1:]
+
+        try:
+            GrupoModel.objects.get(nome__iexact=grupo)
+
+            raise forms.ValidationError(erro_grupo['grupo_ja_existente'], code='grupo_ja_existente')
+        except GrupoModel.DoesNotExist:
+            return self.cleaned_data
+
+    class Meta:
+        model = GrupoModel
+        fields = ('convidarGrupo', )

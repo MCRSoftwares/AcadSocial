@@ -181,10 +181,10 @@ def view_pagina_inicial_logada(request):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
 
-    interesses = UsuarioInteresseModel.objects.filter(usuario=request.user, ativo=True).order_by('data_criacao')
-    grupos_participa = MembroModel.objects.filter(usuario=request.user, ativo=True).order_by('data_entrada')
+    interesses = UsuarioInteresseModel.objects.filter(usuario=request.user, ativo=True).order_by('-data_criacao')
+    grupos_participa = MembroModel.objects.filter(usuario=request.user, ativo=True).order_by('-data_entrada')
     grupos = GrupoModel.objects.filter(membromodel__in=grupos_participa, ativo=True)
-    postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos, ativo=True).order_by('data_criacao')
+    postagens = PostagemGrupoModel.objects.filter(grupo__in=grupos, ativo=True).order_by('-data_criacao')
     comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True)
 
     comentario_postagem = {}
@@ -255,18 +255,19 @@ def view_pagina_inicial_logada(request):
             except PostagemGrupoModel.DoesNotExist:
                 pass
 
-        for postagem in postagens:
-            if 'postagem-' + str(postagem.pid) in request.POST:
-                comentario_form = ComentarioGrupoForm(data=request.POST)
+        if 'comentarPostagem' in request.POST:
+            comentario_form = ComentarioGrupoForm(data=request.POST)
+            pid = request.POST.get('comentarPostagem')
+            postagem = PostagemGrupoModel.objects.get(pid=pid)
 
-                if comentario_form.is_valid():
-                    comentario = comentario_form.save(commit=False)
+            if comentario_form.is_valid():
+                comentario = comentario_form.save(commit=False)
 
-                    comentario.criado_por = request.user
-                    comentario.conteudo = request.POST['comentario']
-                    comentario.postagem = postagem
-                    comentario.data_criacao = timezone.now()
-                    comentario.save()
+                comentario.criado_por = request.user
+                comentario.conteudo = request.POST['comentario']
+                comentario.postagem = postagem
+                comentario.data_criacao = timezone.now()
+                comentario.save()
 
         return HttpResponseRedirect('/')
     else:
@@ -570,15 +571,15 @@ def view_perfil_usuario(request, sigla, perfil_link):
 
     membro = MembroModel.objects.filter(usuario=pag_perfil.usuario)
     interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
-    amigos = AmigoModel.objects.filter(perfil=pag_perfil)
+    amigos = AmigoModel.objects.filter(perfil=pag_perfil, ativo=True)
 
     amigos_dict = {}
 
     for amigo in amigos:
-        amigos_dict[amigo] = ImagemModel.objects.get(perfil=amigo.amigo)
+        amigos_dict[amigo] = ImagemModel.objects.get(perfil=amigo.amigo, is_profile_image=True)
 
     postagens = PostagemGrupoModel.objects.filter(criado_por=pag_perfil.usuario, ativo=True,
-                                                  grupo__membromodel__in=user_membro).order_by('data_criacao')
+                                                  grupo__membromodel__in=user_membro).order_by('-data_criacao')
     comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True)
 
     comentario_postagem = {}
@@ -680,18 +681,19 @@ def view_perfil_usuario(request, sigla, perfil_link):
             except PostagemGrupoModel.DoesNotExist:
                 pass
 
-        for postagem in postagens:
-            if 'postagem-' + str(postagem.pid) in request.POST:
-                comentario_form = ComentarioGrupoForm(data=request.POST)
+        if 'comentarPostagem' in request.POST:
+            comentario_form = ComentarioGrupoForm(data=request.POST)
 
-                if comentario_form.is_valid():
-                    comentario = comentario_form.save(commit=False)
+            if comentario_form.is_valid():
+                comentario = comentario_form.save(commit=False)
+                pid = request.POST.get('comentarPostagem')
+                postagem = PostagemGrupoModel.objects.get(pid=pid)
 
-                    comentario.criado_por = request.user
-                    comentario.conteudo = request.POST['comentario']
-                    comentario.postagem = postagem
-                    comentario.data_criacao = timezone.now()
-                    comentario.save()
+                comentario.criado_por = request.user
+                comentario.conteudo = request.POST['comentario']
+                comentario.postagem = postagem
+                comentario.data_criacao = timezone.now()
+                comentario.save()
 
         return HttpResponseRedirect('/perfil/' + universidade.sigla + '/' + pag_perfil.perfil_link)
     else:
@@ -741,7 +743,7 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
     pag_foto = ImagemModel.objects.get(perfil=pag_perfil, is_active=True, is_profile_image=True)
     interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
     grupos = MembroModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
-    amigos = AmigoModel.objects.filter(perfil=pag_perfil)
+    amigos = AmigoModel.objects.filter(perfil=pag_perfil, ativo=True)
 
     amigos_dict = {}
 
@@ -749,6 +751,29 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
         if amizade not in amigos_dict:
             amigos_dict[amizade] = ImagemModel.objects.get(perfil=amizade.amigo)
 
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+    try:
+        amigo = AmigoModel.objects.get(perfil=perfil, amigo=pag_perfil, ativo=True)
+
+    except AmigoModel.DoesNotExist:
+        amigo = None
+
+    try:
+        convite_amigo = ConviteAmigoModel.objects.get(perfil=perfil, amigo=pag_perfil, ativo=True)
+
+    except ConviteAmigoModel.DoesNotExist:
+        convite_amigo = None
+
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['convite_amigo'] = convite_amigo
+    args['amigo'] = amigo
     args['interesses'] = interesses
     args['grupos'] = grupos
     args['amigos'] = amigos_dict

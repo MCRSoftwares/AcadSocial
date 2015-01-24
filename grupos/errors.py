@@ -19,3 +19,8 @@ erro_interesse = {
     'interesse_ja_existente': 'Este interesse já está cadastrado!',
     'interesse_invalido': 'Não é possível criar um interesse com este nome!',
 }
+
+erro_grupo = {
+    'grupo_ja_existente': 'Este grupo já existe!',
+    'grupo_invalido': 'Não é possível criar um grupo com este nome!',
+}

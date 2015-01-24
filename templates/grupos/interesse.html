@@ -64,13 +64,15 @@
                     </ul>
 
                 {% else %}
-                    <ul class="panel-list truncate">
+                    <ul class="panel-list">
                         {% for g_interesse in grupos_interesse %}
                             <li><a href="{% url 'grupo-index' g_interesse.grupo.gid %}">{{ g_interesse.grupo.nome }}</a></li>
                         {% endfor %}
                     </ul>
                 {% endif %}
-                <a href="" class="panel-footer text-center"><span class="glyphicon glyphicon-plus"></span> Criar Grupo</a>
+                <div class="panel-footer">
+
+                </div>
             </div>
         </div>
         <div class="col-xs-8">

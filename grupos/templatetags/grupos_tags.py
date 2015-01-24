@@ -48,3 +48,36 @@ def get_interesse_in(lista):
         interesses.append(valor.interesse)
 
     return interesses
+
+
+@register.filter(name="get_grupos")
+def get_grupo_in(lista):
+    grupos = []
+
+    for valor in lista:
+        grupos.append(valor.grupo)
+
+    return grupos
+
+
+@register.filter(name="get_convite")
+def is_convidado_in(lista, usuario):
+    usuarios = []
+
+    for valor in lista:
+        usuarios.append(valor.convidado)
+
+    if usuario in usuarios:
+        return True
+
+    return False
+
+
+@register.filter(name="is_member")
+def get_membro_check(membros, usuario):
+
+    for membro in membros:
+        if usuario is membro.usuario:
+            return True
+
+    return False

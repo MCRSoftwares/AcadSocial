@@ -135,8 +135,8 @@
                 </div>
                 {% if grupos_participa|length == 0 %}
                     <ul class="panel-list">
-                        <li class="text-center not-link-list">{{ usuario.first_name }} não tem/participa de nenhum
-                            grupo!
+                        <li class="text-center not-link-list">
+                            {{ usuario.first_name }} não tem/participa de nenhum grupo!
                         </li>
                     </ul>
                     <div class="panel-footer text-center">
@@ -247,7 +247,7 @@
                                                   id="commentTA-{{ postagem.pid }}" maxlength="256"
                                                   placeholder="Comentar..."
                                                   onkeypress="sendCommentForm('#commentTA-{{ postagem.pid }}', '#submitComment-{{ postagem.pid }}')"></textarea>
-                                        <button name="postagem-{{ postagem.pid }}" type="submit" style="display: none;"
+                                        <button name="comentarPostagem" value="{{ postagem.pid }}" type="submit" style="display: none;"
                                                 id="submitComment-{{ postagem.pid }}"></button>
                                     </div>
                                 </form>

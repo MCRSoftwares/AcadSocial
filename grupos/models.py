@@ -104,10 +104,11 @@ class MembroModel(models.Model):
 
 class EventoModel(models.Model):
     titulo = models.CharField(_(u'título'), max_length=128)
-    descricao = models.TextField(_(u'descrição'), max_length=1024)
+    descricao = models.TextField(_(u'descrição'), max_length=256)
     grupo = models.ForeignKey(GrupoModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
     data_evento = models.DateTimeField(_('data do evento'))
+    local_evento = models.CharField(_('local do evento'), max_length=140)
     criado_por = models.ForeignKey(UsuarioModel)
     eid = models.AutoField(primary_key=True)
     ativo = models.BooleanField(default=True)
@@ -157,6 +158,7 @@ class ConviteEventoModel(models.Model):
     convidado = models.ForeignKey(UsuarioModel, related_name='evento_convidado')
     data_envio = models.DateTimeField(_('data de envio'), default=timezone.now())
     evento = models.ForeignKey(EventoModel)
+    grupo = models.ForeignKey(GrupoModel)
     ativo = models.BooleanField(default=True)
     aceito = models.BooleanField(default=False)
     cid = models.AutoField(primary_key=True)

@@ -1,9 +1,358 @@
 {% extends 'base-logado-topo-vazio.html' %}
+{% load staticfiles %}
+{% load grupos_tags %}
+
+{% block title %}
+    {{ grupo.nome }} - AcadSocial
+{% endblock %}
+
+{% block head %}
+    <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('textarea').autosize();
+
+            $(document).scrollTop($.cookie("scroll"));
+
+            $(window).on("scroll", function() {
+                $.cookie("scroll", $(document).scrollTop());
+            });
+
+        });
+
+        sendCommentForm = function(elID, pID) {
+            $(elID).keypress(function(e) {
+                if(e.which == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    $(pID).click();
+                }
+            });
+        };
+
+        setInterval(function() {
+                $.ajax({
+                    url: '{% url 'index' %}',
+                    success: function(data) {
+                        var qtd = $('#qtdComments', data).html();
+                        $('#qtdComments').html(qtd);
+                    }
+                });
+            }, 2500);
+
+        deleteElement = function(elID, formID) {
+            $(elID).hide();
+            $(formID)[0].submit();
+        }
+    </script>
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'grupo-index' grupo.gid %}">
+        <i class="fa fa-group"></i> {{ grupo.nome }}
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'eventos-lista' grupo.gid %}">
+        <i class="fa fa-calendar"></i> Eventos
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-sobre' grupo.gid %}">
+        <i class="fa fa-info-circle"></i> Sobre o Grupo
+    </a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
 
 {% block body %}
-    {% if membro %}
-        Você é um membro!
-    {% else %}
-        Você não é um membro! <a href="{% url 'grupo-entrar' grupo.gid %}">Entrar no grupo.</a>
-    {% endif %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-group"></span> {{ grupo.nome }}
+                </div>
+                <div class="panel-body text-center">
+                    <a href="{% url 'grupo-index' grupo.gid %}" class="feed-link">
+                        <span class="profile-image-big fa fa-group" style="font-size:90pt;"></span>
+                    </a>
+                    <br>
+                    <a href="" class="feed-link">
+                        {% if usuarios|length == 1 %}
+                            1 membro
+                        {% else %}
+                            {{ usuarios|length }} membros
+                        {% endif %}
+                    </a>
+                    <br>
+                    <span class="feed-datetime">
+                        {% if qtd_postagens == 0 %}
+                            Não há postagens
+                        {% elif qtd_postagens == 1 %}
+                            1 postagem
+                        {% else %}
+                            {{ qtd_postagens }} postagens
+                        {% endif %}
+                    </span>
+                </div>
+                {% if membro and membro.is_admin %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você administra este grupo!
+                    </div>
+                {% elif membro %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você é membro deste grupo!
+                    </div>
+                {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button class="panel-footer text-center" style="margin-top:0;" name="entrarGrupo">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Participar
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            {% if membro and not membro.is_admin %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        <button class="panel-heading text-center" style="width:100%;" name="sairGrupo">
+                            <span class="glyphicon glyphicon-remove"></span> Sair do Grupo
+                        </button>
+                    </div>
+                </form>
+            {% elif membro.is_admin %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        <button class="panel-heading text-center" style="width:100%;" name="editarGrupo">
+                            <span class="glyphicon glyphicon-edit"></span> Editar Grupo
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-user"></span> Membros
+                </div>
+                <ul class="panel-list panel-list-friends">
+                    {% for u_membro, membro_foto in usuarios.iteritems %}
+                        <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
+                            <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
+                            &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
+                        </a></li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'grupo-sobre' grupo.gid %}" class="panel-footer text-center">Ver Todos</a>
+            </div>
+            {% if membro %}
+                <div class="panel panel-default panel-bordeless btn-panel">
+                    <button class="panel-heading text-center" style="width:100%;" onclick="location.href='{% url 'grupo-convidar' grupo.gid %}'">
+                        <span class="glyphicon glyphicon-plus"></span> Convidar
+                    </button>
+                </div>
+            {% endif %}
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-paint-brush"></span> Interesses Relacionados
+                </div>
+                <ul class="panel-list">
+                    {% if interesses|length == 0 %}
+                        <li class="not-link-list text-center">Não há interesses relacionados a este grupo!</li>
+                    {% else %}
+                        {% for interesse in interesses|slice:':10' %}
+                            <li class="truncate"><a href="{% url 'interesse-index' interesse.interesse.iid %}">{{ interesse.interesse }}</a></li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+                {% if membro.is_admin %}
+                    <a href="{% url 'grupo-interesses' grupo.gid %}" class="panel-footer text-center">Administrar Interesses</a>
+                {% else %}
+                    <a href="{% url 'grupo-sobre' grupo.gid %}" class="panel-footer text-center">Ver Todos</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-xs-8">
+            {% if membro %}
+                <div class="col-xs-8 no-right-padding no-left-padding">
+                     <form method="POST">
+                         {% csrf_token %}
+                         <input type="text" style="display: none" name="criarPostagem" />
+                         <div class="panel panel-default panel-bordeless feed">
+                             <div class="panel-heading">
+                                 <span class="glyphicon glyphicon-edit"></span> Realizar Postagem
+                             </div>
+                             <div class="panel-body form-panel-focus" style="padding-top:9px;">
+                                 <span class="input-group">
+                                     <span class="input-group-addon" style="color: #7C0B1F;background: #fafafa;">
+                                         <span class="glyphicon glyphicon-edit"></span>
+                                     </span>
+                                     {{ postagem_form.titulo }}
+                                 </span>
+                                 <div class="panel-heading form-panel-focus no-left-padding no-right-padding">
+                                    {{ postagem_form.conteudo }}
+                                 </div>
+                             </div>
+                             <button class="panel-footer" type="submit">Postar</button>
+                         </div>
+                     </form>
+                </div>
+                <div class="col-xs-4">
+                    <div class="panel panel-default panel-bordeless">
+                        <div class="panel-heading truncate text-center">
+                            <a href=""><span class="fa fa-group"></span> {{ grupo.nome }}</a>
+                        </div>
+                        <div class="panel-body text-center truncate">
+                            <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}"
+                               class="feed-link">
+                                <img src="/media/{{ foto.thumbnail_home }}" class="profile-image">
+                                <br>
+                                {{ user.full_name }}
+                            </a>
+                            <br>
+                            <span class="feed-datetime">Agora</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <span id="feed">
+                {% for postagem in postagens|slice:':10' %}
+                    <span id="postagem-{{ postagem.pid }}">
+                        <div class="col-xs-8 no-right-padding no-left-padding">
+                            <div class="panel panel-default panel-bordeless feed">
+                                <div class="panel-heading truncate">
+                                    <div class="col-xs-11 no-padding">
+                                        <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}">
+                                            <span class="glyphicon glyphicon-edit"></span> {{ postagem.titulo }}
+                                        </a>
+                                    </div>
+                                    <div class="col-xs-1 no-padding">
+                                        {% if postagem.criado_por == user or membro.is_admin %}
+                                            <form method="post" action="" id="postagemForm-{{ postagem.pid }}">
+                                                {% csrf_token %}
+                                                <button class="close" type="button"
+                                                        style="font-size:11pt;font-family: Open Sans, sans-serif;"
+                                                        onclick="deleteElement('#postagem-{{ postagem.pid }}',
+                                                                '#postagemForm-{{ postagem.pid }}')">×
+                                                </button>
+                                                <input type="text" name="deletePost" value="{{ postagem.pid }}"
+                                                       style="display: none;">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="panel-body text-left truncate-line feed-group">
+                                    {{ postagem.conteudo }}
+                                </div>
+                                <div class="panel-footer text-center">
+                                    {% if membro %}
+                                        <form method="post" action="" id="commentForm-{{ postagem.pid }}">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <textarea name="comentario" class="comment-bar form-control comment-bar-focus"
+                                                          id="commentTA-{{ postagem.pid }}" maxlength="256"
+                                                          placeholder="Comentar..."
+                                                          onkeypress="sendCommentForm('#commentTA-{{ postagem.pid }}', '#submitComment-{{ postagem.pid }}')"></textarea>
+                                                <button name="comentarPostagem" value="{{ postagem.pid }}" type="submit" style="display: none;"
+                                                        id="submitComment-{{ postagem.pid }}"></button>
+                                            </div>
+                                        </form>
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </div>
+                                <span id="commentSession-{{ postagem.pid }}">
+                                    {% for comentario in comentario_postagem|first_five:postagem.pid %}
+                                        <span id="comment-{{ postagem.pid }}-{{ comentario.cid }}">
+                                            <div class="panel-body comment-start" style="padding:10px;">
+                                                <div class="col-xs-1" style="padding:0;">
+                                                    <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
+                                                        <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}"
+                                                             class="profile-image"></a>
+                                                </div>
+                                                <div class="col-xs-10 comment-user no-padding" style="padding-left:20px;">
+                                                    &nbsp
+                                                    <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
+                                                        {{ comentario.criado_por.full_name }}
+                                                    </a>
+                                                    <br>
+
+                                                    <div class="col-xs-offset-0 truncate-line" style="padding-left:15px;">
+                                                        {{ comentario.conteudo }}
+                                                    </div>
+                                                    <div class="col-xs-12 text-right no-padding comment-datetime">
+                                                        <br>
+                                                        {{ comentario.data_criacao|date:"d/m/Y - H:i:s" }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-1 no-padding" style="margin-top:-5px;">
+                                                    {% if comentario.criado_por == user or postagem.criado_por == user or membro.is_admin %}
+                                                        <form method="post" action=""
+                                                              id="commentForm-{{ postagem.pid }}-{{ comentario.cid }}">
+                                                            {% csrf_token %}
+                                                            <button class="close" type="button" style="font-size:11pt;"
+                                                                    onclick="deleteElement('#comment-{{ postagem.pid }}-{{ comentario.cid }}',
+                                                                            '#commentForm-{{ postagem.pid }}-{{ comentario.cid }}')">×</button>
+                                                            <input type="text" name="deleteComment"
+                                                                   value="{{ postagem.pid }}-{{ comentario.cid }}"
+                                                                   style="display: none;">
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </span>
+                                    {% endfor %}
+                                    {% if qtd_comentarios|item:postagem.pid > 0 %}
+                                        <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}"
+                                           class="panel-footer btn btn-default" style="border:0;margin-top:4px;">
+                                            <span class="fa fa-comments"></span><span
+                                                id="qtdComments"> {{ qtd_comentarios|item:postagem.pid }}</span>
+                                            {% if qtd_comentarios|item:postagem.pid == 1 %}Comentário{% else %}
+                                                Comentários{% endif %}
+                                        </a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel panel-default panel-bordeless">
+                                <div class="panel-heading truncate text-center">
+                                    <a href="{% url 'grupo-index' postagem.grupo.gid %}"><span
+                                            class="fa fa-group"></span> {{ postagem.grupo.nome }}</a>
+                                </div>
+                                <div class="panel-body text-center truncate">
+                                    <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}"
+                                       class="feed-link">
+                                        <img src="/media/{{ fotos_postagens|item:postagem.criado_por }}"
+                                             class="profile-image">
+                                        <br>
+                                        {{ postagem.criado_por.full_name }}
+                                    </a>
+                                    <br>
+                                    <span class="feed-datetime">{{ postagem.data_criacao|date:"d/m/Y - H:i:s" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                {% endfor %}
+            </span>
+            <div class="col-xs-12 no-left-padding">
+                <div class="panel panel-default text-center panel-bordeless" style="background:#f9f9f9;">
+                    <ul class="panel-body pagination" style="margin-top:0;margin-bottom:0;padding:15px;">
+                        {% if not postagens.has_previous %}
+                            <li class="disabled" ><a href=""><<</a></li>
+                        {% else %}
+                            <li><a href="?pg={{ postagens.previous_page_number }}"><<</a></li>
+                        {% endif %}
+                            <li class="disabled"><a href="">Página {{ postagens.number }} de {{ postagens.paginator.num_pages }}</a></li>
+                        {% if not postagens.has_next %}
+                            <li class="disabled" ><a href="">>></a></li>
+                        {% else %}
+                            <li><a href="?pg={{ postagens.next_page_number }}">>></a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

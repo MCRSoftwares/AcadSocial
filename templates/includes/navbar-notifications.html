@@ -7,8 +7,23 @@
         $(id).val(type + '-' + convite);
         $(form)[0].submit();
     }
+
+    setInterval(function() {
+        $.ajax({
+            url: '',
+            success: function(data) {
+                var qtdG = $('#convitesGrupos', data).html();
+                $('#convitesGrupos').html(qtdG);
+                var qtdA = $('#convitesAmigos', data).html();
+                $('#convitesAmigos').html(qtdA);
+                var qtdE = $('#convitesEventos', data).html();
+                $('#convitesEventos').html(qtdE);
+            }
+        });
+    }, 2500);
+
 </script>
-<li class="dropdown">
+<li class="dropdown" id="convitesGrupos">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <span class="fa fa-group"></span>
         <span class="notifications-icon">{{ convites_grupos|length }}</span>
@@ -52,7 +67,7 @@
         <a href="{% url 'convites' %}" class="panel-footer text-center" style="margin-top:0;">Ver todos os Convites</a>
     </div>
 </li>
-<li class="dropdown" style="margin-left:-15px;">
+<li class="dropdown" style="margin-left:-15px;" id="convitesEventos">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <span class="fa fa-calendar"></span>
         <span class="notifications-icon">{{ convites_eventos|length }}</span>
@@ -96,7 +111,7 @@
         <a href="{% url 'convites' %}" class="panel-footer text-center" style="margin-top:0;">Ver todos os Convites</a>
     </div>
 </li>
-<li class="dropdown" style="margin-left:-15px;">
+<li class="dropdown" style="margin-left:-15px;" id="convitesAmigos">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <span class="glyphicon glyphicon-plus"></span>
         <span class="notifications-icon">{{ convites_amigos|length }}</span>

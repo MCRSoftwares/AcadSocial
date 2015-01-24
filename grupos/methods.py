@@ -123,7 +123,7 @@ def convites_eventos_post(request, html_id):
                 participa.ativo = True
                 participa.save()
 
-            except MembroModel.DoesNotExist:
+            except ParticipaEventoModel.DoesNotExist:
                 participa = ParticipaEventoModel()
                 participa.usuario = convite_evento.convidado
                 participa.evento = convite_evento.evento

@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 class GrupoAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do grupo'), {'fields': ('nome', 'descricao',)}),
+        (_(u'Informações do grupo'), {'fields': ('nome', 'descricao', 'ativo')}),
         (_(u'Criação'), {'fields': ('criado_por', 'data_criacao')}),
     )
 
@@ -37,18 +37,18 @@ class GrupoAdmin(admin.ModelAdmin):
 class EventoAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do evento'), {'fields': ('titulo', 'descricao', 'data_evento', 'grupo')}),
+        (_(u'Informações do evento'), {'fields': ('titulo', 'descricao', 'data_evento', 'grupo', 'local_evento', 'ativo')}),
         (_(u'Criação'), {'fields': ('criado_por', 'data_criacao')}),
     )
 
-    list_display = ('titulo', 'descricao', 'criado_por', 'data_criacao')
-    search_fields = ('criado_por', 'titulo', 'descricao',)
+    list_display = ('titulo', 'descricao', 'criado_por',  'local_evento', 'data_criacao')
+    search_fields = ('criado_por', 'titulo',  'local_evento', 'descricao',)
 
 
 class InteresseAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do interesse'), {'fields': ('interesse', 'criado_por', 'data_criacao',)}),
+        (_(u'Informações do interesse'), {'fields': ('interesse', 'criado_por', 'data_criacao', 'ativo')}),
     )
 
     list_display = ('interesse', 'criado_por', 'data_criacao',)
@@ -58,7 +58,7 @@ class InteresseAdmin(admin.ModelAdmin):
 class MembroAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações do membro'), {'fields': ('usuario', 'grupo', 'data_entrada', 'is_admin')}),
+        (_(u'Informações do membro'), {'fields': ('usuario', 'grupo', 'data_entrada', 'is_admin', 'ativo')}),
     )
 
     list_display = ('usuario', 'grupo', 'data_entrada', 'is_admin',)
@@ -68,7 +68,7 @@ class MembroAdmin(admin.ModelAdmin):
 class ParticipaEventoAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações da relação'), {'fields': ('usuario', 'evento', 'data_participacao')}),
+        (_(u'Informações da relação'), {'fields': ('usuario', 'evento', 'ativo', 'data_participacao')}),
     )
 
     list_display = ('evento', 'usuario', 'data_participacao',)
@@ -88,7 +88,7 @@ class UsuarioInteresseAdmin(admin.ModelAdmin):
 class GrupoInteresseAdmin(admin.ModelAdmin):
 
     fieldsets = (
-        (_(u'Informações da relação'), {'fields': ('grupo', 'interesse', 'data_criacao')}),
+        (_(u'Informações da relação'), {'fields': ('grupo', 'interesse', 'data_criacao', 'ativo')}),
     )
 
     list_display = ('interesse', 'grupo', 'data_criacao',)

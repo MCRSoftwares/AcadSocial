@@ -1,0 +1,150 @@
+{% extends 'base-logado-topo-vazio.html' %}
+{% load grupos_tags %}
+
+{% block title %}
+    Eventos - {{ grupo.nome }} - AcadSocial
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-index' grupo.gid %}">
+        <i class="fa fa-group"></i> {{ grupo.nome }}
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'eventos-lista' grupo.gid %}">
+        <i class="fa fa-calendar"></i> Eventos
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-sobre' grupo.gid %}">
+        <i class="fa fa-info-circle"></i> Sobre o Grupo
+    </a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-group"></span> {{ grupo.nome }}
+                </div>
+                <div class="panel-body text-center">
+                    <a href="{% url 'grupo-index' grupo.gid %}" class="feed-link">
+                        <span class="profile-image-big fa fa-group" style="font-size:90pt;"></span>
+                    </a>
+                    <br>
+                    <a href="{% url 'grupo-sobre' grupo.gid %}" class="feed-link">
+                        {% if qtd_membros == 1 %}
+                            1 membro
+                        {% else %}
+                            {{ qtd_membros }} membros
+                        {% endif %}
+                    </a>
+                    <br>
+                    <span class="feed-datetime">
+                        {% if qtd_eventos == 0 %}
+                            Não há eventos neste grupo
+                        {% elif qtd_eventos == 1 %}
+                            1 evento ativo
+                        {% else %}
+                            {{ qtd_eventos }} eventos ativos
+                        {% endif %}
+                    </span>
+                </div>
+                {% if membro and membro.is_admin %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você administra este grupo!
+                    </div>
+                {% elif membro %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você é membro deste grupo!
+                    </div>
+                {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button class="panel-footer text-center" style="margin-top:0;" name="entrarGrupo">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Participar
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            {% if membro  %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        <button class="panel-heading text-center" style="width:100%;" name="criarEvento">
+                            <span class="fa fa-calendar"></span> &nbsp;Criar Evento
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+        <div class="col-xs-8">
+            {% for evento in eventos %}
+                <div class="col-xs-7 no-right-padding no-left-padding">
+                    <div class="panel panel-default panel-bordeless feed">
+                        <div class="panel-heading truncate">
+                            <a href="{% url 'grupo-evento' grupo.gid evento.eid %}"><span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}</a>
+                        </div>
+                        <div class="panel-body text-left truncate-line feed-group">
+                            {{ evento.descricao }}
+                        </div>
+                        <div class="panel-heading perfil-about-heading" style="background: #f9f9f9;">
+                            <span class="fa fa-info-circle"></span> &nbsp;Informações do Evento:
+                        </div>
+                        <div class="panel-heading perfil-about-body">
+                            <span class="fa fa-clock-o"></span> &nbsp;{{ evento.data_evento|date:"d/m/Y - H:i" }}
+                        </div>
+                        <div class="panel-heading perfil-about-body">
+                            <span class="fa fa-globe"></span> &nbsp;{{ evento.local_evento }}
+                        </div>
+                        <div class="panel-footer" style="margin:0;"></div>
+
+                    </div>
+                </div>
+                <div class="col-xs-5">
+                    <div class="panel panel-default panel-bordeless">
+                        <div class="panel-heading text-center truncate">
+                            <span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}
+                        </div>
+                        <div class="panel-body text-center truncate">
+                            <a href="" class="feed-link">
+                                <span class="profile-image fa fa-calendar" style="font-size:60pt;"></span>
+                            </a>
+                            <br>
+                            <span class="feed-datetime">
+                                Criado por:
+                            </span>
+                            <br>
+                            <span class="feed-link">
+                                <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}">
+                                    {{ evento.criado_por.full_name }}
+                                </a>
+                            </span>
+                        </div>
+                        {% if participando|item:evento %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button class="panel-footer" name="sairEvento" value="{{ evento.eid }}">
+                                    Sair do Evento
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button class="panel-footer" name="participarEvento" value="{{ evento.eid }}">
+                                    Participar
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

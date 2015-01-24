@@ -1,0 +1,141 @@
+{% extends 'base-logado-topo-vazio.html' %}
+{% load staticfiles %}
+{% load grupos_tags %}
+
+{% block title %}
+    {{ grupo.nome }} - AcadSocial
+{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-index' grupo.gid %}">
+        <i class="fa fa-group"></i> {{ grupo.nome }}
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'eventos-lista' grupo.gid %}">
+        <i class="fa fa-calendar"></i> Eventos
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'grupo-sobre' grupo.gid %}">
+        <i class="fa fa-info-circle"></i> Sobre o Grupo
+    </a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-group"></span> {{ grupo.nome }}
+                </div>
+                <div class="panel-body text-center">
+                    <a href="{% url 'grupo-index' grupo.gid %}" class="feed-link">
+                        <span class="profile-image-big fa fa-group" style="font-size:90pt;"></span>
+                    </a>
+                    <br>
+                    <div class="feed-datetime" style="margin-top:10px;">
+                        Administrado por:
+                    </div>
+                    <a href="" class="feed-link">
+                        {{ grupo.criado_por.full_name }}
+                    </a>
+                    <br>
+                </div>
+                {% if user in usuarios %}
+                    <div class="panel-footer text-center" style="margin-top:0;">
+                        Você é membro deste grupo!
+                    </div>
+                {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button class="panel-footer text-center" style="margin-top:0;" name="entrarGrupo">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Participar
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            {% if membro and not membro.is_admin %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        <button class="panel-heading text-center" style="width:100%;" name="sairGrupo">
+                            <span class="glyphicon glyphicon-remove"></span> Sair do Grupo
+                        </button>
+                    </div>
+                </form>
+            {% elif membro.is_admin %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="panel panel-default panel-bordeless btn-panel">
+                        <button class="panel-heading text-center" style="width:100%;" name="editarGrupo">
+                            <span class="glyphicon glyphicon-edit"></span> Editar Grupo
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-paint-brush"></span> Interesses Relacionados
+                </div>
+                <ul class="panel-list">
+                    {% if interesses|length == 0 %}
+                        <li class="not-link-list text-center">Não há interesses relacionados a este grupo!</li>
+                    {% else %}
+                        {% for interesse in interesses|slice:':10' %}
+                            <li class="truncate"><a href="{% url 'interesse-index' interesse.interesse.iid %}">{{ interesse.interesse }}</a></li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+                {% if membro.is_admin %}
+                    <a href="{% url 'grupo-interesses' grupo.gid %}" class="panel-footer text-center">Administrar Interesses</a>
+                {% else %}
+                    <div class="panel-footer">
+
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-user"></span> Descrição do Grupo
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-body" style="padding:15px;">
+                        <span class="glyphicon glyphicon-edit"></span> &nbsp;{{ grupo.descricao }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-user"></span> Membros
+                    </div>
+                </div>
+            </div>
+            {% for u_membro, membro_foto in usuarios.iteritems %}
+                <div class="col-xs-6" style="margin-top:-5px;">
+                    <div class="panel panel-default panel-bordeless">
+                        <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
+                            <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
+                                &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

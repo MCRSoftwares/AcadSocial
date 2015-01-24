@@ -1,0 +1,175 @@
+{% extends 'base-logado-topo-vazio.html' %}
+{% load grupos_tags %}
+
+{% block title %}
+    Usuarios - AcadSocial
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'grupo-index' grupo.gid %}">
+        <i class="fa fa-group"></i> {{ grupo.nome }}
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'eventos-lista' grupo.gid %}">
+        <i class="fa fa-calendar"></i> Eventos
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-sobre' grupo.gid %}">
+        <i class="fa fa-info-circle"></i> Sobre o Grupo
+    </a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#usuarioQry").keyup(function(e) {
+                if (e.which != 0) {
+                    var usuario = $('#usuarioQry');
+
+                    $.ajax({
+                        url: '{% url 'grupo-convidar' grupo.gid %}?aq=' + usuario.val(),
+                        success: function(data) {
+                            var qtd = $('#pesquisaUsuario', data).html();
+                            $('#pesquisaUsuario').html(qtd);
+                        }
+                    });
+
+                }
+            });
+        });
+
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4 no-right-padding">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-envelope"></span> Convidados
+                </div>
+                <ul class="panel-list panel-list-friends">
+                    {% if list_convidados|length == 0 %}
+                        <li class="not-link-list text-center">Não há usuários convidados!</li>
+                    {% else %}
+                        {% for convidado, convidado_foto in list_convidados.iteritems %}
+                            <li>
+                                <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                    <img style="border-right:3px solid #e7e7e7;" src="/media/{{ convidado_foto.thumbnail }}">
+                                    &nbsp;&nbsp;{{ convidado.full_name|capfirst }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+                <div class="text-center panel-footer">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading">
+                        <div class="search-bar" style="margin-top:0;width:100%">
+                            <form method="get" action="">
+                                <span class="input-group">
+                                    {{ pesquisa_usuario_form.aq }}
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span id="pesquisaUsuario">
+                {% if data|length <= 1 %}
+                    <div class="col-xs-12">
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center truncate-line">
+                                Não foi possível encontrar nenhum usuario relacionado à "{{ data_list }}"
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% for usuario, usuario_foto in usuarios.iteritems %}
+                        {% if usuario != user and usuario not in membros %}
+                            <div class="col-xs-6">
+                                <div class="panel panel-default panel-bordeless">
+                                    <div class="panel-heading text-center truncate">
+                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}">{{ usuario.full_name|capfirst }}</a>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}" class="feed-link">
+                                            <img src="/media/{{ usuario_foto.thumbnail_perfil }}" class="profile-image-big">
+                                        </a>
+                                        <br>
+                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}" class="feed-link">{{ usuario.full_name|capfirst }}</a>
+                                        <br>
+                                    </div>
+
+                                    {% if convidados|get_convite:usuario %}
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <button class="panel-footer" type="submit" name="cancelUsuario" value="{{ usuario.uid }}">Cancelar Convite</button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <button class="panel-footer" type="submit" name="inviteUsuario" value="{{ usuario.uid }}">Convidar</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </span>
+            <div class="col-xs-12">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-comments"></span> Meus Amigos
+                    </div>
+                </div>
+            </div>
+            {% for u_amigo, amigo_foto in usuario_amigos.iteritems %}
+                <div class="col-xs-7" style="margin-top:-5px;">
+                    <div class="panel panel-default panel-bordeless">
+                        <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
+                            <li><a href="{% url 'perfil' u_amigo.amigo.universidade.sigla u_amigo.amigo.perfil_link %}" style="padding-left:0;">
+                                <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
+                                &nbsp;&nbsp;{{ u_amigo.amigo.usuario.full_name|capfirst }}
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xs-5">
+                    <div class="panel panel-default panel-bordeless btn-panel" style="margin-top:-6px;">
+                        {% if u_amigo.amigo.usuario in membros %}
+                             <div class="panel-heading text-center" style="width:100%;"><span class="fa fa-user"></span> &nbsp;Membro</div>
+                        {% elif convidados|get_convite:u_amigo.amigo.usuario %}
+                            <form method="POST">
+                            {% csrf_token %}
+                                <button class="panel-heading text-center" name="cancelUsuario" value="{{ u_amigo.amigo.usuario.uid }}" style="width:100%;">
+                                    <span class="fa fa-envelope"></span> &nbsp;Cancelar Convite
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button class="panel-heading text-center" name="inviteUsuario" value="{{ u_amigo.amigo.usuario.uid }}" style="width:100%;">
+                                    <span class="fa fa-envelope"></span> &nbsp;Convidar Usuário
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
