@@ -1,10 +1,153 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>AcadSocial - Contato</title>
 
-</body>
-</html>
+        <!-- Bootstrap -->
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="/static/jquery/1.11.1/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript">
+
+		$('#nomeInput').on('keypress click', function() {
+               $('#nomeWError').hide();
+      	});
+
+
+		$('#emailInput').on('keypress click', function() {
+               $('#emailWError').hide();
+
+		});
+
+		$('#assuntoInput').on ('keypress click', function() {
+				$('#assuntoWError').hide();
+
+		});
+
+
+		$('#descricaoInput').on('keypress click', function() {
+               $('#emailWError').hide();
+
+		});
+
+
+
+
+
+    </script>
+
+    </head>
+    <body >
+
+		 <div class="navbar navbar-default navbar-static-top">
+
+            <div class="container">
+
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">Acad<b>Social</b></a>
+                </div>
+
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-left">
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/conta/cadastro/">Cadastre-se</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
+                            <div class="dropdown-menu login-dropdown panel panel-default">
+                                <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
+                                    <input type='hidden' name='csrfmiddlewaretoken' value='6Xm1D4QxuyCdHTORxyFoVME5PYK1zBTz' />
+                                    <div class="panel-body" style="margin-top:-10px;">
+                                        <fieldset>
+                                            <legend><h4>Entrar no AcadSocial</h4></legend>
+
+                                            <div class="form-group">
+                                                <div class="col-xs-12">
+                                                    <input class="form-control" id="id_email" maxlength="128" name="email" placeholder="E-mail" type="email" />
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="col-xs-12">
+                                                    <input class="form-control" id="id_password" maxlength="16" name="password" placeholder="Senha" type="password" />
+                                                </div>
+                                            </div>
+
+                                            <a href="/conta/senha/reset/" ><span class="glyphicon glyphicon-remove-circle"></span> Esqueci minha senha</a>
+                                        </fieldset>
+                                    </div>
+                                    <button class="btn btn-primary panel-footer" name='loginForm' style="width:100%;margin-bottom:-5px">Entrar</button>
+                                </form>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+
+		<div class="text-center titulobug">
+			<h1><b><font color = "#7C0B1F">Contato</font></b><h1>
+			<i class="glyphicon glyphicon-envelope"> </i>
+		</div>
+		<br><br>
+
+
+		<div class="container formarea">
+
+			<div align="center" id="nomeInput" >
+			<h5><b>Nome</b></h5>
+			<input type="text" class="form-control textinput" placeholder="Nome">
+
+			</div>
+
+			<div align="center" id="emailInput"  >
+			<h5><b>Email</b></h5>
+			<span id="helpBlock" class="help-block">É importante colocar E-mail, para podermos responder sua mensagem</span>
+			<input type="text" class="form-control textinput" placeholder="Email">
+			</div>
+
+
+			<div align="center" id="assuntoInput"  >
+			<h5><b>Assunto</b></h5>
+			<input type="text" class="form-control textinput" placeholder="Assunto">
+			</div>
+
+
+
+
+			<div align="center" id="descricaoInput" >
+			<h5><b>Menssagem</b><h5>
+			<textarea class="form-control text" rows="3"></textarea>
+
+			</div>
+
+
+
+
+		</div>
+		<div align= "center">
+		 <button type="submit" class="panel-footer btn btn-outline-inverse2" name="BugForm" style="width:50%;">Enviar</button>
+		</div>
+	</body>
