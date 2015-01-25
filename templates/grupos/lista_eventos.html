@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head %}
+
 {% endblock %}
 
 {% block top-navbar-right %}
@@ -64,13 +65,6 @@
                     <div class="panel-footer text-center" style="margin-top:0;">
                         Você é membro deste grupo!
                     </div>
-                {% else %}
-                    <form method="POST">
-                        {% csrf_token %}
-                        <button class="panel-footer text-center" style="margin-top:0;" name="entrarGrupo">
-                            <span class="glyphicon glyphicon-plus-sign"></span> Participar
-                        </button>
-                    </form>
                 {% endif %}
             </div>
             {% if membro  %}
@@ -110,10 +104,10 @@
                 <div class="col-xs-5">
                     <div class="panel panel-default panel-bordeless">
                         <div class="panel-heading text-center truncate">
-                            <span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}
+                            <a href="{% url 'grupo-evento' grupo.gid evento.eid %}"><span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}</a>
                         </div>
                         <div class="panel-body text-center truncate">
-                            <a href="" class="feed-link">
+                            <a href="{% url 'grupo-evento' grupo.gid evento.eid %}" class="feed-link">
                                 <span class="profile-image fa fa-calendar" style="font-size:60pt;"></span>
                             </a>
                             <br>
@@ -145,6 +139,23 @@
                     </div>
                 </div>
             {% endfor %}
+            <div class="col-xs-12 no-left-padding">
+                <div class="panel panel-default text-center panel-bordeless" style="background:#f9f9f9;">
+                    <ul class="panel-body pagination" style="margin-top:0;margin-bottom:0;padding:15px;">
+                        {% if not eventos.has_previous %}
+                            <li class="disabled" ><a href=""><<</a></li>
+                        {% else %}
+                            <li><a href="?pg={{ eventos.previous_page_number }}"><<</a></li>
+                        {% endif %}
+                            <li class="disabled"><a href="">Página {{ eventos.number }} de {{ eventos.paginator.num_pages }}</a></li>
+                        {% if not eventos.has_next %}
+                            <li class="disabled" ><a href="">>></a></li>
+                        {% else %}
+                            <li><a href="?pg={{ eventos.next_page_number }}">>></a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
