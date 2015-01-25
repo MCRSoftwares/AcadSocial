@@ -1,0 +1,126 @@
+{% extends 'base-logado-topo-vazio.html' %}
+{% load grupos_tags %}
+
+{% block title %}
+    Convidar - {{ grupo.nome }} - AcadSocial
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'grupo-index' grupo.gid %}">
+        <i class="fa fa-group"></i> {{ grupo.nome }}
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'eventos-lista' grupo.gid %}">
+        <i class="fa fa-calendar"></i> Eventos
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-sobre' grupo.gid %}">
+        <i class="fa fa-info-circle"></i> Sobre o Grupo
+    </a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#usuarioQry").keyup(function(e) {
+                if (e.which != 0) {
+                    var usuario = $('#usuarioQry');
+
+                    $.ajax({
+                        url: '{% url 'grupo-convidar' grupo.gid %}?aq=' + usuario.val(),
+                        success: function(data) {
+                            var qtd = $('#pesquisaUsuario', data).html();
+                            $('#pesquisaUsuario').html(qtd);
+                        }
+                    });
+
+                }
+            });
+        });
+
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4 no-right-padding">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-envelope"></span> Convidados
+                </div>
+                <ul class="panel-list panel-list-friends">
+                    {% if list_convidados|length == 0 %}
+                        <li class="not-link-list text-center">Não há usuários convidados!</li>
+                    {% else %}
+                        {% for convidado, convidado_foto in list_convidados.iteritems %}
+                            <li>
+                                <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                    <img style="border-right:3px solid #e7e7e7;" src="/media/{{ convidado_foto.thumbnail }}">
+                                    &nbsp;&nbsp;{{ convidado.full_name|capfirst }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+                <div class="text-center panel-footer">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="col-xs-7">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-comments"></span> Membros do Grupo
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-5">
+                <div class="panel panel-default panel-bordeless btn-panel">
+                     <form method="POST">
+                         {% csrf_token %}
+                         <button class="panel-heading text-center" name="inviteAll" style="width:100%;">
+                             <span class="fa fa-envelope"></span> &nbsp;Convidar Todos
+                         </button>
+                     </form>
+                </div>
+            </div>
+            {% for membro, membro_foto in membros.iteritems %}
+                <div class="col-xs-7" style="margin-top:-5px;">
+                    <div class="panel panel-default panel-bordeless">
+                        <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
+                            <li><a href="{% url 'perfil' membro.perfilmodel.universidade.sigla membro.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
+                                &nbsp;&nbsp;{{ membro.full_name|capfirst }}
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xs-5">
+                    <div class="panel panel-default panel-bordeless btn-panel" style="margin-top:-6px;">
+                        {% if membro in participante %}
+                             <div class="panel-heading text-center" style="width:100%;"><span class="fa fa-user"></span> &nbsp;Participará</div>
+                        {% elif convidados|get_convite:membro %}
+                            <form method="POST">
+                            {% csrf_token %}
+                                <button class="panel-heading text-center" name="cancelUsuario" value="{{ membro.uid }}" style="width:100%;">
+                                    <span class="fa fa-envelope"></span> &nbsp;Cancelar Convite
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button class="panel-heading text-center" name="inviteUsuario" value="{{ membro.uid }}" style="width:100%;">
+                                    <span class="fa fa-envelope"></span> &nbsp;Convidar Usuário
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

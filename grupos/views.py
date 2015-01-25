@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v005a
+Versão do Código: 01v008a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -993,6 +993,112 @@ def view_evento_grupo(request, gid, eid):
 def view_postagem_evento(request, gid, eid, pid):
     args = {}
 
+    try:
+        grupo = GrupoModel.objects.get(gid=gid)
+        MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
+
+    except GrupoModel.DoesNotExist:
+        return HttpResponseRedirect('/')
+
+    except MembroModel.DoesNotExist:
+        return HttpResponseRedirect('/grupo/' + gid + '/')
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    postagem = get_object_or_404(PostagemEventoModel, grupo__gid=gid, pid=pid, ativo=True)
+    comentarios = ComentarioEventoModel.objects.filter(postagem=postagem,
+                                                       ativo=True).order_by('-data_criacao')
+
+    foto_postagem = ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                            perfil__usuario=postagem.criado_por).thumbnail_perfil
+    perfil_postagem = PerfilModel.objects.get(usuario=postagem.criado_por)
+
+    fotos_comentarios = {}
+    perfis_comentarios = {}
+
+    qtd_comentarios = len(comentarios)
+    paginas = Paginator(comentarios, 10)
+
+    for comentario in comentarios:
+        if comentario.criado_por not in fotos_comentarios:
+            fotos_comentarios[comentario.criado_por] = \
+                ImagemModel.objects.get(is_profile_image=True, is_active=True,
+                                        perfil__usuario=comentario.criado_por).thumbnail
+
+        if comentario.criado_por not in perfis_comentarios:
+            perfis_comentarios[comentario.criado_por] = PerfilModel.objects.get(usuario=comentario.criado_por)
+
+    if request.method == 'GET':
+        pagina = request.GET.get('pg')
+
+        try:
+            comentarios = paginas.page(pagina)
+        except PageNotAnInteger:
+            comentarios = paginas.page(1)
+        except EmptyPage:
+            comentarios = paginas.page(paginas.num_pages)
+
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'deleteComment' in request.POST:
+            cid = int(request.POST['deleteComment'])
+
+            try:
+                custom_query = Q(criado_por=request.user) | Q(criado_por=postagem.criado_por)
+                comentario = ComentarioEventoModel.objects.get(Q(postagem__pid=pid), Q(cid=cid), custom_query)
+                comentario.ativo = False
+                comentario.save()
+
+            except ComentarioGrupoModel.DoesNotExist:
+                pass
+
+        if 'deletePost' in request.POST:
+
+            try:
+                postagem.ativo = False
+                postagem.save()
+
+                return HttpResponseRedirect('/grupo/' + gid + '/evento/' + eid)
+
+            except PostagemEventoModel.DoesNotExist:
+                pass
+
+        if 'comment' in request.POST:
+            comentario_form = ComentarioEventoForm(data=request.POST)
+
+            if comentario_form.is_valid():
+                comentario = comentario_form.save(commit=False)
+
+                comentario.criado_por = request.user
+                comentario.conteudo = request.POST['comentario']
+                comentario.postagem = postagem
+                comentario.data_criacao = timezone.now()
+                comentario.save()
+
+        return HttpResponseRedirect('/grupo/' + gid + '/evento/' + eid + '/post/' + pid)
+
+    else:
+        comentario_form = ComentarioGrupoForm()
+
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['qtd_comentarios'] = qtd_comentarios
+    args['comentario_form'] = comentario_form
+    args['comentarios'] = comentarios
+    args['postagem'] = postagem
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+    args['perfil_postagem'] = perfil_postagem
+    args['foto_postagem'] = foto_postagem
+    args['perfis_comentarios'] = perfis_comentarios
+    args['fotos_comentarios'] = fotos_comentarios
+
     return render(request, 'grupos/postagem_evento.html', args)
 
 
@@ -1157,9 +1263,18 @@ def view_grupo_interesses(request, gid):
 def view_grupo_convidar(request, gid):
     args = {}
 
+    try:
+        grupo = GrupoModel.objects.get(gid=gid)
+        MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
+
+    except GrupoModel.DoesNotExist:
+        return HttpResponseRedirect('/')
+
+    except MembroModel.DoesNotExist:
+        return HttpResponseRedirect('/grupo/' + gid + '/')
+
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    grupo = GrupoModel.objects.get(gid=gid)
     usuario_amigos = AmigoModel.objects.filter(perfil=request.user.perfilmodel, ativo=True)
     membros = MembroModel.objects.filter(grupo=grupo)
     convidados = ConviteGrupoModel.objects.filter(grupo=grupo, ativo=True)
@@ -1277,3 +1392,112 @@ def view_grupo_convidar(request, gid):
     args['pesquisa_form'] = UsuarioSearchForm()
 
     return render(request, 'grupos/convidar.html', args)
+
+
+@login_required
+def view_evento_convidar(request, gid, eid):
+    args = {}
+
+    try:
+        grupo = GrupoModel.objects.get(gid=gid)
+        MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
+
+    except GrupoModel.DoesNotExist:
+        return HttpResponseRedirect('/')
+
+    except MembroModel.DoesNotExist:
+        return HttpResponseRedirect('/grupo/' + gid + '/')
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    grupo = GrupoModel.objects.get(gid=gid)
+    membros = MembroModel.objects.filter(grupo=grupo)
+    evento = EventoModel.objects.get(eid=eid)
+    convidados = ConviteEventoModel.objects.filter(evento=evento, ativo=True)
+    participa = ParticipaEventoModel.objects.filter(evento=evento, ativo=True)
+
+    convidados_dict = {}
+    membros_dict = {}
+
+    participa_list = []
+
+    for participante in participa:
+        participa_list.append(participante.usuario)
+
+    if request.method == 'POST':
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'inviteAll' in request.POST:
+
+            for membro in membros:
+                if membro.usuario not in participa_list:
+
+                    try:
+                        convite = ConviteEventoModel.objects.get(convidado=membro.usuario, evento=evento)
+                        convite.ativo = True
+
+                    except ConviteEventoModel.DoesNotExist:
+                        convite = ConviteEventoModel()
+                        convite.usuario = request.user
+                        convite.convidado = membro.usuario
+                        convite.evento = evento
+                        convite.grupo = grupo
+
+                    convite.save()
+
+        if 'cancelUsuario' in request.POST:
+            uid = request.POST.get('cancelUsuario')
+            usuario_obj = UsuarioModel.object.get(uid=uid)
+
+            try:
+                convite = ConviteEventoModel.objects.get(convidado=usuario_obj, evento=evento)
+                convite.ativo = False
+                convite.save()
+
+            except ConviteEventoModel.DoesNotExist:
+                pass
+
+        if 'inviteUsuario' in request.POST:
+            uid = request.POST.get('inviteUsuario')
+            usuario_obj = UsuarioModel.object.get(uid=uid)
+
+            try:
+                convite = ConviteEventoModel.objects.get(convidado=usuario_obj, evento=evento)
+                convite.ativo = True
+
+            except ConviteEventoModel.DoesNotExist:
+                convite = ConviteEventoModel()
+                convite.usuario = request.user
+                convite.convidado = usuario_obj
+                convite.evento = evento
+                convite.grupo = grupo
+
+            convite.save()
+
+        return HttpResponseRedirect('/grupo/' + gid + '/evento/' + eid + '/convidar/')
+
+    for membro in membros:
+        if membro not in membros_dict:
+            membros_dict[membro.usuario] = ImagemModel.objects.get(perfil=membro.usuario.perfilmodel,
+                                                                   is_profile_image=True)
+
+    for convite in convidados:
+        if convite not in convidados_dict:
+            convidados_dict[convite.convidado] = ImagemModel.objects.get(perfil=convite.convidado.perfilmodel,
+                                                                         is_profile_image=True)
+
+    args['participante'] = participa_list
+    args['convidados'] = convidados
+    args['list_convidados'] = convidados_dict
+    args['membros'] = membros_dict
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['grupo'] = grupo
+    args['foto'] = foto
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm()
+
+    return render(request, 'grupos/convidar_evento.html', args)

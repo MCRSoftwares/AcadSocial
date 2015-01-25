@@ -1,0 +1,162 @@
+{% extends 'base-logado-com-topo.html' %}
+{% load staticfiles %}
+{% load grupos_tags %}
+
+{% block title %} {{ postagem.titulo }} - AcadSocial {% endblock %}
+
+{% block groups-active %}
+    class="lista-active"
+{% endblock %}
+
+{% block head %}
+    <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('textarea').autosize();
+
+            setInterval(function() {
+                $.ajax({
+                    url: '{% url 'grupo-post' postagem.grupo.gid postagem.pid %}?page={{ comentarios.number }}',
+                    success: function(data) {
+
+                        var comments = $('#commentSession', data).html();
+                        $('#commentSession').html(comments);
+
+                        var qtd = $('#qtdComments', data).html();
+                        $('#qtdComments').html(qtd);
+                    }
+                });
+            }, 2500);
+
+
+        });
+
+        sendCommentForm = function(formID) {
+            $(formID).keypress(function(e) {
+                if(e.which == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    this.form.submit();
+                }
+            });
+        };
+
+        deleteElement = function(elID, formID) {
+            $(elID).hide();
+            $(formID)[0].submit();
+        }
+
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading truncate text-center">
+                    <a href="{% url 'grupo-evento' postagem.grupo.gid postagem.evento.eid %}"><span class="fa fa-group"></span> {{ postagem.evento.titulo }}</a>
+                </div>
+                <div class="panel-body text-center truncate">
+                    <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}" class="feed-link">
+                        <img src="/media/{{ foto_postagem }}" class="profile-image-big">
+                        <br>
+                        {{ postagem.criado_por.full_name }}
+                    </a>
+                    <br>
+                    <span class="feed-datetime">{{ postagem.data_criacao|date:"d/m/Y - H:i:s" }}</span>
+                </div>
+                <div class="panel-footer text-center no-padding" style="font-size: 20pt;font-family: Josefin Sans, sans-serif;padding:5px;">
+                        <span class="fa fa-comments"></span><span id="qtdComments"> {{ qtd_comentarios }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="panel panel-default panel-bordeless feed">
+                <div class="panel-heading truncate">
+                    <div class="col-xs-11 no-padding">
+                        <a href="{% url 'grupo-post' postagem.grupo.gid postagem.pid %}">
+                            <span class="glyphicon glyphicon-edit"></span> {{ postagem.titulo }}
+                        </a>
+                    </div>
+                    <div class="col-xs-1 no-padding">
+                        {% if postagem.criado_por == user %}
+                            <form method="post" action="" id="postagemForm">
+                                {% csrf_token %}
+                                <button class="close" type="button" style="font-size:11pt;font-family: Open Sans, sans-serif;"
+                                        onclick="deleteElement('#postagem', '#postagemForm')">×</button>
+                                <input type="text" name="deletePost" style="display: none;">
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="panel-body text-left truncate-line feed-group">
+                    {{ postagem.conteudo }}
+                </div>
+                <div class="panel-footer">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea name="comentario" class="comment-bar form-control comment-bar-focus"
+                                      id="commentTA" maxlength="256"
+                                      placeholder="Comentar..."
+                                      onkeypress="sendCommentForm('#commentTA')" autofocus></textarea>
+                            <input name="comment" type="text" style="display: none;">
+                        </div>
+                    </form>
+                </div>
+                <span id="commentSession">
+                    {% for comentario in comentarios %}
+                        {% if comentario.postagem == postagem %}
+                            <span id="comment-{{ comentario.cid }}">
+                                <div class="panel-body comment-start" style="padding:10px;">
+                                    <div class="col-xs-1" style="padding:0;">
+                                        <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}">
+                                            <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}" class="profile-image">
+                                        </a>
+                                    </div>
+                                    <div class="col-xs-10 comment-user no-padding">
+                                        &nbsp&nbsp
+                                        <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}">
+                                            {{ comentario.criado_por.full_name }}
+                                        </a>
+                                        <br>
+                                        <div class="col-xs-offset-0 truncate-line" style="padding-left:15px;">
+                                            {{ comentario.conteudo }}
+                                        </div>
+                                        <div class="col-xs-12 text-right no-padding comment-datetime">
+                                            <br>
+                                            {{ comentario.data_criacao|date:"d/m/Y - H:i:s" }}
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-1 no-padding" style="margin-top:-5px;">
+                                        {% if comentario.criado_por == user or postagem.criado_por == user %}
+                                            <form method="post" action="" id="commentForm-{{ comentario.cid }}">
+                                                {% csrf_token %}
+                                                <button class="close" type="button" style="font-size:11pt;"
+                                                        onclick="deleteElement('#comment-{{ comentario.cid }}',
+                                                                '#commentForm-{{ comentario.cid }}')">×</button>
+                                                <input type="text" name="deleteComment" value="{{ comentario.cid }}" style="display: none;">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                        <ul class="panel-footer pagination text-center" style="margin-top:5px;margin-bottom:0;">
+                            {% if not comentarios.has_previous %}
+                                <li class="disabled" ><a href=""><<</a></li>
+                            {% else %}
+                                <li><a href="?pg={{ comentarios.previous_page_number }}"><<</a></li>
+                            {% endif %}
+                            <li class="disabled"><a href="">Página {{ comentarios.number }} de {{ comentarios.paginator.num_pages }}</a></li>
+                            {% if not comentarios.has_next %}
+                                <li class="disabled" ><a href="">>></a></li>
+                            {% else %}
+                                <li><a href="?pg={{ comentarios.next_page_number }}">>></a></li>
+                            {% endif %}
+                        </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
