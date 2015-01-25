@@ -18,12 +18,20 @@ Descrição:
 from django import forms
 from grupos.errors import erro_interesse, erro_grupo
 from grupos.models import ComentarioGrupoModel, InteresseModel, GrupoModel, PostagemGrupoModel
+from grupos.models import ComentarioEventoModel, PostagemEventoModel
 
 
 class ComentarioGrupoForm(forms.ModelForm):
 
     class Meta:
         model = ComentarioGrupoModel
+        fields = ()
+
+
+class ComentarioEventoForm(forms.ModelForm):
+
+    class Meta:
+        model = ComentarioEventoModel
         fields = ()
 
 
@@ -141,6 +149,28 @@ class PostagemGrupoForm(forms.ModelForm):
         fields = ('titulo', 'conteudo', )
 
 
+class PostagemEventoForm(forms.ModelForm):
+
+    titulo_attrs = {
+        'class': 'form-control form-panel',
+        'placeholder': u'Título...',
+    }
+
+    conteudo_attrs = {
+        'class': 'form-control form-panel',
+        'placeholder': u'Conteúdo...',
+        'maxlength': '256',
+        'rows': '1',
+    }
+
+    titulo = forms.CharField(max_length=32, widget=forms.TextInput(attrs=titulo_attrs), required=True)
+    conteudo = forms.CharField(widget=forms.Textarea(attrs=conteudo_attrs), required=True)
+
+    class Meta:
+        model = PostagemEventoModel
+        fields = ('titulo', 'conteudo', )
+
+
 class MembroSearchForm(forms.ModelForm):
 
     pesquisa_attrs = {
@@ -155,33 +185,3 @@ class MembroSearchForm(forms.ModelForm):
     class Meta:
         model = GrupoModel
         fields = ('aq', )
-
-
-class ConvidarGrupoForm(forms.ModelForm):
-
-    grupo_attrs = {
-        'id': 'grupoField'
-    }
-
-    convidarGrupo = forms.CharField(max_length=64, widget=forms.HiddenInput(attrs=grupo_attrs))
-
-    def clean(self):
-        grupo = self.cleaned_data.get('criarGrupo')
-        grupo = ' '.join(unicode(grupo).split())
-
-        if not grupo or not ''.join(unicode(grupo).split()):
-            raise forms.ValidationError(erro_grupo['grupo_invalido'], code='grupo_invalido')
-
-        if unicode(grupo).startswith(' '):
-            grupo = grupo[1:]
-
-        try:
-            GrupoModel.objects.get(nome__iexact=grupo)
-
-            raise forms.ValidationError(erro_grupo['grupo_ja_existente'], code='grupo_ja_existente')
-        except GrupoModel.DoesNotExist:
-            return self.cleaned_data
-
-    class Meta:
-        model = GrupoModel
-        fields = ('convidarGrupo', )
