@@ -400,7 +400,7 @@ def view_lista_grupos(request):
 
         if 'addGrupo' in request.POST:
             grupo_id = request.POST.get('addGrupo')
-            grupo_obj = InteresseModel.objects.get(gid=grupo_id)
+            grupo_obj = GrupoModel.objects.get(gid=grupo_id)
 
             membro = MembroModel()
             membro.grupo = grupo_obj
