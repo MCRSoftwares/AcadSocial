@@ -38,6 +38,7 @@ from grupos.methods import load_convites_grupos, load_convites_amigos, load_conv
 from grupos.methods import convites_amigos_post, convites_grupos_post, convites_eventos_post
 from grupos.forms import ComentarioGrupoForm
 from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 def view_cadastrar_usuario(request):
@@ -193,6 +194,18 @@ def view_pagina_inicial_logada(request):
     perfis_comentarios = {}
     perfis_postagens = {}
     qtd_comentarios = {}
+
+    paginas = Paginator(postagens, 10)
+
+    if request.method == 'GET':
+        pagina = request.GET.get('pg')
+
+        try:
+            postagens = paginas.page(pagina)
+        except PageNotAnInteger:
+            postagens = paginas.page(1)
+        except EmptyPage:
+            postagens = paginas.page(paginas.num_pages)
 
     for comentario in comentarios:
         if comentario.criado_por not in fotos_comentarios:

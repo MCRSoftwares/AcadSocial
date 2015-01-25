@@ -136,7 +136,7 @@
                     <span class="fa fa-user"></span> Membros
                 </div>
                 <ul class="panel-list panel-list-friends">
-                    {% for u_membro, membro_foto in usuarios.iteritems %}
+                    {% for u_membro, membro_foto in usuarios.items|slice:':5' %}
                         <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
                             <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
                             &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
