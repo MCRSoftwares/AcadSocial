@@ -123,14 +123,11 @@
                 {% endif %}
             </div>
             {% if membro and membro.is_admin or evento.criado_por == user %}
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="panel panel-default panel-bordeless btn-panel">
-                        <button class="panel-heading text-center" style="width:100%;" name="editarGrupo">
-                            <span class="glyphicon glyphicon-edit"></span> Editar Evento
-                        </button>
-                    </div>
-                </form>
+                <div class="panel panel-default panel-bordeless btn-panel">
+                    <button class="panel-heading text-center" style="width:100%;" name="editarEvento" onclick="location.href='{% url 'evento-editar' grupo.gid evento.eid %}'">
+                        <span class="glyphicon glyphicon-edit"></span> Editar Evento
+                    </button>
+                </div>
             {% endif %}
             <div class="panel panel-default panel-bordeless btn-panel">
                 <button class="panel-heading text-center" style="width:100%;" onclick="location.href='{% url 'evento-convidar' grupo.gid evento.eid %}'">
@@ -142,12 +139,16 @@
                     <span class="fa fa-user"></span> Participantes
                 </div>
                 <ul class="panel-list panel-list-friends">
-                    {% for u_membro, membro_foto in participantes.iteritems %}
-                        <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
-                            <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
-                            &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
-                        </a></li>
-                    {% endfor %}
+                    {% if participantes|length == 0 %}
+                        <li class="not-link-list text-center">Não há membros neste evento!</li>
+                    {% else %}
+                        {% for u_membro, membro_foto in participantes.iteritems %}
+                            <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
+                                &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
+                            </a></li>
+                        {% endfor %}
+                    {% endif %}
                 </ul>
                 <div class="panel-footer"></div>
             </div>

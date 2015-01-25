@@ -15,8 +15,6 @@ Descrição:
     Definição das views relacionadas à aplicação de grupos e eventos.
 """
 
-# TODO Configurar views que possuem notificações
-
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from grupos.models import GrupoModel, MembroModel
@@ -29,7 +27,9 @@ from grupos.models import UsuarioInteresseModel, GrupoInteresseModel, ConviteGru
 from grupos.models import PostagemEventoModel, ComentarioEventoModel
 from grupos.forms import ComentarioGrupoForm, AdicionarInteresseForm, InteresseSearchForm, PostagemEventoForm
 from grupos.forms import GrupoSearchForm, AdicionarGrupoForm, PostagemGrupoForm, MembroSearchForm, ComentarioEventoForm
+from grupos.forms import EditarGrupoForm, AdminGrupoForm, EventoForm
 from django.utils import timezone
+from datetime import datetime
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from grupos.methods import load_convites_amigos, load_convites_eventos, load_convites_grupos
@@ -231,6 +231,69 @@ def view_editar_grupo(request, gid):
 
         except MembroModel.DoesNotExist:
             return HttpResponseRedirect('/grupo/' + gid + '/')
+
+        perfil = PerfilModel.objects.get(usuario=request.user)
+        foto = ImagemModel.objects.get(perfil=perfil, is_active=True, is_profile_image=True)
+        membros = MembroModel.objects.filter(grupo=grupo, ativo=True)
+        usuarios = UsuarioModel.object.filter(membromodel__in=membros)
+
+        admin_form = AdminGrupoForm()
+        admin_form.fields['membro'].queryset = usuarios
+
+        if request.method == 'POST':
+
+            convites_amigos_post(request, 'conviteAmigoForm')
+            convites_eventos_post(request, 'conviteEventoForm')
+            convites_grupos_post(request, 'conviteGrupoForm')
+
+            if 'membro' in request.POST:
+
+                admin_form = AdminGrupoForm(data=request.POST)
+                admin_form.fields['membro'].queryset = usuarios
+
+                if admin_form.is_valid():
+                    usuario_obj = admin_form.cleaned_data['membro']
+
+                    membro_obj = MembroModel.objects.get(usuario=usuario_obj, grupo=grupo)
+
+                    membro_obj.is_admin = True
+                    membro_obj.save()
+
+                    membro.is_admin = False
+                    membro.save()
+
+                    return HttpResponseRedirect('/grupo/' + gid + '/')
+
+            if 'descricao' and 'nome' in request.POST:
+
+                editar_form = EditarGrupoForm(data=request.POST)
+
+                if editar_form.is_valid():
+                    grupo_nome = editar_form.cleaned_data.get('nome')
+                    grupo_desc = editar_form.cleaned_data.get('descricao')
+
+                    grupo.nome = grupo_nome
+                    grupo.descricao = grupo_desc
+                    grupo.save()
+
+                    return HttpResponseRedirect('/grupo/' + gid + '/')
+
+            else:
+                editar_form = EditarGrupoForm()
+        else:
+            editar_form = EditarGrupoForm()
+
+        args['convites_grupos'] = load_convites_grupos(request)
+        args['convites_eventos'] = load_convites_eventos(request)
+        args['convites_amigos'] = load_convites_amigos(perfil)
+        args['admin_form'] = admin_form
+        args['membros'] = membros
+        args['editar_form'] = editar_form
+        args['membro'] = membro
+        args['perfil'] = perfil
+        args['foto'] = foto
+        args['grupo'] = grupo
+        args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
 
         return render(request, 'grupos/editar_grupo.html', args)
 
@@ -1411,8 +1474,8 @@ def view_evento_convidar(request, gid, eid):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
     grupo = GrupoModel.objects.get(gid=gid)
-    membros = MembroModel.objects.filter(grupo=grupo)
-    evento = EventoModel.objects.get(eid=eid)
+    membros = MembroModel.objects.filter(grupo=grupo, ativo=True)
+    evento = EventoModel.objects.get(eid=eid, ativo=True)
     convidados = ConviteEventoModel.objects.filter(evento=evento, ativo=True)
     participa = ParticipaEventoModel.objects.filter(evento=evento, ativo=True)
 
@@ -1432,11 +1495,13 @@ def view_evento_convidar(request, gid, eid):
         if 'inviteAll' in request.POST:
 
             for membro in membros:
-                if membro.usuario not in participa_list:
+                if membro.usuario not in participa_list and membro.usuario != request.user:
 
                     try:
-                        convite = ConviteEventoModel.objects.get(convidado=membro.usuario, evento=evento)
+                        convite = ConviteEventoModel.objects.get(convidado=membro.usuario, evento=evento,
+                                                                 usuario=request.user)
                         convite.ativo = True
+                        convite.usuario = request.user
 
                     except ConviteEventoModel.DoesNotExist:
                         convite = ConviteEventoModel()
@@ -1452,7 +1517,8 @@ def view_evento_convidar(request, gid, eid):
             usuario_obj = UsuarioModel.object.get(uid=uid)
 
             try:
-                convite = ConviteEventoModel.objects.get(convidado=usuario_obj, evento=evento)
+                convite = ConviteEventoModel.objects.get(convidado=usuario_obj, evento=evento,
+                                                         usuario=request.user)
                 convite.ativo = False
                 convite.save()
 
@@ -1464,7 +1530,8 @@ def view_evento_convidar(request, gid, eid):
             usuario_obj = UsuarioModel.object.get(uid=uid)
 
             try:
-                convite = ConviteEventoModel.objects.get(convidado=usuario_obj, evento=evento)
+                convite = ConviteEventoModel.objects.get(convidado=usuario_obj, evento=evento,
+                                                         usuario=request.user)
                 convite.ativo = True
 
             except ConviteEventoModel.DoesNotExist:
@@ -1475,6 +1542,26 @@ def view_evento_convidar(request, gid, eid):
                 convite.grupo = grupo
 
             convite.save()
+
+        if 'delUsuario' in request.POST:
+            uid = request.POST.get('delUsuario')
+            usuario_obj = UsuarioModel.object.get(uid=uid)
+
+            participa = ParticipaEventoModel.objects.get(evento=evento, usuario=usuario_obj)
+            participa.ativo = False
+            participa.save()
+
+        if 'partUsuario' in request.POST:
+            try:
+                participa = ParticipaEventoModel.objects.get(evento=evento, usuario=request.user)
+                participa.ativo = True
+
+            except ParticipaEventoModel.DoesNotExist:
+                participa = ParticipaEventoModel()
+                participa.usuario = request.user
+                participa.evento = evento
+
+            participa.save()
 
         return HttpResponseRedirect('/grupo/' + gid + '/evento/' + eid + '/convidar/')
 
@@ -1496,8 +1583,124 @@ def view_evento_convidar(request, gid, eid):
     args['convites_eventos'] = load_convites_eventos(request)
     args['convites_amigos'] = load_convites_amigos(perfil)
     args['grupo'] = grupo
+    args['evento'] = evento
     args['foto'] = foto
     args['perfil'] = perfil
     args['pesquisa_form'] = UsuarioSearchForm()
 
     return render(request, 'grupos/convidar_evento.html', args)
+
+
+@login_required
+def view_criar_evento(request, gid):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    grupo = GrupoModel.objects.get(gid=gid)
+
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'titulo' and 'descricao' and 'local_evento' in request.POST:
+            evento_form = EventoForm(data=request.POST)
+
+            if evento_form.is_valid():
+                evento = evento_form.save(commit=False)
+
+                evento.criado_por = request.user
+                evento.data_criacao = timezone.now()
+                evento.grupo = grupo
+
+                dia = evento_form.cleaned_data['dia']
+                mes = evento_form.cleaned_data['mes']
+                ano = evento_form.cleaned_data['ano']
+                hora = evento_form.cleaned_data['hora']
+                minutos = evento_form.cleaned_data['minutos']
+
+                data_str = '%s-%s-%s %s:%s' % (dia, mes, ano, hora, minutos)
+                evento.data_evento = datetime.strptime(data_str, '%d-%m-%Y %H:%M')
+
+                evento.save()
+
+                participa = ParticipaEventoModel()
+                participa.evento = evento
+                participa.usuario = request.user
+                participa.save()
+
+                return HttpResponseRedirect('/grupo/' + gid + '/evento/' + str(evento.eid))
+
+        else:
+            evento_form = EventoForm()
+
+    else:
+        evento_form = EventoForm()
+
+    args['evento_form'] = evento_form
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['grupo'] = grupo
+    args['pesquisa_form'] = UsuarioSearchForm()
+    args['foto'] = foto
+    args['perfil'] = perfil
+
+    return render(request, 'grupos/criar_evento.html', args)
+
+
+@login_required
+def view_editar_evento(request, gid, eid):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
+    grupo = GrupoModel.objects.get(gid=gid)
+    evento = EventoModel.objects.get(eid=eid)
+
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'titulo' and 'descricao' and 'local_evento' in request.POST:
+            evento_form = EventoForm(data=request.POST)
+
+            if evento_form.is_valid():
+
+                evento.titulo = evento_form.cleaned_data.get('titulo')
+                evento.descricao = evento_form.cleaned_data.get('descricao')
+
+                dia = evento_form.cleaned_data['dia']
+                mes = evento_form.cleaned_data['mes']
+                ano = evento_form.cleaned_data['ano']
+                hora = evento_form.cleaned_data['hora']
+                minutos = evento_form.cleaned_data['minutos']
+
+                data_str = '%s-%s-%s %s:%s' % (dia, mes, ano, hora, minutos)
+                evento.data_evento = datetime.strptime(data_str, '%d-%m-%Y %H:%M')
+
+                evento.save()
+
+                return HttpResponseRedirect('/grupo/' + gid + '/evento/' + str(evento.eid))
+
+        else:
+            evento_form = EventoForm()
+
+    else:
+        evento_form = EventoForm()
+
+    args['evento_form'] = evento_form
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['grupo'] = grupo
+    args['evento'] = evento
+    args['pesquisa_form'] = UsuarioSearchForm()
+    args['foto'] = foto
+    args['perfil'] = perfil
+
+    return render(request, 'grupos/editar_evento.html', args)

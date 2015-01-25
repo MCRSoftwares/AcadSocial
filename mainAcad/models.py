@@ -20,7 +20,8 @@ from contas.models import PerfilModel
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from mainAcad.methods import converter_para_jpg, gerar_thumbnail
-from mainAcad.constants import DEFAULT_PICTURE
+from mainAcad.constants import DEFAULT_PICTURE, DEFAULT_PICTURE_THUMBNAIL
+from mainAcad.constants import DEFAULT_PICTURE_THUMBNAIL_HOME, DEFAULT_PICTURE_THUMBNAIL_PERFIL
 from PIL import Image
 
 
@@ -33,9 +34,12 @@ class ImagemModel(models.Model):
                           'Unselect this instead of deleting the profile image.')
 
     imagem = models.ImageField(_('Image'), upload_to='imagens', default=DEFAULT_PICTURE)
-    thumbnail_perfil = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/', default=DEFAULT_PICTURE)
-    thumbnail_home = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/', default=DEFAULT_PICTURE)
-    thumbnail = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/', default=DEFAULT_PICTURE)
+    thumbnail_perfil = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/',
+                                         default=DEFAULT_PICTURE_THUMBNAIL_PERFIL)
+    thumbnail_home = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/',
+                                       default=DEFAULT_PICTURE_THUMBNAIL_HOME)
+    thumbnail = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/',
+                                  default=DEFAULT_PICTURE_THUMBNAIL)
     perfil = models.ForeignKey(PerfilModel)
     data_envio = models.DateTimeField(default=timezone.now())
     is_active = models.BooleanField(default=True, help_text=active_help_text)

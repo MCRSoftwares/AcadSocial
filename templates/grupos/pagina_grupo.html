@@ -122,14 +122,11 @@
                     </div>
                 </form>
             {% elif membro.is_admin %}
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="panel panel-default panel-bordeless btn-panel">
-                        <button class="panel-heading text-center" style="width:100%;" name="editarGrupo">
-                            <span class="glyphicon glyphicon-edit"></span> Editar Grupo
-                        </button>
-                    </div>
-                </form>
+                <div class="panel panel-default panel-bordeless btn-panel">
+                    <button class="panel-heading text-center" style="width:100%;" name="editarGrupo" onclick="location.href='{% url 'grupo-editar' grupo.gid %}'">
+                        <span class="glyphicon glyphicon-edit"></span> Editar Grupo
+                    </button>
+                </div>
             {% endif %}
             <div class="panel panel-default panel-bordeless">
                 <div class="panel-heading text-center">

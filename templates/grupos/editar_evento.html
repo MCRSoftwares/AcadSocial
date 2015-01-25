@@ -1,0 +1,201 @@
+{% extends 'base-logado-topo-vazio.html' %}
+{% load grupos_tags %}
+{% load staticfiles %}
+
+{% block title %}
+    Criar Evento - {{ grupo.nome }} - AcadSocial
+{% endblock %}
+
+{% block head %}
+    <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('textarea').autosize();
+
+            $('#eventoTitulo').val('{{ evento.titulo }}');
+            $('#eventoDesc').val('{{ evento.descricao }}');
+            $('#eventoLocal').val('{{ evento.local_evento }}');
+
+            $("#eventoDia option").filter(function() {
+                return $(this).text() == {{ evento.data_evento|date:'d' }};
+            }).prop('selected', true);
+
+            $("#eventoMes option").filter(function() {
+                return $(this).text() == {{ evento.data_evento|date:'m' }};
+            }).prop('selected', true);
+
+            $("#eventoAno option").filter(function() {
+                return $(this).text() == {{ evento.data_evento|date:'Y' }};
+            }).prop('selected', true);
+
+            $("#eventoHora option").filter(function() {
+                return $(this).text() == {{ evento.data_evento|date:'H' }};
+            }).prop('selected', true);
+
+            $("#eventoMinutos option").filter(function() {
+                return $(this).text() == {{ evento.data_evento|date:'i' }};
+            }).prop('selected', true);
+
+            $('#eventoTitulo').on('keypress click', function() {
+               $('#tituloWError').hide();
+               $('#nonFWError').hide();
+            });
+
+            $('#eventoDesc').on('keypress click', function() {
+               $('#descWError').hide();
+               $('#nonFWError').hide();
+            });
+
+            $('#eventoLocal').on('keypress click', function() {
+               $('#localWError').hide();
+               $('#nonFWError').hide();
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block top-navbar-right %}
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-index' grupo.gid %}">
+        <i class="fa fa-group"></i> {{ grupo.nome }}
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li class="lista-active"><a href="{% url 'eventos-lista' grupo.gid %}">
+        <i class="fa fa-calendar"></i> Eventos
+    </a></li>
+    <li class="divider-vertical"></li>
+    <li><a href="{% url 'grupo-sobre' grupo.gid %}">
+        <i class="fa fa-info-circle"></i> Sobre o Grupo
+    </a></li>
+    <li class="divider-vertical"></li>
+{% endblock %}
+
+{% block body %}
+    <div class="vertical-space">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-group"></span> {{ evento.titulo }}
+                </div>
+                <div class="panel-body text-center">
+                    <a href="{% url 'grupo-evento' grupo.gid evento.eid %}" class="feed-link">
+                        <span class="profile-image-big fa fa-calendar" style="font-size:90pt;"></span>
+                    </a>
+                    <br>
+                    <a href="{% url 'grupo-index' grupo.gid %}" class="feed-link">
+                        {{ grupo.nome }}
+                    </a>
+                    <br>
+                    <span class="feed-datetime">
+                        Criado por:
+                    </span>
+                    <br>
+                    <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}" class="feed-link">
+                        {{ evento.criado_por.full_name }}
+                    </a>
+                </div>
+                <div class="panel-footer text-center" style="margin-top:0;">
+                    Você administra este evento!
+                </div>
+            </div>
+            <div class="panel panel-default panel-bordeless btn-panel">
+                <form method="POST">
+                    {% csrf_token %}
+                    <button class="panel-heading" style="width:100%" name="cancelarEvento">
+                        <span class="fa fa-remove"></span> &nbsp;Cancelar Evento
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="panel panel-default panel-bordeless">
+                <div class="panel-heading text-center">
+                    <span class="fa fa-calendar"></span> &nbsp;Editar Evento
+                </div>
+            </div>
+            <div class="panel panel-default panel-bordeless">
+                <form method="post" class="form-horizontal">
+                    {% csrf_token %}
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Título</label>
+                            <div class="col-xs-9">
+                                {{ evento_form.titulo }}
+                                {% if evento_form.titulo.errors %}
+                                    {% for error in evento_form.titulo.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="tituloWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Descrição</label>
+                            <div class="col-xs-9">
+                                {{ evento_form.descricao }}
+                                {% if evento_form.descricao.errors %}
+                                    {% for error in evento_form.descricao.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="descWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Data</label>
+                            <div class="col-xs-3">
+                                {{ evento_form.dia }}
+                            </div>
+                            <div class="col-xs-3">
+                                {{ evento_form.mes }}
+                            </div>
+                            <div class="col-xs-3">
+                                {{ evento_form.ano }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Horário</label>
+                            <div class="col-xs-3">
+                                {{ evento_form.hora }}
+                            </div>
+                            <div class="col-xs-3">
+                                {{ evento_form.minutos }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Local</label>
+                            <div class="col-xs-9">
+                                {{ evento_form.local_evento }}
+                                {% if evento_form.local_evento.errors %}
+                                    {% for error in evento_form.local_evento.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="localWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if evento_form.non_field_errors %}
+                            {% for error in evento_form.non_field_errors %}
+                                <span class="help-block alert alert-danger alert-dismissable" id="nonFWError">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {{ error }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <button class="panel-footer" type="submit">
+                        Enviar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

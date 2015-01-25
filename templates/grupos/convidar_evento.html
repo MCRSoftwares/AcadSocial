@@ -48,25 +48,59 @@
 {% block body %}
     <div class="vertical-space">
         <div class="col-xs-4 no-right-padding">
-            <div class="panel panel-default panel-bordeless">
-                <div class="panel-heading text-center">
-                    <span class="fa fa-envelope"></span> Convidados
-                </div>
-                <ul class="panel-list panel-list-friends">
-                    {% if list_convidados|length == 0 %}
-                        <li class="not-link-list text-center">Não há usuários convidados!</li>
+            <div class="col-xs-12 no-right-padding no-left-padding">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <a href="{% url 'grupo-evento' grupo.gid evento.eid %}"><span class="fa fa-group"></span> {{ evento.titulo }}</a>
+                    </div>
+                    <div class="panel-body text-center">
+                        <a href="{% url 'grupo-evento' grupo.gid evento.eid %}" class="feed-link">
+                            <span class="profile-image-big fa fa-calendar" style="font-size:90pt;"></span>
+                        </a>
+                        <br>
+                        <a href="{% url 'grupo-index' grupo.gid %}" class="feed-link">
+                            {{ grupo.nome }}
+                        </a>
+                        <br>
+                        <span class="feed-datetime">
+                            Criado por:
+                        </span>
+                        <br>
+                        <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}" class="feed-link">
+                            {{ evento.criado_por.full_name }}
+                        </a>
+                    </div>
+                    {% if evento.criado_por == user %}
+                        <div class="panel-footer text-center" style="margin-top:0;">
+                            Você administra este evento!
+                        </div>
                     {% else %}
-                        {% for convidado, convidado_foto in list_convidados.iteritems %}
-                            <li>
-                                <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
-                                    <img style="border-right:3px solid #e7e7e7;" src="/media/{{ convidado_foto.thumbnail }}">
-                                    &nbsp;&nbsp;{{ convidado.full_name|capfirst }}
-                                </a>
-                            </li>
-                        {% endfor %}
+                        <div class="panel-footer text-center" style="margin-top:0;">
+                        </div>
                     {% endif %}
-                </ul>
-                <div class="text-center panel-footer">
+                </div>
+            </div>
+            <div class="col-xs-12 no-right-padding no-left-padding">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-envelope"></span> Convidados
+                    </div>
+                    <ul class="panel-list panel-list-friends">
+                        {% if list_convidados|length == 0 %}
+                            <li class="not-link-list text-center">Não há usuários convidados!</li>
+                        {% else %}
+                            {% for convidado, convidado_foto in list_convidados.iteritems %}
+                                <li>
+                                    <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                        <img style="border-right:3px solid #e7e7e7;" src="/media/{{ convidado_foto.thumbnail }}">
+                                        &nbsp;&nbsp;{{ convidado.full_name|capfirst }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                    <div class="text-center panel-footer">
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,20 +135,41 @@
                 </div>
                 <div class="col-xs-5">
                     <div class="panel panel-default panel-bordeless btn-panel" style="margin-top:-6px;">
-                        {% if membro in participante %}
-                             <div class="panel-heading text-center" style="width:100%;"><span class="fa fa-user"></span> &nbsp;Participará</div>
-                        {% elif convidados|get_convite:membro %}
+                        {% if membro == user and membro in participante %}
                             <form method="POST">
-                            {% csrf_token %}
+                                {% csrf_token %}
+                                <button class="panel-heading text-center" name="delUsuario" value="{{ membro.uid }}" style="width:100%;">
+                                    <span class="fa fa-remove"></span> &nbsp;Sair do Evento
+                                </button>
+                            </form>
+                        {% elif user == evento.criado_por and membro in participante %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button class="panel-heading text-center" name="delUsuario" value="{{ membro.uid }}" style="width:100%;">
+                                    <span class="fa fa-remove"></span> &nbsp;Excluir do Evento
+                                </button>
+                            </form>
+                        {% elif membro in participante %}
+                             <div class="panel-heading text-center" style="width:100%;background:#fff;"><span class="fa fa-check-square-o"></span> &nbsp;Confirmou</div>
+                        {% elif convidados|get_convite:membro and membro != user %}
+                            <form method="POST">
+                                {% csrf_token %}
                                 <button class="panel-heading text-center" name="cancelUsuario" value="{{ membro.uid }}" style="width:100%;">
                                     <span class="fa fa-envelope"></span> &nbsp;Cancelar Convite
                                 </button>
                             </form>
-                        {% else %}
+                        {% elif membro != user %}
                             <form method="POST">
                                 {% csrf_token %}
                                 <button class="panel-heading text-center" name="inviteUsuario" value="{{ membro.uid }}" style="width:100%;">
                                     <span class="fa fa-envelope"></span> &nbsp;Convidar Usuário
+                                </button>
+                            </form>
+                        {% else %}
+                             <form method="POST">
+                                {% csrf_token %}
+                                <button class="panel-heading text-center" name="partUsuario" value="{{ membro.uid }}" style="width:100%;">
+                                    <span class="fa fa-check-square-o"></span> &nbsp;Participar
                                 </button>
                             </form>
                         {% endif %}

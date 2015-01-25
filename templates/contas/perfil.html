@@ -107,6 +107,13 @@
                     </div>
                 </form>
             {% endif %}
+            {% if perfil.usuario == user %}
+                <div class="panel panel-default panel-bordeless btn-panel">
+                    <button class="panel-heading text-center" style="width:100%;" onclick="location.href='{% url 'perfil-editar' %}'">
+                        <span class="glyphicon glyphicon-edit"></span> Editar Perfil
+                    </button>
+                </div>
+            {% endif %}
             <div class="panel panel-default panel-bordeless">
                 <div class="panel-heading text-center">
                     <span class="fa fa-paint-brush"></span> Interesses

@@ -57,9 +57,9 @@ class UsuarioCadastroForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control'}
-    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control'}
-    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control'}
+    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control', 'id': 'nomeID'}
+    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control', 'id': 'sobrenomeID'}
+    email_attrs = {'placeholder': 'E-mail', 'class': 'form-control', 'id': 'emailID'}
     password_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
     password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control'}
 
@@ -142,9 +142,11 @@ class PerfilCadastroForm(forms.ModelForm):
 
     # Criação dos atributos dos campos
 
-    universidade_attrs = {'placeholder': 'Universidade', 'class': 'form-control'}
-    curso_attrs = {'placeholder': 'Curso', 'class': 'form-control'}
-    data_nascimento_attrs = {'class': 'form-control'}
+    universidade_attrs = {'placeholder': 'Universidade', 'class': 'form-control', 'id': 'univID'}
+    curso_attrs = {'placeholder': 'Curso', 'class': 'form-control', 'id': 'cursoID'}
+    dia_attrs = {'class': 'form-control', 'id': 'diaID'}
+    mes_attrs = {'class': 'form-control', 'id': 'mesID'}
+    ano_attrs = {'class': 'form-control', 'id': 'anoID'}
 
     # Criação das listas de dia, mês e ano
 
@@ -159,9 +161,9 @@ class PerfilCadastroForm(forms.ModelForm):
 
     # Criação dos campos
 
-    dia = forms.ChoiceField(choices=dia_list, widget=forms.Select(data_nascimento_attrs))
-    mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(data_nascimento_attrs))
-    ano = forms.ChoiceField(choices=ano_list, widget=forms.Select(data_nascimento_attrs))
+    dia = forms.ChoiceField(choices=dia_list, widget=forms.Select(dia_attrs))
+    mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(mes_attrs))
+    ano = forms.ChoiceField(choices=ano_list, widget=forms.Select(ano_attrs))
 
     universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade',
                                           label='universidade', widget=forms.Select(attrs=universidade_attrs))
@@ -176,6 +178,119 @@ class PerfilCadastroForm(forms.ModelForm):
 
         if not self.cleaned_data.get('termos_condicoes'):
             raise forms.ValidationError(erro_cadastro['termos_nao_aceitos'], code='termos_nao_aceitos')
+        # Checa se a data de nascimento é válida
+
+        dia_nasc = self.cleaned_data.get('dia')
+        mes_nasc = self.cleaned_data.get('mes')
+        ano_nasc = self.cleaned_data.get('ano')
+
+        nasc_str = str(dia_nasc) + '-' + str(mes_nasc) + '-' + str(ano_nasc)
+
+        try:
+            datetime.strptime(nasc_str, '%d-%m-%Y')
+        except ValueError:
+            raise forms.ValidationError(erro_cadastro['data_incorreta'], code='data_incorreta')
+
+        return self.cleaned_data
+
+    class Meta:
+        model = PerfilModel
+        fields = ('dia', 'mes', 'ano', 'universidade', 'curso')
+
+
+class UsuarioEditForm(forms.ModelForm):
+
+    # Criação dos atributos dos campos
+
+    first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control', 'id': 'nomeID'}
+    last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control', 'id': 'sobrenomeID'}
+
+    # Criação dos campos
+
+    first_name = forms.CharField(min_length=2, max_length=128, widget=forms.TextInput(attrs=first_name_attrs))
+    last_name = forms.CharField(min_length=2, max_length=128, widget=forms.TextInput(attrs=last_name_attrs),
+                                label='sobrenome')
+
+    def clean(self):
+
+        # Checa se os campos nome e sobrenome são válidos
+
+        nome = self.cleaned_data.get('first_name')
+        sobrenome = self.cleaned_data.get('last_name')
+
+        if nome and len(nome) < 2:
+            raise forms.ValidationError(erro_cadastro['nome_incompleto'], code='nome_incompleto')
+
+        if sobrenome and len(sobrenome) < 2:
+            raise forms.ValidationError(erro_cadastro['sobrenome_incompleto'], code='sobrenome_incompleto')
+
+        if not validar_palavra(nome):
+            raise forms.ValidationError(erro_cadastro['nome_invalido'], code='nome_invalido')
+
+        if not validar_palavra(sobrenome):
+            raise forms.ValidationError(erro_cadastro['sobrenome_invalido'], code='sobrenome_invalido')
+
+        return self.cleaned_data
+
+    def clean_email(self):
+
+        try:
+            email_front = self.cleaned_data['email_front']
+            email_back = self.cleaned_data['email_back']
+        except:
+            raise forms.ValidationError(erro_cadastro['email_invalido'], code='email_invalido')
+
+        email = email_front + email_back
+
+        # Checa se o e-mail já existe.
+
+        try:
+            UsuarioModel.object.get(email=email)
+
+        except UsuarioModel.DoesNotExist:
+            return email
+
+        raise forms.ValidationError(erro_cadastro['email_ja_existente'], code='email_ja_existente')
+
+    class Meta:
+        model = UsuarioModel
+        fields = ('first_name', 'last_name',)
+
+
+class PerfilEditForm(forms.ModelForm):
+
+    # Criação dos atributos dos campos
+
+    universidade_attrs = {'placeholder': 'Universidade', 'class': 'form-control', 'id': 'univID'}
+    curso_attrs = {'placeholder': 'Curso', 'class': 'form-control', 'id': 'cursoID'}
+    dia_attrs = {'class': 'form-control', 'id': 'diaID'}
+    mes_attrs = {'class': 'form-control', 'id': 'mesID'}
+    ano_attrs = {'class': 'form-control', 'id': 'anoID'}
+
+    # Criação das listas de dia, mês e ano
+
+    dia_list = [(x, str(x)) for x in range(1, 32)]
+    dia_list.insert(0, (0, 'Dia'))
+
+    mes_list = [(x, str(x)) for x in range(1, 13)]
+    mes_list.insert(0, (0, 'Mês'))
+
+    ano_list = [(x, str(x)) for x in range(datetime.today().year - 100, datetime.today().year + 1)]
+    ano_list.insert(0, (0, 'Ano'))
+
+    # Criação dos campos
+
+    dia = forms.ChoiceField(choices=dia_list, widget=forms.Select(dia_attrs))
+    mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(mes_attrs))
+    ano = forms.ChoiceField(choices=ano_list, widget=forms.Select(ano_attrs))
+
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade',
+                                          label='universidade', widget=forms.Select(attrs=universidade_attrs))
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', label='curso',
+                                   widget=forms.Select(attrs=curso_attrs))
+
+    def clean(self):
+
         # Checa se a data de nascimento é válida
 
         dia_nasc = self.cleaned_data.get('dia')

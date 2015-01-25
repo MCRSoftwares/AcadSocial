@@ -1,25 +1,29 @@
 {% extends 'base-logado-topo-vazio.html' %}
+{% load grupos_tags %}
 {% load staticfiles %}
 
-{% block title %} Editar {{ grupo.nome }} - AcadSocial  {% endblock %}
+{% block title %}
+    Criar Evento - {{ grupo.nome }} - AcadSocial
+{% endblock %}
 
 {% block head %}
     <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
-
     <script type="text/javascript">
         $(document).ready(function(){
             $('textarea').autosize();
 
-            $('#nomeGrupoEditar').val('{{ grupo.nome }}');
-            $('#descricaoGrupoEditar').val('{{ grupo.descricao }}');
-
-            $('#nomeGrupoEditar').on('keypress click', function() {
-               $('#nomeWError').hide();
+            $('#eventoTitulo').on('keypress click', function() {
+               $('#tituloWError').hide();
                $('#nonFWError').hide();
             });
 
-            $('#descricaoGrupoEditar').on('keypress click', function() {
+            $('#eventoDesc').on('keypress click', function() {
                $('#descWError').hide();
+               $('#nonFWError').hide();
+            });
+
+            $('#eventoLocal').on('keypress click', function() {
+               $('#localWError').hide();
                $('#nonFWError').hide();
             });
         });
@@ -30,11 +34,11 @@
     <li class="divider-vertical"></li>
     <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
     <li class="divider-vertical"></li>
-    <li class="lista-active"><a href="{% url 'grupo-index' grupo.gid %}">
+    <li><a href="{% url 'grupo-index' grupo.gid %}">
         <i class="fa fa-group"></i> {{ grupo.nome }}
     </a></li>
     <li class="divider-vertical"></li>
-    <li><a href="{% url 'eventos-lista' grupo.gid %}">
+    <li class="lista-active"><a href="{% url 'eventos-lista' grupo.gid %}">
         <i class="fa fa-calendar"></i> Eventos
     </a></li>
     <li class="divider-vertical"></li>
@@ -64,42 +68,32 @@
                         Criado por:
                     </span>
                     <br>
-                    <a href="" class="feed-link">
+                    <a href="{% url 'perfil' grupo.criado_por.perfilmodel.universidade.sigla grupo.criado_por.perfilmodel.perfil_link %}" class="feed-link">
                         {{ grupo.criado_por.full_name }}
                     </a>
                 </div>
                 <div class="panel-footer text-center" style="margin-top:0;">
                     Você administra este grupo!
                 </div>
-                {% if membros|length == 1 %}
-                    <div class="panel panel-default panel-bordeless btn-panel">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <button class="panel-heading text-center" style="width:100%;">
-                                <span class="fa fa-remove"></span> Excluir Grupo
-                            </button>
-                        </form>
-                    </div>
-                {% endif %}
             </div>
         </div>
         <div class="col-xs-8">
             <div class="panel panel-default panel-bordeless">
                 <div class="panel-heading text-center">
-                    <span class="fa fa-edit"></span> Editar Grupo
+                    <span class="fa fa-calendar"></span> &nbsp;Criar Evento
                 </div>
             </div>
             <div class="panel panel-default panel-bordeless">
-                <form method="post" action="" enctype="multipart/form-data" class="form-horizontal">
+                <form method="post" class="form-horizontal">
                     {% csrf_token %}
                     <div class="panel-body">
                         <div class="form-group">
-                            <label class="col-xs-3 control-label text-right">Nome do Grupo</label>
+                            <label class="col-xs-3 control-label text-right">Título</label>
                             <div class="col-xs-9">
-                                {{ editar_form.nome }}
-                                {% if editar_form.nome.errors %}
-                                    {% for error in editar_form.nome.errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable" id="nomeWError">
+                                {{ evento_form.titulo }}
+                                {% if evento_form.titulo.errors %}
+                                    {% for error in evento_form.titulo.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="tituloWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -110,18 +104,45 @@
                         <div class="form-group">
                             <label class="col-xs-3 control-label text-right">Descrição</label>
                             <div class="col-xs-9">
-                                {{ editar_form.descricao }}
-                                {% if editar_form.descricao.errors %}
-                                    {% for error in editar_form.descricao.errors %}
+                                {{ evento_form.descricao }}
+                                {% if evento_form.descricao.errors %}
+                                    {% for error in evento_form.descricao.errors %}
                                         <span class="help-block alert alert-danger alert-dismissable" id="descWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
                                     {% endfor %}
                                 {% endif %}
-                                {% if editar_form.non_field_errors %}
-                                    {% for error in editar_form.non_field_errors %}
-                                        <span class="help-block alert alert-danger alert-dismissable" id="nonFWError">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Data</label>
+                            <div class="col-xs-3">
+                                {{ evento_form.dia }}
+                            </div>
+                            <div class="col-xs-3">
+                                {{ evento_form.mes }}
+                            </div>
+                            <div class="col-xs-3">
+                                {{ evento_form.ano }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Horário</label>
+                            <div class="col-xs-3">
+                                {{ evento_form.hora }}
+                            </div>
+                            <div class="col-xs-3">
+                                {{ evento_form.minutos }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label text-right">Local</label>
+                            <div class="col-xs-9">
+                                {{ evento_form.local_evento }}
+                                {% if evento_form.local_evento.errors %}
+                                    {% for error in evento_form.local_evento.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="localWError">
                                             <button type="button" class="close" data-dismiss="alert">×</button>
                                             {{ error }}
                                         </span>
@@ -129,43 +150,19 @@
                                 {% endif %}
                             </div>
                         </div>
+                        {% if evento_form.non_field_errors %}
+                            {% for error in evento_form.non_field_errors %}
+                                <span class="help-block alert alert-danger alert-dismissable" id="nonFWError">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {{ error }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <button class="panel-footer" type="submit">
-                        Enviar
+                        Criar Evento
                     </button>
                 </form>
-            </div>
-            <div class="col-xs-6">
-                <div class="panel panel-default panel-bordeless btn-panel" onclick="location.href='{% url 'grupo-interesses' grupo.gid %}'">
-                    <button class="panel-heading text-center" style="width:100%;">
-                        <span class="fa fa-paint-brush"></span> Administrar Interesses
-                    </button>
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="panel panel-default panel-bordeless btn-panel">
-                    <button class="panel-heading text-center" style="width:100%;" onclick="$('#changeAdminForm').show();">
-                        <span class="fa fa-send"></span> Transferir Administração
-                    </button>
-                </div>
-            </div>
-            <div class="col-xs-12 no-left-padding no-right-padding" style="display:none" id="changeAdminForm">
-                <div class="panel panel-default panel-bordeless btn-panel">
-                    <form method="post" class="form-horizontal">
-                        {% csrf_token %}
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label class="col-xs-3 control-label text-right">Sel. Membro</label>
-                                <div class="col-xs-9">
-                                    {{ admin_form.membro }}
-                                </div>
-                            </div>
-                        </div>
-                        <button class="panel-footer" type="submit">
-                            Enviar
-                        </button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>

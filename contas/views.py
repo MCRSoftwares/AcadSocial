@@ -17,7 +17,7 @@ Descrição:
 
 # TODO Configurar views que possuem notificações
 
-from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm
+from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm, PerfilEditForm, UsuarioEditForm
 from contas.forms import EnviarTokenForm, SenhaResetForm
 from universidades.models import UniversidadeModel
 from django.http import HttpResponseRedirect
@@ -51,6 +51,7 @@ def view_cadastrar_usuario(request):
 
     if request.method == 'POST' and 'loginForm' in request.POST:
         login_form = UsuarioLoginForm(data=request.POST)
+
         return login_form_body(request, view_login_usuario, login_form, login)
     else:
         login_form = UsuarioLoginForm()
@@ -803,6 +804,76 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
 
     return render(request, 'contas/perfil_sobre.html', args)
 
+
+@login_required
+def view_editar_perfil(request):
+    args = {}
+
+    perfil = PerfilModel.objects.get(usuario=request.user)
+    foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
+
+    if request.method == 'POST':
+
+        convites_amigos_post(request, 'conviteAmigoForm')
+        convites_eventos_post(request, 'conviteEventoForm')
+        convites_grupos_post(request, 'conviteGrupoForm')
+
+        usuario_form = UsuarioEditForm(data=request.POST)
+        perfil_form = PerfilEditForm(data=request.POST)
+        foto_form = ImagemUploadForm(files=request.FILES)
+
+        if usuario_form.is_valid() and perfil_form.is_valid() and foto_form.is_valid():
+            request.user.first_name = usuario_form.cleaned_data.get('first_name')
+            request.user.last_name = usuario_form.cleaned_data.get('last_name')
+
+            dia = perfil_form.cleaned_data.get('dia')
+            mes = perfil_form.cleaned_data.get('mes')
+            ano = perfil_form.cleaned_data.get('ano')
+
+            data_str = '%s-%s-%s' % (dia, mes, ano)
+            perfil.data_nascimento = datetime.strptime(data_str, '%d-%m-%Y')
+            perfil.curso = perfil_form.cleaned_data.get('curso')
+            perfil.universidade = perfil_form.cleaned_data.get('universidade')
+
+            perfil.save()
+            request.user.save()
+
+            foto.is_profile_image = False
+            foto.save()
+
+            foto = foto_form.save(commit=False)
+            foto.perfil = perfil
+            foto.is_profile_image = True
+
+            foto.save()
+
+            return HttpResponseRedirect('/perfil/' + perfil.universidade.sigla + '/' + perfil.perfil_link)
+    else:
+        usuario_form = UsuarioEditForm()
+        perfil_form = PerfilEditForm()
+        foto_form = ImagemUploadForm()
+
+        perfil_form.fields['universidade'].initial = perfil.universidade
+        perfil_form.fields['curso'].initial = perfil.curso
+        perfil_form.fields['dia'].initial = perfil.data_nascimento.day
+        perfil_form.fields['mes'].initial = perfil.data_nascimento.month
+        perfil_form.fields['ano'].initial = perfil.data_nascimento.year
+        usuario_form.fields['first_name'].initial = request.user.first_name
+        usuario_form.fields['last_name'].initial = request.user.last_name
+
+    args['convites_grupos'] = load_convites_grupos(request)
+    args['convites_eventos'] = load_convites_eventos(request)
+    args['convites_amigos'] = load_convites_amigos(perfil)
+    args['foto_form'] = foto_form
+    args['usuario_form'] = usuario_form
+    args['perfil_form'] = perfil_form
+    args['perfil'] = perfil
+    args['pesquisa_form'] = UsuarioSearchForm(data=request.GET)
+    args['foto'] = foto
+    args['idade'] = calcular_idade(perfil.data_nascimento)
+    args['aniversario'] = calcular_aniversario(perfil.data_nascimento)
+
+    return render(request, 'contas/perfil_editar.html', args)
 
 @login_required
 def view_desativar_perfil(request):

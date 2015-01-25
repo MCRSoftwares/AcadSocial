@@ -29,7 +29,7 @@ urlpatterns = patterns('',
                            views.view_perfil_usuario, name='perfil'),
                        url(r'^perfil/(?P<sigla>\w+)/(?P<perfil_link>[\w\-]+)/sobre/$',
                            views.view_perfil_usuario_sobre, name='perfil-sobre'),
-
+                       url(r'^perfil/editar/$', views.view_editar_perfil, name='perfil-editar'),
                        url(r'^conta/login/', views.view_login_usuario, name='login'),
                        url(r'^conta/logout/', views.view_logout_usuario, name='logout'),
 

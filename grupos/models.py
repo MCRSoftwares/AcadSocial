@@ -27,7 +27,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class GrupoModel(models.Model):
     gid = models.AutoField(_('grupo ID'), primary_key=True)
-    nome = models.CharField(max_length=128)
+    nome = models.CharField(max_length=100)
     descricao = models.TextField(_(u'descrição'), max_length=1024)
     criado_por = models.ForeignKey(UsuarioModel, related_name='criador_grupo')
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())
@@ -103,7 +103,7 @@ class MembroModel(models.Model):
 
 
 class EventoModel(models.Model):
-    titulo = models.CharField(_(u'título'), max_length=128)
+    titulo = models.CharField(_(u'título'), max_length=100)
     descricao = models.TextField(_(u'descrição'), max_length=256)
     grupo = models.ForeignKey(GrupoModel)
     data_criacao = models.DateTimeField(_(u'data de criação'), default=timezone.now())

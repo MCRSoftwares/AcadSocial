@@ -68,14 +68,11 @@
                 {% endif %}
             </div>
             {% if membro  %}
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="panel panel-default panel-bordeless btn-panel">
-                        <button class="panel-heading text-center" style="width:100%;" name="criarEvento">
-                            <span class="fa fa-calendar"></span> &nbsp;Criar Evento
-                        </button>
-                    </div>
-                </form>
+                <div class="panel panel-default panel-bordeless btn-panel">
+                    <button class="panel-heading text-center" style="width:100%;" name="criarEvento" onclick="location.href='{% url 'evento-criar' grupo.gid %}'">
+                        <span class="fa fa-calendar"></span> &nbsp;Criar Evento
+                    </button>
+                </div>
             {% endif %}
         </div>
         <div class="col-xs-8">

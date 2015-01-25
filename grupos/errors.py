@@ -24,3 +24,7 @@ erro_grupo = {
     'grupo_ja_existente': 'Este grupo já existe!',
     'grupo_invalido': 'Não é possível criar um grupo com este nome!',
 }
+
+erro_evento = {
+    'data_invalida': 'Esta data/hora não é válida!'
+}
