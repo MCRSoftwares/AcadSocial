@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v003a
+Versão do Código: 01v004a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -157,6 +157,18 @@ def view_usuario_search(request):
     args['foto'] = ImagemModel.objects.get(perfil__usuario=request.user, is_profile_image=True)
 
     return render(request, 'mainAcad/search.html', args)
+
+
+def view_reportar_bug(request):
+    pass
+
+
+def view_denuncia(request):
+    pass
+
+
+def view_fale_conosco(request):
+    pass
 
 
 def custom_404(request):

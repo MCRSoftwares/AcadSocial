@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v008a
+Versão do Código: 01v009a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -19,6 +19,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from grupos.models import GrupoModel, MembroModel
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from mainAcad.models import ImagemModel, AmigoModel
 from mainAcad.forms import UsuarioSearchForm
 from contas.models import PerfilModel, UsuarioModel
@@ -29,7 +30,7 @@ from grupos.forms import ComentarioGrupoForm, AdicionarInteresseForm, InteresseS
 from grupos.forms import GrupoSearchForm, AdicionarGrupoForm, PostagemGrupoForm, MembroSearchForm, ComentarioEventoForm
 from grupos.forms import EditarGrupoForm, AdminGrupoForm, EventoForm
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from grupos.methods import load_convites_amigos, load_convites_eventos, load_convites_grupos
@@ -49,7 +50,7 @@ def view_pagina_grupo(request, gid):
         membro = MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('index', args=[]))
 
     except MembroModel.DoesNotExist:
         membro = None
@@ -189,7 +190,7 @@ def view_pagina_grupo(request, gid):
                 comentario.data_criacao = timezone.now()
                 comentario.save()
 
-        return HttpResponseRedirect('/grupo/' + gid)
+        return HttpResponseRedirect(reverse('grupo-index', args=[gid]))
     else:
         comentario_form = ComentarioGrupoForm()
         postagem_form = PostagemGrupoForm()
@@ -227,7 +228,7 @@ def view_editar_grupo(request, gid):
             membro = MembroModel.objects.get(is_admin=True, grupo=grupo, usuario=request.user)
 
         except GrupoModel.DoesNotExist:
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse('index', args=[]))
 
         except MembroModel.DoesNotExist:
             return HttpResponseRedirect('/grupo/' + gid + '/')
@@ -254,7 +255,7 @@ def view_editar_grupo(request, gid):
                     g_membro.ativo = False
                     g_membro.save()
 
-                return HttpResponseRedirect('/grupo/lista/')
+                return HttpResponseRedirect(reverse('grupos-lista', args=[]))
 
             if 'membro' in request.POST:
 
@@ -272,7 +273,7 @@ def view_editar_grupo(request, gid):
                     membro.is_admin = False
                     membro.save()
 
-                    return HttpResponseRedirect('/grupo/' + gid + '/')
+                    return HttpResponseRedirect(reverse('grupo-index', args=[gid]))
 
             if 'descricao' and 'nome' in request.POST:
 
@@ -286,7 +287,7 @@ def view_editar_grupo(request, gid):
                     grupo.descricao = grupo_desc
                     grupo.save()
 
-                    return HttpResponseRedirect('/grupo/' + gid + '/')
+                    return HttpResponseRedirect(reverse('grupo-index', args=[gid]))
 
             else:
                 editar_form = EditarGrupoForm()
@@ -469,7 +470,7 @@ def view_lista_grupos(request):
                 membro.is_admin = True
                 membro.save()
 
-                return HttpResponseRedirect('/grupo/' + str(grupo.gid))
+                return HttpResponseRedirect(reverse('grupo-index', args=[str(grupo.gid)]))
 
         if 'addGrupo' in request.POST:
             grupo_id = request.POST.get('addGrupo')
@@ -480,7 +481,7 @@ def view_lista_grupos(request):
             membro.usuario = request.user
             membro.save()
 
-            return HttpResponseRedirect('/grupo/lista/')
+            return HttpResponseRedirect(reverse('grupos-lista', args=[]))
 
     else:
         grupo_form = AdicionarGrupoForm()
@@ -738,7 +739,7 @@ def view_postagem_grupo(request, gid, pid):
                 postagem.ativo = False
                 postagem.save()
 
-                return HttpResponseRedirect('/grupo/' + gid)
+                return HttpResponseRedirect(reverse('grupo-index', args=[gid]))
 
             except PostagemGrupoModel.DoesNotExist:
                 pass
@@ -788,21 +789,39 @@ def view_lista_eventos(request, gid):
         membro = MembroModel.objects.get(usuario=request.user, ativo=True, grupo=grupo)
 
     except GrupoModel.DoesNotExist:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('index', args=[]))
 
     except MembroModel.DoesNotExist:
-        return HttpResponseRedirect('/grupo/' + gid)
+        return HttpResponseRedirect(reverse('grupo-index', args=[gid]))
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
 
     membros = MembroModel.objects.filter(grupo=grupo, ativo=True)
-    eventos = EventoModel.objects.filter(grupo=grupo, ativo=True).order_by('data_evento')
+    eventos_tmp = EventoModel.objects.filter(grupo=grupo, ativo=True, cancelado=False)
 
-    paginas = Paginator(eventos, 10)
+    for evento in eventos_tmp:
+
+        if evento.data_evento < timezone.now():
+            evento.ativo = False
+            evento.save()
+
+    eventos = EventoModel.objects.filter(grupo=grupo, ativo=True, cancelado=False).order_by('data_evento')
+
     participando_dict = {}
+    filtro = 'ativos'
 
     if request.method == 'GET':
+
+        if 'evt' in request.GET:
+            filtro = request.GET.get('evt')
+
+            if filtro == 'inativos':
+                eventos = EventoModel.objects.filter(grupo=grupo, ativo=False, cancelado=False).order_by('data_evento')
+            elif filtro == 'cancelados':
+                eventos = EventoModel.objects.filter(grupo=grupo, ativo=True, cancelado=True).order_by('data_evento')
+
+        paginas = Paginator(eventos, 10)
         pagina = request.GET.get('pg')
 
         try:
@@ -828,9 +847,22 @@ def view_lista_eventos(request, gid):
         convites_eventos_post(request, 'conviteEventoForm')
         convites_grupos_post(request, 'conviteGrupoForm')
 
+        if 'restaurarEvento' in request.POST:
+            eid = request.POST.get('restaurarEvento')
+            evento = EventoModel.objects.get(eid=eid, cancelado=True)
+            evento.cancelado = False
+            evento.ativo = True
+
+            if evento.data_evento < timezone.now():
+                evento.data_evento = timezone.now() + timedelta(days=1)
+
+            evento.save()
+
+            return HttpResponseRedirect(reverse('grupo-evento', args=[gid, eid]))
+
         if 'participarEvento' in request.POST:
             eid = request.POST.get('participarEvento')
-            evento = EventoModel.objects.get(eid=eid)
+            evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
 
             print eid
 
@@ -846,7 +878,7 @@ def view_lista_eventos(request, gid):
 
         if 'sairEvento' in request.POST:
             eid = request.POST.get('sairEvento')
-            evento = EventoModel.objects.get(eid=eid)
+            evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
 
             try:
                 participa = ParticipaEventoModel.objects.get(evento=evento, usuario=request.user)
@@ -857,6 +889,7 @@ def view_lista_eventos(request, gid):
 
         return HttpResponseRedirect('')
 
+    args['filtro'] = filtro
     args['participando'] = participando_dict
     args['membro'] = membro
     args['qtd_membros'] = len(list(membros))
@@ -880,17 +913,26 @@ def view_evento_grupo(request, gid, eid):
     try:
         grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         membro = MembroModel.objects.get(usuario=request.user, ativo=True, grupo=grupo)
+        evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
 
     except GrupoModel.DoesNotExist:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('index', args=[]))
 
     except MembroModel.DoesNotExist:
-        return HttpResponseRedirect('/grupo/' + gid)
+        return HttpResponseRedirect(reverse('grupo-index', args=[gid]))
+
+    except EventoModel.DoesNotExist:
+        return HttpResponseRedirect(reverse('eventos-lista', args=[gid]))
+
+    if evento.data_evento < timezone.now():
+        evento.ativo = False
+        evento.save()
+
+        return HttpResponseRedirect('/grupo/' + gid + '/evento/lista/')
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
 
-    evento = EventoModel.objects.get(eid=eid, ativo=True)
     postagens = PostagemEventoModel.objects.filter(evento=evento, grupo=grupo, ativo=True)
     comentarios = ComentarioEventoModel.objects.filter(postagem__in=postagens, ativo=True)
     participando = ParticipaEventoModel.objects.filter(evento=evento, ativo=True)
@@ -960,7 +1002,7 @@ def view_evento_grupo(request, gid, eid):
 
         if 'participarEvento' in request.POST:
             eid = request.POST.get('participarEvento')
-            evento = EventoModel.objects.get(eid=eid)
+            evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
 
             try:
                 participa = ParticipaEventoModel.objects.get(evento=evento, usuario=request.user)
@@ -974,7 +1016,7 @@ def view_evento_grupo(request, gid, eid):
 
         if 'sairEvento' in request.POST:
             eid = request.POST.get('sairEvento')
-            evento = EventoModel.objects.get(eid=eid)
+            evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
 
             try:
                 participa = ParticipaEventoModel.objects.get(evento=evento, usuario=request.user)
@@ -1503,7 +1545,7 @@ def view_evento_convidar(request, gid, eid):
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
     grupo = GrupoModel.objects.get(gid=gid, ativo=True)
     membros = MembroModel.objects.filter(grupo=grupo, ativo=True)
-    evento = EventoModel.objects.get(eid=eid, ativo=True)
+    evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
     convidados = ConviteEventoModel.objects.filter(evento=evento, ativo=True)
     participa = ParticipaEventoModel.objects.filter(evento=evento, ativo=True)
 
@@ -1686,13 +1728,19 @@ def view_editar_evento(request, gid, eid):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
     grupo = GrupoModel.objects.get(gid=gid, ativo=True)
-    evento = EventoModel.objects.get(eid=eid)
+    evento = EventoModel.objects.get(eid=eid, ativo=True, cancelado=False)
 
     if request.method == 'POST':
 
         convites_amigos_post(request, 'conviteAmigoForm')
         convites_eventos_post(request, 'conviteEventoForm')
         convites_grupos_post(request, 'conviteGrupoForm')
+
+        if 'cancelarEvento' in request.POST:
+            evento.cancelado = True
+            evento.save()
+
+            return HttpResponseRedirect('/grupo/' + gid + '/evento/lista/')
 
         if 'titulo' and 'descricao' and 'local_evento' in request.POST:
             evento_form = EventoForm(data=request.POST)

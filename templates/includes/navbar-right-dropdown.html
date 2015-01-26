@@ -1,0 +1,47 @@
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <span class="glyphicon glyphicon-cog"></span>
+        <b class="caret"></b>
+    </a>
+
+    <div class="dropdown-menu panel-dropdown">
+        <ul class="panel-list">
+            <li>
+                <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
+                    <i class="fa fa-user"></i>
+                    <span>Meu Perfil</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'perfil-editar' %}">
+                    <i class="fa fa-edit"></i>
+                    <span>Editar Perfil</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <i class="fa fa-bug"></i>
+                    <span>Reportar Bug</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <i class="fa fa-thumbs-down"></i>
+                    <span>Denunciar</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <i class="fa fa-envelope"></i>
+                    <span>Fale Conosco</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}">
+                    <i class="fa fa-power-off"></i>
+                    <span>Sair</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>

@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v002a
+Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -280,10 +280,10 @@ class EventoForm(forms.ModelForm):
     ano_list.insert(0, (0, 'Ano'))
 
     hora_list = [(x, str(x)) for x in range(0, 24)]
-    hora_list.insert(0, (0, 'Hora'))
+    hora_list.insert(0, (-1, 'Hora'))
 
     minutos_list = [(x * 5, str(x * 5)) for x in range(0, 12)]
-    minutos_list.insert(0, (0, 'Minutos'))
+    minutos_list.insert(0, (-1, 'Minutos'))
 
     dia = forms.ChoiceField(choices=dia_list, widget=forms.Select(dia_attrs))
     mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(mes_attrs))

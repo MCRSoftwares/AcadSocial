@@ -49,11 +49,29 @@
                     <br>
                     <span class="feed-datetime">
                         {% if qtd_eventos == 0 %}
-                            Não há eventos neste grupo
+                            {% if filtro == 'inativos' %}
+                                Não há eventos inativos neste grupo
+                            {% elif filtro == 'cancelados' %}
+                                Não há eventos cancelados neste grupo
+                            {% else %}
+                                Não há eventos ativos neste grupo
+                            {% endif %}
                         {% elif qtd_eventos == 1 %}
-                            1 evento ativo
+                            {% if filtro == 'inativos' %}
+                                1 evento inativo
+                            {% elif filtro == 'cancelados' %}
+                                1 evento cancelado
+                            {% else %}
+                                1 evento ativo
+                            {% endif %}
                         {% else %}
-                            {{ qtd_eventos }} eventos ativos
+                            {% if filtro == 'inativos' %}
+                                {{ qtd_eventos }} eventos inativos
+                            {% elif filtro == 'cancelados' %}
+                                {{ qtd_eventos }} eventos cancelados
+                            {% else %}
+                                {{ qtd_eventos }} eventos ativos
+                            {% endif %}
                         {% endif %}
                     </span>
                 </div>
@@ -72,6 +90,30 @@
                     <button class="panel-heading text-center" style="width:100%;" name="criarEvento" onclick="location.href='{% url 'evento-criar' grupo.gid %}'">
                         <span class="fa fa-calendar"></span> &nbsp;Criar Evento
                     </button>
+                </div>
+
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center" style="width:100%;">
+                        <span class="fa fa-power-off"></span> &nbsp;Filtros
+                    </div>
+                    <ul class="panel-list">
+                        <li {% if filtro == 'ativos' %}class="lista-active"{% endif %}>
+                            <a href="?evt=ativos">
+                                <span class="fa fa-check"></span> &nbsp;Ativos
+                            </a>
+                        </li>
+                        <li {% if filtro == 'inativos' %}class="lista-active"{% endif %}>
+                            <a href="?evt=inativos">
+                                <span class="fa fa-power-off"></span> &nbsp;Inativos
+                            </a>
+                        </li>
+                        <li {% if filtro == 'cancelados' %}class="lista-active"{% endif %}>
+                            <a href="?evt=cancelados">
+                                <span class="fa fa-trash"></span> &nbsp;Cancelados
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="panel-footer"></div>
                 </div>
             {% endif %}
         </div>
@@ -99,41 +141,99 @@
                     </div>
                 </div>
                 <div class="col-xs-5">
-                    <div class="panel panel-default panel-bordeless">
-                        <div class="panel-heading text-center truncate">
-                            <a href="{% url 'grupo-evento' grupo.gid evento.eid %}"><span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}</a>
-                        </div>
-                        <div class="panel-body text-center truncate">
-                            <a href="{% url 'grupo-evento' grupo.gid evento.eid %}" class="feed-link">
-                                <span class="profile-image fa fa-calendar" style="font-size:60pt;"></span>
-                            </a>
-                            <br>
-                            <span class="feed-datetime">
-                                Criado por:
-                            </span>
-                            <br>
-                            <span class="feed-link">
-                                <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}">
-                                    {{ evento.criado_por.full_name }}
+                    {% if filtro == 'inativos' %}
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center truncate">
+                                <a href=""><span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}</a>
+                            </div>
+                            <div class="panel-body text-center truncate">
+                                <a href="" class="feed-link">
+                                    <span class="profile-image fa fa-calendar" style="font-size:60pt;"></span>
                                 </a>
-                            </span>
+                                <br>
+                                <span class="feed-datetime">
+                                    Criado por:
+                                </span>
+                                <br>
+                                <span class="feed-link">
+                                    <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}">
+                                        {{ evento.criado_por.full_name }}
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="panel-footer text-center">
+                                Este evento já ocorreu!
+                            </div>
                         </div>
-                        {% if participando|item:evento %}
-                            <form method="POST">
-                                {% csrf_token %}
-                                <button class="panel-footer" name="sairEvento" value="{{ evento.eid }}">
-                                    Sair do Evento
-                                </button>
-                            </form>
-                        {% else %}
-                            <form method="POST">
-                                {% csrf_token %}
-                                <button class="panel-footer" name="participarEvento" value="{{ evento.eid }}">
-                                    Participar
-                                </button>
-                            </form>
-                        {% endif %}
-                    </div>
+                    {% elif filtro == 'cancelados' %}
+                         <div class="panel panel-default panel-bordeless">
+                             <div class="panel-heading text-center truncate">
+                                <a href=""><span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}</a>
+                             </div>
+                             <div class="panel-body text-center truncate">
+                                <a href="" class="feed-link">
+                                    <span class="profile-image fa fa-calendar" style="font-size:60pt;"></span>
+                                </a>
+                                <br>
+                                <span class="feed-datetime">
+                                    Criado por:
+                                </span>
+                                <br>
+                                <span class="feed-link">
+                                    <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}">
+                                        {{ evento.criado_por.full_name }}
+                                    </a>
+                                </span>
+                             </div>
+                             {% if user == evento.criado_por %}
+                                 <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="panel-footer" name="restaurarEvento" value="{{ evento.eid }}">Restaurar Evento</button>
+                                 </form>
+                             {% else %}
+                                <div class="panel-footer text-center">
+                                    Este evento foi cancelado!
+                                </div>
+                             {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="panel panel-default panel-bordeless">
+                            <div class="panel-heading text-center truncate">
+                                <a href="{% url 'grupo-evento' grupo.gid evento.eid %}"><span class="fa fa-calendar"></span> &nbsp;{{ evento.titulo }}</a>
+                            </div>
+                            <div class="panel-body text-center truncate">
+                                <a href="{% url 'grupo-evento' grupo.gid evento.eid %}" class="feed-link">
+                                    <span class="profile-image fa fa-calendar" style="font-size:60pt;"></span>
+                                </a>
+                                <br>
+                                <span class="feed-datetime">
+                                    Criado por:
+                                </span>
+                                <br>
+                                <span class="feed-link">
+                                    <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}">
+                                        {{ evento.criado_por.full_name }}
+                                    </a>
+                                </span>
+                            </div>
+
+                            {% if participando|item:evento %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="panel-footer" name="sairEvento" value="{{ evento.eid }}">
+                                        Sair do Evento
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button class="panel-footer" name="participarEvento" value="{{ evento.eid }}">
+                                        Participar
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
             <div class="col-xs-12 no-left-padding">

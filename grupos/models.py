@@ -3,7 +3,7 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Código: 01v005a
+Versão do Código: 01v006a
 
 Responsável: Victor Ferraz
 Auxiliar: -
@@ -112,6 +112,7 @@ class EventoModel(models.Model):
     criado_por = models.ForeignKey(UsuarioModel)
     eid = models.AutoField(primary_key=True)
     ativo = models.BooleanField(default=True)
+    cancelado = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.titulo + ' (' + unicode(self.criado_por) + ')'
