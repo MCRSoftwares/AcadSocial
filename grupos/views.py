@@ -235,7 +235,7 @@ def view_editar_grupo(request, gid):
         perfil = PerfilModel.objects.get(usuario=request.user)
         foto = ImagemModel.objects.get(perfil=perfil, is_active=True, is_profile_image=True)
         membros = MembroModel.objects.filter(grupo=grupo, ativo=True)
-        usuarios = UsuarioModel.object.filter(membromodel__in=membros)
+        usuarios = UsuarioModel.object.filter(Q(membromodel__in=membros), ~Q(membromodel=membro))
 
         admin_form = AdminGrupoForm()
         admin_form.fields['membro'].queryset = usuarios
@@ -503,7 +503,8 @@ def view_pagina_interesse(request, iid):
 
     for u_interesse in usuarios_interesse:
         if u_interesse.usuario not in usuarios:
-            usuarios[u_interesse.usuario] = ImagemModel.objects.get(perfil=u_interesse.usuario.perfilmodel)
+            usuarios[u_interesse.usuario] = ImagemModel.objects.get(perfil=u_interesse.usuario.perfilmodel,
+                                                                    is_profile_image=True)
 
     if request.method == 'POST':
 
@@ -624,9 +625,15 @@ def view_interesses(request):
             interesse_id = request.POST.get('addInteresse')
             interesse_obj = InteresseModel.objects.get(iid=interesse_id)
 
-            usuario_interesse = UsuarioInteresseModel()
-            usuario_interesse.interesse = interesse_obj
-            usuario_interesse.usuario = request.user
+            try:
+                usuario_interesse = UsuarioInteresseModel.objects.get(interesse=interesse_obj)
+                usuario_interesse.ativo = True
+
+            except UsuarioInteresseModel.DoesNotExist:
+                usuario_interesse = UsuarioInteresseModel()
+                usuario_interesse.interesse = interesse_obj
+                usuario_interesse.usuario = request.user
+
             usuario_interesse.save()
 
             return HttpResponseRedirect('/interesse/lista/')
@@ -1269,14 +1276,25 @@ def view_grupo_interesses(request, gid):
                 interesse.criado_por = request.user
                 interesse.save()
 
-                usuario_interesse = UsuarioInteresseModel()
-                usuario_interesse.interesse = interesse
-                usuario_interesse.usuario = request.user
+                try:
+                    usuario_interesse = UsuarioInteresseModel.objects.get(interesse=interesse)
+                    usuario_interesse.ativo = True
+
+                except UsuarioInteresseModel.DoesNotExist:
+                    usuario_interesse = UsuarioInteresseModel()
+                    usuario_interesse.interesse = interesse
+                    usuario_interesse.usuario = request.user
+
                 usuario_interesse.save()
 
-                grupo_interesse = GrupoInteresseModel()
-                grupo_interesse.interesse = interesse
-                grupo_interesse.grupo = grupo
+                try:
+                    grupo_interesse = GrupoInteresseModel.objects.get(interesse=interesse)
+                    grupo_interesse.ativo = True
+                except GrupoInteresseModel.DoesNotExist:
+                    grupo_interesse = GrupoInteresseModel()
+                    grupo_interesse.interesse = interesse
+                    grupo_interesse.grupo = grupo
+
                 grupo_interesse.save()
 
         if 'addInteresse' in request.POST:
@@ -1673,6 +1691,7 @@ def view_editar_evento(request, gid, eid):
 
                 evento.titulo = evento_form.cleaned_data.get('titulo')
                 evento.descricao = evento_form.cleaned_data.get('descricao')
+                evento.local_evento = evento_form.cleaned_data.get('local_evento')
 
                 dia = evento_form.cleaned_data['dia']
                 mes = evento_form.cleaned_data['mes']

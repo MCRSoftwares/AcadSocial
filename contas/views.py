@@ -838,12 +838,13 @@ def view_editar_perfil(request):
             perfil.save()
             request.user.save()
 
-            foto.is_profile_image = False
-            foto.save()
+            if 'imagem' in request.FILES and request.FILES['imagem']:
+                foto.is_profile_image = False
+                foto.save()
 
-            foto = foto_form.save(commit=False)
-            foto.perfil = perfil
-            foto.is_profile_image = True
+                foto = foto_form.save(commit=False)
+                foto.perfil = perfil
+                foto.is_profile_image = True
 
             foto.save()
 
