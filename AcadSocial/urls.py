@@ -26,6 +26,8 @@ urlpatterns = patterns('',
                        url(r'^', include('grupos.urls')),
                        )
 
+handler404 = 'mainAcad.views.custom_404'
+handler500 = 'mainAcad.views.custom_500'
 if settings.DEBUG:
     urlpatterns += patterns('django.views.static', (r'media/(?P<path>.*)', 'serve',
                                                     {'document_root': settings.MEDIA_ROOT}))

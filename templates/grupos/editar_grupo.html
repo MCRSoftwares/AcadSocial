@@ -71,17 +71,17 @@
                 <div class="panel-footer text-center" style="margin-top:0;">
                     Você administra este grupo!
                 </div>
-                {% if membros|length == 1 %}
-                    <div class="panel panel-default panel-bordeless btn-panel">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <button class="panel-heading text-center" style="width:100%;">
-                                <span class="fa fa-remove"></span> Excluir Grupo
-                            </button>
-                        </form>
-                    </div>
-                {% endif %}
             </div>
+            {% if membros|length == 1 %}
+                <div class="panel panel-default panel-bordeless btn-panel">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button class="panel-heading text-center" style="width:100%;" name="excluirGrupo">
+                            <span class="fa fa-remove"></span> Excluir Grupo
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
         </div>
         <div class="col-xs-8">
             <div class="panel panel-default panel-bordeless">

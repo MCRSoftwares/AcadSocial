@@ -157,3 +157,11 @@ def view_usuario_search(request):
     args['foto'] = ImagemModel.objects.get(perfil__usuario=request.user, is_profile_image=True)
 
     return render(request, 'mainAcad/search.html', args)
+
+
+def custom_404(request):
+    return render(request, '404.html', {}, status=404)
+
+
+def custom_500(request):
+    return render(request, '500.html', {}, status=500)

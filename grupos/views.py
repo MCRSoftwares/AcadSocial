@@ -45,7 +45,7 @@ def view_pagina_grupo(request, gid):
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         membro = MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
@@ -223,7 +223,7 @@ def view_editar_grupo(request, gid):
         args = {}
 
         try:
-            grupo = GrupoModel.objects.get(gid=gid)
+            grupo = GrupoModel.objects.get(gid=gid, ativo=True)
             membro = MembroModel.objects.get(is_admin=True, grupo=grupo, usuario=request.user)
 
         except GrupoModel.DoesNotExist:
@@ -245,6 +245,16 @@ def view_editar_grupo(request, gid):
             convites_amigos_post(request, 'conviteAmigoForm')
             convites_eventos_post(request, 'conviteEventoForm')
             convites_grupos_post(request, 'conviteGrupoForm')
+
+            if 'excluirGrupo' in request.POST:
+                grupo.ativo = False
+                grupo.save()
+
+                for g_membro in membros:
+                    g_membro.ativo = False
+                    g_membro.save()
+
+                return HttpResponseRedirect('/grupo/lista/')
 
             if 'membro' in request.POST:
 
@@ -304,7 +314,7 @@ def view_entrar_grupo(request, gid):
     grupo = None
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         MembroModel.objects.get(usuario=request.user, grupo=grupo)
 
     except GrupoModel.DoesNotExist:
@@ -327,7 +337,7 @@ def view_sobre_grupo(request, gid):
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         membro = MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
@@ -660,7 +670,7 @@ def view_postagem_grupo(request, gid, pid):
     args = {}
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
@@ -774,7 +784,7 @@ def view_lista_eventos(request, gid):
     args = {}
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         membro = MembroModel.objects.get(usuario=request.user, ativo=True, grupo=grupo)
 
     except GrupoModel.DoesNotExist:
@@ -868,7 +878,7 @@ def view_evento_grupo(request, gid, eid):
     args = {}
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         membro = MembroModel.objects.get(usuario=request.user, ativo=True, grupo=grupo)
 
     except GrupoModel.DoesNotExist:
@@ -1064,7 +1074,7 @@ def view_postagem_evento(request, gid, eid, pid):
     args = {}
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
@@ -1213,7 +1223,7 @@ def view_grupo_interesses(request, gid):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    grupo = GrupoModel.objects.get(gid=gid)
+    grupo = GrupoModel.objects.get(gid=gid, ativo=True)
     grupo_interesses = GrupoInteresseModel.objects.filter(grupo=grupo, ativo=True)
 
     interesses = []
@@ -1345,7 +1355,7 @@ def view_grupo_convidar(request, gid):
     args = {}
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
@@ -1480,7 +1490,7 @@ def view_evento_convidar(request, gid, eid):
     args = {}
 
     try:
-        grupo = GrupoModel.objects.get(gid=gid)
+        grupo = GrupoModel.objects.get(gid=gid, ativo=True)
         MembroModel.objects.get(grupo=grupo, usuario=request.user, ativo=True)
 
     except GrupoModel.DoesNotExist:
@@ -1491,7 +1501,7 @@ def view_evento_convidar(request, gid, eid):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    grupo = GrupoModel.objects.get(gid=gid)
+    grupo = GrupoModel.objects.get(gid=gid, ativo=True)
     membros = MembroModel.objects.filter(grupo=grupo, ativo=True)
     evento = EventoModel.objects.get(eid=eid, ativo=True)
     convidados = ConviteEventoModel.objects.filter(evento=evento, ativo=True)
@@ -1615,7 +1625,7 @@ def view_criar_evento(request, gid):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    grupo = GrupoModel.objects.get(gid=gid)
+    grupo = GrupoModel.objects.get(gid=gid, ativo=True)
 
     if request.method == 'POST':
 
@@ -1675,7 +1685,7 @@ def view_editar_evento(request, gid, eid):
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
-    grupo = GrupoModel.objects.get(gid=gid)
+    grupo = GrupoModel.objects.get(gid=gid, ativo=True)
     evento = EventoModel.objects.get(eid=eid)
 
     if request.method == 'POST':
