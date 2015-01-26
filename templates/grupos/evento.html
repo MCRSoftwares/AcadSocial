@@ -143,7 +143,7 @@
                         <li class="not-link-list text-center">Não há membros neste evento!</li>
                     {% else %}
                         {% for u_membro, membro_foto in participantes.iteritems %}
-                            <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
+                            <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla_campus u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
                                 <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
                                 &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
                             </a></li>
@@ -184,7 +184,7 @@
                             <a href=""><span class="fa fa-group"></span> {{ grupo.nome }}</a>
                         </div>
                         <div class="panel-body text-center truncate">
-                            <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}"
+                            <a href="{% url 'perfil' perfil.universidade.sigla_campus perfil.perfil_link %}"
                                class="feed-link">
                                 <img src="/media/{{ foto.thumbnail_home }}" class="profile-image">
                                 <br>

@@ -24,9 +24,14 @@ class UniversidadeModel(models.Model):
     sigla = models.CharField(max_length=20)
     nome = models.CharField(max_length=256)
     campus = models.CharField(max_length=128)
+    sigla_campus = models.CharField(max_length=148)
 
     def __unicode__(self):
         return self.sigla + ' (' + self.campus + ')'
+
+    def save(self, *args, **kwargs):
+        self.sigla_campus = self.sigla + '' + self.campus
+        super(UniversidadeModel, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('universidade')

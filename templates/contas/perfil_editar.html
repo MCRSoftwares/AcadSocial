@@ -67,10 +67,10 @@
     <li class="divider-vertical"></li>
     <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
     <li class="divider-vertical"></li>
-    <li class="lista-active"><a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}">
+    <li class="lista-active"><a href="{% url 'perfil' perfil.universidade.sigla_campus perfil.perfil_link %}">
         <i class="fa fa-user"></i> Perfil de {{ perfil.usuario.first_name }}</a></li>
     <li class="divider-vertical"></li>
-    <li><a href="{% url 'perfil-sobre' perfil.universidade.sigla perfil.perfil_link %}"><i class="fa fa-info-circle"></i> Sobre {{ perfil.usuario.first_name }}</a></li>
+    <li><a href="{% url 'perfil-sobre' perfil.universidade.sigla_campus perfil.perfil_link %}"><i class="fa fa-info-circle"></i> Sobre {{ perfil.usuario.first_name }}</a></li>
     <li class="divider-vertical"></li>
 {% endblock %}
 
@@ -84,13 +84,13 @@
                 <div class="panel-body text-center truncate-line border-sides">
                     <img src="/media/{{ foto.thumbnail_perfil }}" class="profile-image-big">
                     <br>
-                    <a href="{% url 'perfil' perfil.universidade.sigla perfil.perfil_link %}" class="feed-link"><span class="fa fa-user"></span> {{ user.full_name }}</a>
+                    <a href="{% url 'perfil' perfil.universidade.sigla_campus perfil.perfil_link %}" class="feed-link"><span class="fa fa-user"></span> {{ user.full_name }}</a>
                 </div>
                 <div class="panel-heading perfil-about-heading">
                     <span class="fa fa-info-circle"></span> Sobre
                 </div>
                 <div class="panel-heading perfil-about-body">
-                    <span class="fa fa-graduation-cap"></span> {{ perfil.universidade.sigla }} ({{ perfil.universidade.campus }})
+                    <span class="fa fa-graduation-cap"></span> {{ perfil.universidade.sigla_campus }} ({{ perfil.universidade.campus }})
                 </div>
                 <div class="panel-heading perfil-about-body">
                     <span class="fa fa-book"></span> {{ perfil.curso }}

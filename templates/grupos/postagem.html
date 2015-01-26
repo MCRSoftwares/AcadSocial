@@ -56,7 +56,7 @@
                     <a href="{% url 'grupo-index' postagem.grupo.gid %}"><span class="fa fa-group"></span> {{ postagem.grupo.nome }}</a>
                 </div>
                 <div class="panel-body text-center truncate">
-                    <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}" class="feed-link">
+                    <a href="{% url 'perfil' perfil_postagem.universidade.sigla_campus perfil_postagem.perfil_link %}" class="feed-link">
                         <img src="/media/{{ foto_postagem }}" class="profile-image-big">
                         <br>
                         {{ postagem.criado_por.full_name }}
@@ -109,13 +109,13 @@
                             <span id="comment-{{ comentario.cid }}">
                                 <div class="panel-body comment-start" style="padding:10px;">
                                     <div class="col-xs-1" style="padding:0;">
-                                        <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}">
+                                        <a href="{% url 'perfil' perfil_postagem.universidade.sigla_campus perfil_postagem.perfil_link %}">
                                             <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}" class="profile-image">
                                         </a>
                                     </div>
                                     <div class="col-xs-10 comment-user no-padding">
                                         &nbsp&nbsp
-                                        <a href="{% url 'perfil' perfil_postagem.universidade.sigla perfil_postagem.perfil_link %}">
+                                        <a href="{% url 'perfil' perfil_postagem.universidade.sigla_campus perfil_postagem.perfil_link %}">
                                             {{ comentario.criado_por.full_name }}
                                         </a>
                                         <br>

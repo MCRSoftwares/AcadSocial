@@ -25,7 +25,7 @@
 
         setInterval(function() {
                 $.ajax({
-                    url: '{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}',
+                    url: '{% url 'perfil' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}',
                     success: function(data) {
                         var qtd = $('#qtdComments', data).html();
                         $('#qtdComments').html(qtd);
@@ -45,10 +45,10 @@
     <li class="divider-vertical"></li>
     <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
     <li class="divider-vertical"></li>
-    <li class="lista-active"><a href="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}">
+    <li class="lista-active"><a href="{% url 'perfil' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}">
         <i class="fa fa-user"></i> Perfil de {{ pag_perfil.usuario.first_name }}</a></li>
     <li class="divider-vertical"></li>
-    <li><a href="{% url 'perfil-sobre' pag_perfil.universidade.sigla pag_perfil.perfil_link %}"><i class="fa fa-info-circle"></i> Sobre {{ pag_perfil.usuario.first_name }}</a></li>
+    <li><a href="{% url 'perfil-sobre' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}"><i class="fa fa-info-circle"></i> Sobre {{ pag_perfil.usuario.first_name }}</a></li>
     <li class="divider-vertical"></li>
 {% endblock %}
 
@@ -68,7 +68,7 @@
                     <span class="fa fa-info-circle"></span> Sobre
                 </div>
                 <div class="panel-heading perfil-about-body">
-                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla }} ({{ universidade.campus }})
+                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla_campus }} ({{ universidade.campus }})
                 </div>
                 <div class="panel-heading perfil-about-body">
                     <span class="fa fa-book"></span> {{ pag_perfil.curso }}
@@ -133,7 +133,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <a href="{% url 'perfil-sobre' universidade.sigla pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
+                    <a href="{% url 'perfil-sobre' universidade.sigla_campus pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
                 {% endif %}
             </div>
             <div class="panel panel-default panel-bordeless">
@@ -156,7 +156,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <a href="{% url 'perfil-sobre' universidade.sigla pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
+                    <a href="{% url 'perfil-sobre' universidade.sigla_campus pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
                 {% endif %}
 
             </div>
@@ -175,14 +175,14 @@
                     <ul class="panel-list panel-list-friends">
                         {% for amigo, amigo_foto in amigos.iteritems|slice:':5' %}
                             <li>
-                                <a href="{% url 'perfil' amigo.amigo.universidade.sigla amigo.amigo.perfil_link %}" style="padding-left: 0;">
+                                <a href="{% url 'perfil' amigo.amigo.universidade.sigla_campus amigo.amigo.perfil_link %}" style="padding-left: 0;">
                                     <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
                                     &nbsp&nbsp{{ amigo.amigo.usuario.full_name }}
                                 </a>
                             </li>
                         {% endfor %}
                     </ul>
-                    <a href="{% url 'perfil-sobre' universidade.sigla pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
+                    <a href="{% url 'perfil-sobre' universidade.sigla_campus pag_perfil.perfil_link %}" class="panel-footer text-center">Ver Todos</a>
                 {% endif %}
             </div>
         </div>
@@ -230,7 +230,7 @@
                                 </div>
                                 <div class="col-xs-1 no-padding">
                                     {% if postagem.criado_por == user %}
-                                        <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}" id="postagemForm-{{ postagem.pid }}">
+                                        <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}" id="postagemForm-{{ postagem.pid }}">
                                             {% csrf_token %}
                                             <button class="close" type="button"
                                                     style="font-size:11pt;font-family: Open Sans, sans-serif;"
@@ -247,7 +247,7 @@
                                 {{ postagem.conteudo }}
                             </div>
                             <div class="panel-footer">
-                                <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}" id="commentForm-{{ postagem.pid }}">
+                                <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}" id="commentForm-{{ postagem.pid }}">
                                     {% csrf_token %}
                                     <div class="form-group">
                                         <textarea name="comentario" class="comment-bar form-control comment-bar-focus"
@@ -285,7 +285,7 @@
                                             </div>
                                             <div class="col-xs-1 no-padding" style="margin-top:-5px;">
                                                 {% if comentario.criado_por == user or postagem.criado_por == user %}
-                                                    <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}"
+                                                    <form method="post" action="{% url 'perfil' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}"
                                                           id="commentForm-{{ postagem.pid }}-{{ comentario.cid }}">
                                                         {% csrf_token %}
                                                         <button class="close" type="button" style="font-size:11pt;"

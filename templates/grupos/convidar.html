@@ -58,7 +58,7 @@
                     {% else %}
                         {% for convidado, convidado_foto in list_convidados.iteritems %}
                             <li>
-                                <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla_campus convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
                                     <img style="border-right:3px solid #e7e7e7;" src="/media/{{ convidado_foto.thumbnail }}">
                                     &nbsp;&nbsp;{{ convidado.full_name|capfirst }}
                                 </a>
@@ -102,14 +102,14 @@
                             <div class="col-xs-6">
                                 <div class="panel panel-default panel-bordeless">
                                     <div class="panel-heading text-center truncate">
-                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}">{{ usuario.full_name|capfirst }}</a>
+                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla_campus usuario.perfilmodel.perfil_link %}">{{ usuario.full_name|capfirst }}</a>
                                     </div>
                                     <div class="panel-body text-center">
-                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}" class="feed-link">
+                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla_campus usuario.perfilmodel.perfil_link %}" class="feed-link">
                                             <img src="/media/{{ usuario_foto.thumbnail_perfil }}" class="profile-image-big">
                                         </a>
                                         <br>
-                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}" class="feed-link">{{ usuario.full_name|capfirst }}</a>
+                                        <a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla_campus usuario.perfilmodel.perfil_link %}" class="feed-link">{{ usuario.full_name|capfirst }}</a>
                                         <br>
                                     </div>
 
@@ -141,7 +141,7 @@
                 <div class="col-xs-7" style="margin-top:-5px;">
                     <div class="panel panel-default panel-bordeless">
                         <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
-                            <li><a href="{% url 'perfil' u_amigo.amigo.universidade.sigla u_amigo.amigo.perfil_link %}" style="padding-left:0;">
+                            <li><a href="{% url 'perfil' u_amigo.amigo.universidade.sigla_campus u_amigo.amigo.perfil_link %}" style="padding-left:0;">
                                 <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
                                 &nbsp;&nbsp;{{ u_amigo.amigo.usuario.full_name|capfirst }}
                             </a></li>

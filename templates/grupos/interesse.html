@@ -23,7 +23,7 @@
                     <div class="feed-datetime" style="margin-top:10px;">
                         Adicionado por:
                     </div>
-                    <a href="{% url 'perfil' interesse.criado_por.perfilmodel.universidade.sigla interesse.criado_por.perfilmodel.perfil_link %}" class="feed-link">
+                    <a href="{% url 'perfil' interesse.criado_por.perfilmodel.universidade.sigla_campus interesse.criado_por.perfilmodel.perfil_link %}" class="feed-link">
                         {{ interesse.criado_por.full_name }}
                     </a>
                     <br>
@@ -108,7 +108,7 @@
                     <div class="col-xs-6" style="margin-top:-5px;">
                         <div class="panel panel-default panel-bordeless">
                             <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
-                                <li><a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla usuario.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                <li><a href="{% url 'perfil' usuario.perfilmodel.universidade.sigla_campus usuario.perfilmodel.perfil_link %}" style="padding-left:0;">
                                     <img style="border-right:3px solid #e7e7e7;" src="/media/{{ usuario_foto.thumbnail }}">
                                     &nbsp;&nbsp;{{ usuario.full_name|capfirst }}
                                 </a></li>

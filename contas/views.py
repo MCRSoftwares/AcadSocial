@@ -574,9 +574,7 @@ def view_perfil_usuario(request, sigla, perfil_link):
 
     # Procura por um usuário e perfil existente que pertença ao link dado.
 
-    sigla = sigla.upper()
-
-    universidade = get_object_or_404(UniversidadeModel, sigla=sigla)
+    universidade = get_object_or_404(UniversidadeModel, sigla_campus=sigla)
     pag_perfil = get_object_or_404(PerfilModel, perfil_link=perfil_link, universidade=universidade)
     imagem = ImagemModel.objects.get(perfil=pag_perfil, is_profile_image=True)
     perfil = PerfilModel.objects.get(usuario=request.user)
@@ -709,7 +707,7 @@ def view_perfil_usuario(request, sigla, perfil_link):
                 comentario.data_criacao = timezone.now()
                 comentario.save()
 
-        return HttpResponseRedirect('/perfil/' + universidade.sigla + '/' + pag_perfil.perfil_link)
+        return HttpResponseRedirect('/perfil/' + universidade.sigla_campus + '/' + pag_perfil.perfil_link)
     else:
         comentario_form = ComentarioGrupoForm()
 
@@ -848,7 +846,7 @@ def view_editar_perfil(request):
 
             foto.save()
 
-            return HttpResponseRedirect('/perfil/' + perfil.universidade.sigla + '/' + perfil.perfil_link)
+            return HttpResponseRedirect('/perfil/' + perfil.universidade.sigla_campus + '/' + perfil.perfil_link)
     else:
         usuario_form = UsuarioEditForm()
         perfil_form = PerfilEditForm()

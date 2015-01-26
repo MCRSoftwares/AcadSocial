@@ -63,7 +63,7 @@
                                   <span class="fa fa-user"></span> &nbspUsuário
                               </div>
                               <div class="panel-body text-center">
-                                  <a href="{% url 'perfil' item.universidade.sigla item.perfil_link %}" class="feed-link">
+                                  <a href="{% url 'perfil' item.universidade.sigla_campus item.perfil_link %}" class="feed-link">
                                       <img src="/media/{{ item_foto.thumbnail_perfil }}" class="profile-image">
                                       <br>
                                       {{ item.usuario.full_name|capfirst }}

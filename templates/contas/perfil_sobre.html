@@ -11,7 +11,7 @@
     <li class="divider-vertical"></li>
     <li><a href="{% url 'index' %}"><i class="fa fa-home"></i> Página inicial</a></li>
     <li class="divider-vertical"></li>
-    <li><a href="{% url 'perfil' pag_perfil.universidade.sigla pag_perfil.perfil_link %}">
+    <li><a href="{% url 'perfil' pag_perfil.universidade.sigla_campus pag_perfil.perfil_link %}">
         <i class="fa fa-user"></i> Perfil de {{ pag_perfil.usuario.first_name }}</a></li>
     <li class="divider-vertical"></li>
     <li class="lista-active"><a href=""><i class="fa fa-info-circle"></i> Sobre {{ pag_perfil.usuario.first_name }}</a></li>
@@ -34,7 +34,7 @@
                     <span class="fa fa-info-circle"></span> Sobre
                 </div>
                 <div class="panel-heading perfil-about-body">
-                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla }} ({{ universidade.campus }})
+                    <span class="fa fa-graduation-cap"></span> {{ universidade.sigla_campus }} ({{ universidade.campus }})
                 </div>
                 <div class="panel-heading perfil-about-body">
                     <span class="fa fa-book"></span> {{ pag_perfil.curso }}
@@ -117,7 +117,7 @@
                     <div class="col-xs-6" style="margin-top:-5px;">
                         <div class="panel panel-default panel-bordeless">
                             <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
-                               <li><a href="{% url 'perfil' amizade.amigo.universidade.sigla amizade.amigo.perfil_link %}" style="padding-left:0;">
+                               <li><a href="{% url 'perfil' amizade.amigo.universidade.sigla_campus amizade.amigo.perfil_link %}" style="padding-left:0;">
                                    <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
                                    &nbsp;&nbsp;{{ amizade.amigo.usuario.full_name|capfirst }}
                                </a></li>

@@ -31,7 +31,7 @@
             {% for convite, convite_foto in convites_grupos.items|slice:':5' %}
                 <div class="panel-body" style="padding:10px;border-bottom:1px solid #f2f2f2;">
                     <div class="col-xs-1 no-padding">
-                        <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}"
+                        <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla_campus convite.usuario.perfilmodel.perfil_link %}"
                            style="padding-left:0;">
                             <img class="profile-image" src="/media/{{ convite_foto.thumbnail }}">
                         </a>
@@ -40,7 +40,7 @@
                         {% csrf_token %}
                         <input type="text" style="display:none" id="conviteGrupoAction-{{ convite.cid }}" name="conviteGrupoForm" value="{{ convite.cid }}">
                         <div class="col-xs-10 comment-user" style="padding-top:5px;padding-left:30px;">
-                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}">
+                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla_campus convite.usuario.perfilmodel.perfil_link %}">
                                 {{ convite.usuario.full_name }}
                             </a>
                             convidou você para participar do grupo
@@ -75,7 +75,7 @@
             {% for convite, convite_foto in convites_eventos.items|slice:':5' %}
                 <div class="panel-body" style="padding:10px;border-bottom:1px solid #f2f2f2;">
                     <div class="col-xs-1 no-padding">
-                        <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}"
+                        <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla_campus convite.usuario.perfilmodel.perfil_link %}"
                            style="padding-left:0;">
                             <img class="profile-image" src="/media/{{ convite_foto.thumbnail }}">
                         </a>
@@ -84,7 +84,7 @@
                         {% csrf_token %}
                         <input type="text" style="display:none" id="conviteEventoAction-{{ convite.cid }}" name="conviteEventoForm" value="{{ convite.cid }}">
                         <div class="col-xs-10 comment-user" style="padding-top:5px;padding-left:30px;">
-                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla convite.usuario.perfilmodel.perfil_link %}">
+                            <a href="{% url 'perfil' convite.usuario.perfilmodel.universidade.sigla_campus convite.usuario.perfilmodel.perfil_link %}">
                                 {{ convite.usuario.full_name }}
                             </a>
                             convidou você para participar do evento
@@ -119,7 +119,7 @@
             {% for convite, convite_foto in convites_amigos.items|slice:':5' %}
                 <div class="panel-body" style="padding:10px;border-bottom:1px solid #f2f2f2;">
                     <div class="col-xs-1 no-padding">
-                        <a href="{% url 'perfil' convite.perfil.universidade.sigla convite.perfil.perfil_link %}"
+                        <a href="{% url 'perfil' convite.perfil.universidade.sigla_campus convite.perfil.perfil_link %}"
                            style="padding-left:0;">
                             <img class="profile-image" src="/media/{{ convite_foto.thumbnail }}">
                         </a>
@@ -128,7 +128,7 @@
                         {% csrf_token %}
                         <input type="text" style="display:none" id="conviteAmigoAction-{{ convite.cid }}" name="conviteAmigoForm" value="{{ convite.cid }}">
                         <div class="col-xs-10 comment-user" style="padding-top:5px;padding-left:30px;">
-                            <a href="{% url 'perfil' convite.perfil.universidade.sigla convite.perfil.perfil_link %}">
+                            <a href="{% url 'perfil' convite.perfil.universidade.sigla_campus convite.perfil.perfil_link %}">
                                 {{ convite.perfil.usuario.full_name }}
                             </a>
                             adicionou você como amigo!<br>

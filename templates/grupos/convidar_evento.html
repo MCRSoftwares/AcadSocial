@@ -66,7 +66,7 @@
                             Criado por:
                         </span>
                         <br>
-                        <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla evento.criado_por.perfilmodel.perfil_link %}" class="feed-link">
+                        <a href="{% url 'perfil' evento.criado_por.perfilmodel.universidade.sigla_campus evento.criado_por.perfilmodel.perfil_link %}" class="feed-link">
                             {{ evento.criado_por.full_name }}
                         </a>
                     </div>
@@ -91,7 +91,7 @@
                         {% else %}
                             {% for convidado, convidado_foto in list_convidados.iteritems %}
                                 <li>
-                                    <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
+                                    <a href="{% url 'perfil' convidado.perfilmodel.universidade.sigla_campus convidado.perfilmodel.perfil_link %}" style="padding-left:0;">
                                         <img style="border-right:3px solid #e7e7e7;" src="/media/{{ convidado_foto.thumbnail }}">
                                         &nbsp;&nbsp;{{ convidado.full_name|capfirst }}
                                     </a>
@@ -126,7 +126,7 @@
                 <div class="col-xs-7" style="margin-top:-5px;">
                     <div class="panel panel-default panel-bordeless">
                         <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
-                            <li><a href="{% url 'perfil' membro.perfilmodel.universidade.sigla membro.perfilmodel.perfil_link %}" style="padding-left:0;">
+                            <li><a href="{% url 'perfil' membro.perfilmodel.universidade.sigla_campus membro.perfilmodel.perfil_link %}" style="padding-left:0;">
                                 <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
                                 &nbsp;&nbsp;{{ membro.full_name|capfirst }}
                             </a></li>
