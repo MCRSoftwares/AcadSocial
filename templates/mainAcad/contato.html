@@ -1,153 +1,142 @@
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>AcadSocial - Contato</title>
+{% extends 'base-simples.html' %}
+{% load staticfiles %}
 
-        <!-- Bootstrap -->
-        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="css/font-awesome.min.css" rel="stylesheet">
-        <link href="css/style.css" rel="stylesheet">
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+{% block title %}Cadastro{% endblock %}
 
-
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="/static/jquery/1.11.1/jquery.min.js"></script>
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-
-
+{% block head %}
+    <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
     <script type="text/javascript">
+        $(document).ready(function(){
+            $('textarea').autosize();
 
-		$('#nomeInput').on('keypress click', function() {
+            $('input[id=imageID]').change(function() {
+                $('#imageName').val($(this).val());
+            });
+
+            $.ajax({
+                url: '{% static 'text/termoscondicoes.txt' %}',
+                dataType: 'text',
+                success: function (data) {
+                    $('#termosCondicoes').html(data);
+                }
+            });
+
+            $('#nomeInput').on('keypress click', function() {
                $('#nomeWError').hide();
-      	});
-
-
-		$('#emailInput').on('keypress click', function() {
+               $('#usuarioNFWError').hide();
+            });
+            $('#emailInput').on('keypress click', function() {
                $('#emailWError').hide();
+               $('#usuarioNFWError').hide();
+            });
 
-		});
+            $('#senhaInput').on('keypress click', function() {
+               $('#senhaWError').hide();
+               $('#nonFWError').hide();
+            });
 
-		$('#assuntoInput').on ('keypress click', function() {
-				$('#assuntoWError').hide();
+            $('#assuntoInput').on('keypress click', function() {
+               $('#assuntoWError').hide();
+               $('#nonFWError').hide();
+            });
 
-		});
+            $('#conteudoInput').on('keypress click', function() {
+               $('#conteudoWError').hide();
+               $('#nonFWError').hide();
+            });
 
-
-		$('#descricaoInput').on('keypress click', function() {
-               $('#emailWError').hide();
-
-		});
-
-
-
-
-
+        });
     </script>
+{% endblock %}
 
-    </head>
-    <body >
+{% block body %}
+    <div class="acad-title text-center">
+        <a href="{% url 'index' %}"><b class="fa fa-graduation-cap"></b>Acad<b>Social</b></a>
+    </div>
+    <br><br>
+    <div class="col-xs-6 col-xs-offset-3">
+        <form method="post" action="" enctype="multipart/form-data" class="form-horizontal">
+            {% csrf_token %}
+            <fieldset>
+                <div class="panel panel-default">
+                    <div class="panel-body">
 
-		 <div class="navbar navbar-default navbar-static-top">
+                        <legend>Fale Conosco</legend>
 
-            <div class="container">
-
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">Acad<b>Social</b></a>
-                </div>
-
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-left">
-
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/conta/cadastro/">Cadastre-se</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Entrar <b class="caret"></b></a>
-                            <div class="dropdown-menu login-dropdown panel panel-default">
-                                <form method="post" action="." enctype="multipart/form-data" class="form-horizontal">
-                                    <input type='hidden' name='csrfmiddlewaretoken' value='6Xm1D4QxuyCdHTORxyFoVME5PYK1zBTz' />
-                                    <div class="panel-body" style="margin-top:-10px;">
-                                        <fieldset>
-                                            <legend><h4>Entrar no AcadSocial</h4></legend>
-
-                                            <div class="form-group">
-                                                <div class="col-xs-12">
-                                                    <input class="form-control" id="id_email" maxlength="128" name="email" placeholder="E-mail" type="email" />
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <div class="col-xs-12">
-                                                    <input class="form-control" id="id_password" maxlength="16" name="password" placeholder="Senha" type="password" />
-                                                </div>
-                                            </div>
-
-                                            <a href="/conta/senha/reset/" ><span class="glyphicon glyphicon-remove-circle"></span> Esqueci minha senha</a>
-                                        </fieldset>
-                                    </div>
-                                    <button class="btn btn-primary panel-footer" name='loginForm' style="width:100%;margin-bottom:-5px">Entrar</button>
-                                </form>
+                        <div class="form-group" id="nomeInput">
+                            <label class="col-xs-3 control-label">Nome</label>
+                            <div class="col-xs-9">
+                                {{ contato_form.nome }}
+                                {% if contato_form.nome.errors %}
+                                    {% for error in contato_form.nome.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="nomeWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
                             </div>
-                        </li>
+                        </div>
 
-                    </ul>
+                        <div class="form-group" id="emailInput">
+                            <label class="col-xs-3 control-label">E-mail</label>
+                            <div class="col-xs-9">
+                                {{ contato_form.email }}
+                                {% if contato_form.email.errors %}
+                                    {% for error in contato_form.email.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="emailWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="assuntoInput">
+                            <label class="col-xs-3 control-label">Assunto</label>
+                            <div class="col-xs-9">
+                                {{ contato_form.assunto }}
+                                {% if contato_form.assunto.errors %}
+                                    {% for error in contato_form.nome.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="assuntoWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="conteudoInput">
+                            <label class="col-xs-3 control-label">Conteúdo</label>
+                            <div class="col-xs-9">
+                                {{ contato_form.conteudo }}
+                                {% if contato_form.conteudo.errors %}
+                                    {% for error in contato_form.conteudo.errors %}
+                                        <span class="help-block alert alert-danger alert-dismissable" id="conteudoWError">
+                                            <button type="button" class="close" data-dismiss="alert">×</button>
+                                            {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if contato_form.non_field_errors %}
+                            {% for error in contato_form.non_field_errors %}
+                                <br>
+                                <span class="help-block alert alert-danger alert-dismissable" id="nonFWError">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {{ error }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="panel-footer btn btn-primary" name="contatoForm" style="width:100%;">Enviar</button>
                 </div>
+            </fieldset>
+        </form>
+    </div>
 
-            </div>
-
-        </div>
-
-
-		<div class="text-center titulobug">
-			<h1><b><font color = "#7C0B1F">Contato</font></b><h1>
-			<i class="glyphicon glyphicon-envelope"> </i>
-		</div>
-		<br><br>
-
-
-		<div class="container formarea">
-
-			<div align="center" id="nomeInput" >
-			<h5><b>Nome</b></h5>
-			<input type="text" class="form-control textinput" placeholder="Nome">
-
-			</div>
-
-			<div align="center" id="emailInput"  >
-			<h5><b>Email</b></h5>
-			<span id="helpBlock" class="help-block">É importante colocar E-mail, para podermos responder sua mensagem</span>
-			<input type="text" class="form-control textinput" placeholder="Email">
-			</div>
-
-
-			<div align="center" id="assuntoInput"  >
-			<h5><b>Assunto</b></h5>
-			<input type="text" class="form-control textinput" placeholder="Assunto">
-			</div>
-
-
-
-
-			<div align="center" id="descricaoInput" >
-			<h5><b>Menssagem</b><h5>
-			<textarea class="form-control text" rows="3"></textarea>
-
-			</div>
-
-
-
-
-		</div>
-		<div align= "center">
-		 <button type="submit" class="panel-footer btn btn-outline-inverse2" name="BugForm" style="width:50%;">Enviar</button>
-		</div>
-	</body>
+{% endblock %}

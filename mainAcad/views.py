@@ -16,7 +16,7 @@ Descrição:
 """
 
 from django.shortcuts import render
-from mainAcad.forms import UsuarioSearchForm
+from mainAcad.forms import UsuarioSearchForm, ContatoForm
 from contas.models import PerfilModel
 from grupos.models import GrupoModel, InteresseModel, EventoModel
 from grupos.models import PostagemGrupoModel, PostagemEventoModel
@@ -78,27 +78,27 @@ def view_usuario_search(request):
 
                     elif filtro == '2':
                         grupo_query = Q(nome__icontains=item)
-                        grupos = GrupoModel.objects.filter(grupo_query)
+                        grupos = GrupoModel.objects.filter(grupo_query, ativo=True)
 
                         if grupos:
                             resultado = True
 
                     elif filtro == '3':
-                        interesse_query = Q(interesse__icontains=item)
+                        interesse_query = Q(interesse__icontains=item, ativo=True)
                         interesses = InteresseModel.objects.filter(interesse_query)
 
                         if interesses:
                             resultado = True
 
                     elif filtro == '4':
-                        evento_query = Q(titulo__icontains=item)
+                        evento_query = Q(titulo__icontains=item, ativo=True)
                         eventos = EventoModel.objects.filter(evento_query)
 
                         if eventos:
                             resultado = True
 
                     elif filtro == '5':
-                        postagem_query = Q(titulo__icontains=item)
+                        postagem_query = Q(titulo__icontains=item, ativo=True)
                         postagens_grupos = PostagemGrupoModel.objects.filter(postagem_query)
                         postagens_eventos = PostagemEventoModel.objects.filter(postagem_query)
 
@@ -118,11 +118,11 @@ def view_usuario_search(request):
                         for perfil in perfis:
                             perfis_dict[perfil] = ImagemModel.objects.get(perfil=perfil)
 
-                    grupos = GrupoModel.objects.filter(grupo_query)
-                    interesses = InteresseModel.objects.filter(interesse_query)
-                    eventos = EventoModel.objects.filter(evento_query)
-                    postagens_grupos = PostagemGrupoModel.objects.filter(postagem_query)
-                    postagens_eventos = PostagemEventoModel.objects.filter(postagem_query)
+                    grupos = GrupoModel.objects.filter(grupo_query, ativo=True)
+                    interesses = InteresseModel.objects.filter(interesse_query, ativo=True)
+                    eventos = EventoModel.objects.filter(evento_query, ativo=True)
+                    postagens_grupos = PostagemGrupoModel.objects.filter(postagem_query, ativo=True)
+                    postagens_eventos = PostagemEventoModel.objects.filter(postagem_query, ativo=True)
 
                     if grupos or interesses or eventos or postagens_eventos or postagens_grupos or perfis:
                         resultado = True
@@ -160,15 +160,56 @@ def view_usuario_search(request):
 
 
 def view_reportar_bug(request):
-    pass
+    args = {}
+
+    if request.method == 'POST':
+        bug_form = ContatoForm(data=request.POST)
+
+        if bug_form.is_valid():
+            print request.POST
+
+    else:
+        bug_form = ContatoForm()
+
+
+    args['contato_form'] = bug_form
+
+    return render(request, 'mainAcad/bugs.html', args)
 
 
 def view_denuncia(request):
-    pass
+    args = {}
+
+    if request.method == 'POST':
+        report_form = ContatoForm(data=request.POST)
+
+        if report_form.is_valid():
+            print request.POST
+
+    else:
+        report_form = ContatoForm()
+
+    args['contato_form'] = report_form
+
+    return render(request, 'mainAcad/denuncia.html', args)
 
 
 def view_fale_conosco(request):
-    pass
+    args = {}
+
+    if request.method == 'POST':
+        contato_form = ContatoForm(data=request.POST)
+
+        if contato_form.is_valid():
+            print request.POST
+
+    else:
+        contato_form = ContatoForm()
+
+
+    args['contato_form'] = contato_form
+
+    return render(request, 'mainAcad/contato.html', args)
 
 
 def custom_404(request):

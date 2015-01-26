@@ -56,3 +56,33 @@ class ImagemUploadForm(forms.ModelForm):
     class Meta:
         model = ImagemModel
         fields = ('imagem',)
+
+
+class ContatoForm(forms.ModelForm):
+
+    nome_attrs = {
+        'class': 'form-control',
+    }
+
+    email_attrs = {
+        'class': 'form-control',
+    }
+
+    assunto_attrs = {
+        'class': 'form-control',
+    }
+
+    conteudo_attrs = {
+        'class': 'form-control',
+        'maxlength': '1024',
+        'rows': '3',
+    }
+
+    nome = forms.CharField(max_length=256, widget=forms.TextInput(attrs=nome_attrs))
+    email = forms.CharField(max_length=128, widget=forms.EmailInput(attrs=email_attrs))
+    assunto = forms.CharField(max_length=256, widget=forms.TextInput(attrs=assunto_attrs))
+    conteudo = forms.CharField(max_length=1024, widget=forms.Textarea(attrs=conteudo_attrs))
+
+    class Meta:
+        model = UsuarioModel
+        fields = ('nome', 'email', 'assunto', 'conteudo',)

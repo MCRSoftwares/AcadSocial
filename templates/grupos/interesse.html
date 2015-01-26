@@ -79,12 +79,15 @@
             <div class="col-xs-12">
                 <div class="panel panel-default panel-bordeless">
                     <div class="panel-heading text-center">
+                        {{ interesse.interesse }}
+                    </div>
+                    <div class="panel-body text-center" style="padding:15px;">
                         {% if usuarios_interesse|length == 0 %}
-                            <span class="fa fa-users"></span> Nenhum usuários possui este interesse
+                            <span class="fa fa-user"></span> Nenhum usuários possui este interesse
                         {% elif usuarios_interesse|length == 1 %}
-                            <span class="fa fa-users"></span>&nbsp; 1 usuário possui este interesse
+                            <span class="fa fa-user"></span>&nbsp; 1 usuário possui este interesse
                         {% else %}
-                            <span class="fa fa-users"></span>&nbsp; {{ usuarios_interesse|length }} usuários possuem este interesse
+                            <span class="fa fa-user"></span>&nbsp; {{ usuarios_interesse|length }} usuários possuem este interesse
                         {% endif %}
                     </div>
                 </div>

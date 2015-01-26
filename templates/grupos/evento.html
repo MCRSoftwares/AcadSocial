@@ -154,6 +154,19 @@
             </div>
         </div>
         <div class="col-xs-8">
+            <div class="col-xs-12 no-left-padding">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        <span class="fa fa-comment"></span> &nbsp;Descrição do Evento
+                    </div>
+                </div>
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-body">
+                        <span class="fa fa-comment"></span> &nbsp;{{ evento.descricao }}
+                    </div>
+
+                </div>
+            </div>
             {% if membro %}
                 <div class="col-xs-8 no-right-padding no-left-padding">
                      <form method="POST">

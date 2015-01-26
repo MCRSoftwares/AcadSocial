@@ -751,7 +751,7 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_active=True, is_profile_image=True)
 
-    pag_perfil = PerfilModel.objects.get(perfil_link=perfil_link, universidade__sigla=sigla)
+    pag_perfil = PerfilModel.objects.get(perfil_link=perfil_link, universidade__sigla_campus=sigla)
     pag_foto = ImagemModel.objects.get(perfil=pag_perfil, is_active=True, is_profile_image=True)
     interesses = UsuarioInteresseModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
     grupos = MembroModel.objects.filter(usuario=pag_perfil.usuario, ativo=True)
@@ -761,7 +761,7 @@ def view_perfil_usuario_sobre(request, sigla, perfil_link):
 
     for amizade in amigos:
         if amizade not in amigos_dict:
-            amigos_dict[amizade] = ImagemModel.objects.get(perfil=amizade.amigo)
+            amigos_dict[amizade] = ImagemModel.objects.get(perfil=amizade.amigo, is_profile_image=True)
 
     if request.method == 'POST':
 

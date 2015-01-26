@@ -633,11 +633,14 @@ def view_interesses(request):
                 return HttpResponseRedirect('/interesse/lista/')
 
         if 'addInteresse' in request.POST:
+
             interesse_id = request.POST.get('addInteresse')
             interesse_obj = InteresseModel.objects.get(iid=interesse_id)
 
+            print interesse_id
+
             try:
-                usuario_interesse = UsuarioInteresseModel.objects.get(interesse=interesse_obj)
+                usuario_interesse = UsuarioInteresseModel.objects.get(interesse=interesse_obj, usuario=request.user)
                 usuario_interesse.ativo = True
 
             except UsuarioInteresseModel.DoesNotExist:
