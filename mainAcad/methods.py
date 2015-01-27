@@ -16,7 +16,8 @@ Descrição:
 """
 
 from datetime import datetime
-from AcadSocial.settings import MEDIA_ROOT
+from AcadSocial.settings import MEDIA_ROOT, EMAIL_HOST_USER
+from django.core.mail import EmailMessage
 from PIL import Image
 import hashlib
 import random
@@ -78,3 +79,12 @@ def gerar_thumbnail(imagem, imagem_path, thumbnail_name, size):
     thumbnail.save(thumbnail_path, 'JPEG', quality=95)
 
     return thumbnail_media_path
+
+
+def enviar_email(nome, email, assunto, conteudo):
+
+    conteudo_email = '[Enviado por %s (%s)]\n\n %s' % (nome,  email, conteudo)
+
+    email_msg = EmailMessage(subject=assunto, body=conteudo_email, from_email=email, to=[EMAIL_HOST_USER])
+
+    return email_msg.send()

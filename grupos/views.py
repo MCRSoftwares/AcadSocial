@@ -8,8 +8,8 @@ Versão do Código: 01v009a
 Responsável: Victor Ferraz
 Auxiliar: -
 
-Requisito(s): -
-Caso(s) de Uso: -
+Requisito(s): RF003, RF004, RF005, RF006, RF007, RF009 até o RF017
+Caso(s) de Uso: DV003, DVA001, DVA002, DVA003, DVA004, DVA005, DVA006, DVA007, PD002, PD004
 
 Descrição:
     Definição das views relacionadas à aplicação de grupos e eventos.

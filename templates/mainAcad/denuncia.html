@@ -1,7 +1,7 @@
 {% extends 'base-simples.html' %}
 {% load staticfiles %}
 
-{% block title %}Cadastro{% endblock %}
+{% block title %}Denunciar - AcadSocial{% endblock %}
 
 {% block head %}
     <script src="{% static 'jquery/1.11.1/plugins/autosize/jquery.autosize.min.js' %}"></script>
@@ -9,38 +9,32 @@
         $(document).ready(function(){
             $('textarea').autosize();
 
-            $('input[id=imageID]').change(function() {
-                $('#imageName').val($(this).val());
-            });
+            var nome = $('#nomeInput');
+            var email = $('#emailInput');
+            var assunto = $('#assuntoInput');
+            var conteudo = $('#conteudoInput');
 
-            $.ajax({
-                url: '{% static 'text/termoscondicoes.txt' %}',
-                dataType: 'text',
-                success: function (data) {
-                    $('#termosCondicoes').html(data);
-                }
-            });
+            $('#nomeID').val('');
+            $('#emailID').val('');
+            $('#conteudoID').val('');
+            $('#assuntoID').val('');
 
-            $('#nomeInput').on('keypress click', function() {
+            nome.on('keypress click', function() {
                $('#nomeWError').hide();
                $('#usuarioNFWError').hide();
             });
-            $('#emailInput').on('keypress click', function() {
+
+            email.on('keypress click', function() {
                $('#emailWError').hide();
                $('#usuarioNFWError').hide();
             });
 
-            $('#senhaInput').on('keypress click', function() {
-               $('#senhaWError').hide();
-               $('#nonFWError').hide();
-            });
-
-            $('#assuntoInput').on('keypress click', function() {
+            assunto.on('keypress click', function() {
                $('#assuntoWError').hide();
                $('#nonFWError').hide();
             });
 
-            $('#conteudoInput').on('keypress click', function() {
+            conteudo.on('keypress click', function() {
                $('#conteudoWError').hide();
                $('#nonFWError').hide();
             });
@@ -131,6 +125,18 @@
                                     {{ error }}
                                 </span>
                             {% endfor %}
+                        {% endif %}
+
+                        {% if email_enviado and email_enviado == 1 %}
+                            <span class="help-block alert alert-info alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                E-mail enviado com sucesso!
+                            </span>
+                        {% elif email_enviado and email_enviado == 0 %}
+                            <span class="help-block alert alert-danger alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                Ocorreu um erro e o e-mail não pôde ser enviado! Por favor, tente novamente mais tarde.
+                            </span>
                         {% endif %}
                     </div>
                     <button type="submit" class="panel-footer btn btn-primary" name="reportForm" style="width:100%;">Enviar</button>

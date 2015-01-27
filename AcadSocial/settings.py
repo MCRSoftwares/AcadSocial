@@ -3,11 +3,11 @@
 """
 Equipe MCRSoftwares - AcadSocial
 
-Versão do Sistema: 0.0.1a005
-Versão do Código: 01v005a
+Versão do Sistema: 1.0.0a007
+Versão do Código: 01v006a
 
 Responsável: Victor Ferraz
-Auxiliar: -
+Auxiliar: Alessandro Henrique, Avyner Lucena, Elson Rodrigues, José Durval
 
 Requisito(s): -
 Caso(s) de Uso: -
@@ -130,11 +130,14 @@ AUTH_USER_MODEL = 'contas.UsuarioModel'
 
 LOGIN_URL = '/conta/login/'
 
-# DEBUG - Email config
-
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp/emails_ativacao/')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'AcadSocial@gmail.com'
+EMAIL_HOST_PASSWORD = 'aaedv2015'
+EMAIL_PORT = 587
+SERVER_EMAIL = 'AcadSocial <AcadSocial@gmail.com>'
+DEFAULT_FROM_EMAIL = 'AcadSocial <AcadSocial@gmail.com>'
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

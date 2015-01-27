@@ -1,4 +1,16 @@
+# -*- encoding: utf-8 -*-
+
 """
+Equipe MCRSoftwares - AcadSocial
+
+Versão do Código: 01v002a
+
+Responsável: Victor Ferraz
+Auxiliar: -
+
+Requisito(s): -
+Caso(s) de Uso: -
+
 WSGI config for AcadSocial project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.

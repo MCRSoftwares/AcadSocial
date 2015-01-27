@@ -61,7 +61,7 @@ def convites_amigos_post(request, html_id):
         cid = action.split('-')[1]
 
         if action.startswith('aceitar'):
-            convite_amigo = ConviteAmigoModel.objects.get(cid=cid)
+            convite_amigo = ConviteAmigoModel.objects.get(cid=cid, ativo=True)
             convite_amigo.ativo = False
             convite_amigo.save()
 
@@ -69,7 +69,7 @@ def convites_amigos_post(request, html_id):
             check_amigo_model(convite_amigo.perfil, convite_amigo.amigo)
 
         elif action.startswith('recusar'):
-            convite_amigo = ConviteAmigoModel.objects.get(cid=cid)
+            convite_amigo = ConviteAmigoModel.objects.get(cid=cid, ativo=True)
             convite_amigo.ativo = False
             convite_amigo.save()
 
@@ -82,7 +82,7 @@ def convites_grupos_post(request, html_id):
         cid = action.split('-')[1]
 
         if action.startswith('aceitar'):
-            convite_grupo = ConviteGrupoModel.objects.get(cid=cid)
+            convite_grupo = ConviteGrupoModel.objects.get(cid=cid, ativo=True)
             convite_grupo.ativo = False
             convite_grupo.aceito = True
             convite_grupo.save()
@@ -112,7 +112,7 @@ def convites_eventos_post(request, html_id):
         cid = action.split('-')[1]
 
         if action.startswith('aceitar'):
-            convite_evento = ConviteEventoModel.objects.get(cid=cid)
+            convite_evento = ConviteEventoModel.objects.get(cid=cid, ativo=True)
             convite_evento.ativo = False
             convite_evento.aceito = True
             convite_evento.save()
@@ -130,7 +130,7 @@ def convites_eventos_post(request, html_id):
                 participa.save()
 
         elif action.startswith('recusar'):
-            convite_evento = ConviteEventoModel.objects.get(cid=cid)
+            convite_evento = ConviteEventoModel.objects.get(cid=cid, ativo=True)
             convite_evento.ativo = False
             convite_evento.save()
 

@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.conf import settings
 
 urlpatterns = patterns('',
-                       url(r'^admin/', include(admin.site.urls)),
+                       url(r'^admin/', include(admin.site.urls), name='admin'),
                        url(r'^', include('contas.urls')),
                        url(r'^', include('mainAcad.urls')),
                        url(r'^', include('grupos.urls')),

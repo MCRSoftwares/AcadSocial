@@ -8,8 +8,8 @@ Versão do Código: 01v004a
 Responsável: Victor Ferraz
 Auxiliar: -
 
-Requisito(s): -
-Caso(s) de Uso: -
+Requisito(s): RF008, RF018, RF025, RF026
+Caso(s) de Uso: DVA008, DVA009, DVA011, PD003
 
 Descrição:
     Definição das views relacionadas à aplicação principal.
@@ -23,9 +23,11 @@ from grupos.models import PostagemGrupoModel, PostagemEventoModel
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from mainAcad.models import ImagemModel
+from mainAcad.methods import enviar_email
 from django.contrib.auth.decorators import login_required
 from grupos.methods import load_convites_grupos, load_convites_amigos, load_convites_eventos
 from grupos.methods import convites_amigos_post, convites_grupos_post, convites_eventos_post
+from django.core.urlresolvers import reverse
 
 
 @login_required
@@ -74,7 +76,7 @@ def view_usuario_search(request):
                         if perfis:
                             resultado = True
                             for perfil in perfis:
-                                perfis_dict[perfil] = ImagemModel.objects.get(perfil=perfil)
+                                perfis_dict[perfil] = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
 
                     elif filtro == '2':
                         grupo_query = Q(nome__icontains=item)
@@ -116,7 +118,7 @@ def view_usuario_search(request):
 
                     if perfis:
                         for perfil in perfis:
-                            perfis_dict[perfil] = ImagemModel.objects.get(perfil=perfil)
+                            perfis_dict[perfil] = ImagemModel.objects.get(perfil=perfil, is_profile_image=True)
 
                     grupos = GrupoModel.objects.filter(grupo_query, ativo=True)
                     interesses = InteresseModel.objects.filter(interesse_query, ativo=True)
@@ -163,16 +165,25 @@ def view_reportar_bug(request):
     args = {}
 
     if request.method == 'POST':
-        bug_form = ContatoForm(data=request.POST)
+        contato_form = ContatoForm(data=request.POST)
 
-        if bug_form.is_valid():
-            print request.POST
+        if contato_form.is_valid():
+            assunto = '[Bug] ' + unicode(contato_form.cleaned_data.get('assunto'))
+            nome = contato_form.cleaned_data.get('nome')
+            conteudo = contato_form.cleaned_data.get('conteudo')
+            email = contato_form.cleaned_data.get('email')
+
+            email_enviado = enviar_email(nome, email, assunto, conteudo)
+
+            args['email_enviado'] = email_enviado
+            args['contato_form'] = contato_form
+
+            return render(request, 'mainAcad/bugs.html', args)
 
     else:
-        bug_form = ContatoForm()
+        contato_form = ContatoForm()
 
-
-    args['contato_form'] = bug_form
+    args['contato_form'] = contato_form
 
     return render(request, 'mainAcad/bugs.html', args)
 
@@ -181,15 +192,25 @@ def view_denuncia(request):
     args = {}
 
     if request.method == 'POST':
-        report_form = ContatoForm(data=request.POST)
+        contato_form = ContatoForm(data=request.POST)
 
-        if report_form.is_valid():
-            print request.POST
+        if contato_form.is_valid():
+            assunto = u'[Denúncia] ' + unicode(contato_form.cleaned_data.get('assunto'))
+            nome = contato_form.cleaned_data.get('nome')
+            conteudo = contato_form.cleaned_data.get('conteudo')
+            email = contato_form.cleaned_data.get('email')
+
+            email_enviado = enviar_email(nome, email, assunto, conteudo)
+
+            args['email_enviado'] = email_enviado
+            args['contato_form'] = contato_form
+
+            return render(request, 'mainAcad/denuncia.html', args)
 
     else:
-        report_form = ContatoForm()
+        contato_form = ContatoForm()
 
-    args['contato_form'] = report_form
+    args['contato_form'] = contato_form
 
     return render(request, 'mainAcad/denuncia.html', args)
 
@@ -201,11 +222,19 @@ def view_fale_conosco(request):
         contato_form = ContatoForm(data=request.POST)
 
         if contato_form.is_valid():
-            print request.POST
+            assunto = '[Contato] ' + unicode(contato_form.cleaned_data.get('assunto'))
+            nome = contato_form.cleaned_data.get('nome')
+            conteudo = contato_form.cleaned_data.get('conteudo')
+            email = contato_form.cleaned_data.get('email')
 
+            email_enviado = enviar_email(nome, email, assunto, conteudo)
+
+            args['email_enviado'] = email_enviado
+            args['contato_form'] = contato_form
+
+            return render(request, 'mainAcad/contato.html', args)
     else:
         contato_form = ContatoForm()
-
 
     args['contato_form'] = contato_form
 

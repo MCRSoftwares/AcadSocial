@@ -8,8 +8,8 @@ Versão do Código: 01v009a
 Responsável: Victor Ferraz
 Auxiliar: -
 
-Requisito(s): RF001, RF002, RF020, RF022, RF023, RF027
-Caso(s) de Uso: DV001, DV002, DVA012
+Requisito(s): RF001, RF002, RF013, RF019, RF020, RF021, RF022, RF023, RF027
+Caso(s) de Uso: DV001, DV002, DVA010, DVA012, PD005
 
 Descrição:
     Definição das views relacionadas à aplicação de contas (cadastro/login).
@@ -39,6 +39,7 @@ from grupos.methods import convites_amigos_post, convites_grupos_post, convites_
 from grupos.forms import ComentarioGrupoForm
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.urlresolvers import reverse
 
 
 def view_cadastrar_usuario(request):
@@ -163,7 +164,7 @@ def view_pagina_inicial_login(request):
 
             # Se for um usuário normal, ele será mandado para a view da página principal.
 
-            return redirect(redirecionar_para(request.get_full_path()))
+            return HttpResponseRedirect(reverse('index', args=[]))
         else:
             return view_login_usuario(request)
     else:
@@ -178,7 +179,7 @@ def view_pagina_inicial_logada(request):
     args = {}
 
     if request.user.is_superuser:
-        return HttpResponseRedirect('/admin')
+        return HttpResponseRedirect(reverse('admin', args=[]))
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)

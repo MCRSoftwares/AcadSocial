@@ -437,6 +437,16 @@ textarea.form-control {
     background-color: #F2DEDE;
 }
 
+.alert-info {
+	border-radius: 0;
+	margin-bottom: -5px;
+	font-size: 10pt;
+	padding: 10px 35px 10px 10px;
+    border: 1px solid #BCE8F1;
+    color: #3170B2;
+    background-color: #D9EDF7;
+}
+
 .alert-warning {
 	border-radius: 0;
 	margin-bottom: -5px;

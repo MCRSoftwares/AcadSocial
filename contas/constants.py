@@ -17,6 +17,7 @@ Descrição:
 
 VALID_EMAILS = (
     '@ufpe.br',
+    '@cin.ufpe.br',
 )
 
 TOKEN_TYPE = (

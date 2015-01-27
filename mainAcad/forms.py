@@ -6,7 +6,7 @@ Equipe MCRSoftwares - AcadSocial
 Versão do Código: 01v003a
 
 Responsável: Victor Ferraz
-Auxiliar: -
+Auxiliar: El
 
 Requisito(s): -
 Caso(s) de Uso: -
@@ -62,26 +62,33 @@ class ContatoForm(forms.ModelForm):
 
     nome_attrs = {
         'class': 'form-control',
+        'id': 'nomeID',
     }
 
     email_attrs = {
         'class': 'form-control',
+        'id': 'emailID',
     }
 
     assunto_attrs = {
         'class': 'form-control',
+        'id': 'assuntoID',
     }
 
     conteudo_attrs = {
         'class': 'form-control',
         'maxlength': '1024',
         'rows': '3',
+        'id': 'conteudoID',
     }
 
     nome = forms.CharField(max_length=256, widget=forms.TextInput(attrs=nome_attrs))
     email = forms.CharField(max_length=128, widget=forms.EmailInput(attrs=email_attrs))
     assunto = forms.CharField(max_length=256, widget=forms.TextInput(attrs=assunto_attrs))
     conteudo = forms.CharField(max_length=1024, widget=forms.Textarea(attrs=conteudo_attrs))
+
+    def clean(self):
+        return self.cleaned_data
 
     class Meta:
         model = UsuarioModel
