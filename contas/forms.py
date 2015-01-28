@@ -165,9 +165,10 @@ class PerfilCadastroForm(forms.ModelForm):
     mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(mes_attrs))
     ano = forms.ChoiceField(choices=ano_list, widget=forms.Select(ano_attrs))
 
-    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade',
-                                          label='universidade', widget=forms.Select(attrs=universidade_attrs))
-    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', label='curso',
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects.order_by('nome'),
+                                          empty_label='Universidade', label='universidade',
+                                          widget=forms.Select(attrs=universidade_attrs))
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects.order_by('nome'), empty_label='Curso', label='curso',
                                    widget=forms.Select(attrs=curso_attrs))
 
     termos_condicoes = forms.BooleanField(widget=forms.CheckboxInput())
@@ -284,9 +285,10 @@ class PerfilEditForm(forms.ModelForm):
     mes = forms.ChoiceField(choices=mes_list, widget=forms.Select(mes_attrs))
     ano = forms.ChoiceField(choices=ano_list, widget=forms.Select(ano_attrs))
 
-    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects, empty_label='Universidade',
-                                          label='universidade', widget=forms.Select(attrs=universidade_attrs))
-    curso = forms.ModelChoiceField(queryset=CursoModel.objects, empty_label='Curso', label='curso',
+    universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects.order_by('nome'),
+                                          empty_label='Universidade', label='universidade',
+                                          widget=forms.Select(attrs=universidade_attrs))
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects.order_by('nome'), empty_label='Curso', label='curso',
                                    widget=forms.Select(attrs=curso_attrs))
 
     def clean(self):

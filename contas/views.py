@@ -593,6 +593,7 @@ def view_perfil_usuario(request, sigla, perfil_link):
 
     postagens = PostagemGrupoModel.objects.filter(criado_por=pag_perfil.usuario, ativo=True,
                                                   grupo__membromodel__in=user_membro).order_by('-data_criacao')
+
     comentarios = ComentarioGrupoModel.objects.filter(postagem__in=postagens, ativo=True)
 
     comentario_postagem = {}
@@ -847,7 +848,7 @@ def view_editar_perfil(request):
 
             foto.save()
 
-            return HttpResponseRedirect('/perfil/' + perfil.universidade.sigla_campus + '/' + perfil.perfil_link)
+            return HttpResponseRedirect(reverse('perfil', args=[perfil.universidade.sigla_campus, perfil.perfil_link]))
     else:
         usuario_form = UsuarioEditForm()
         perfil_form = PerfilEditForm()

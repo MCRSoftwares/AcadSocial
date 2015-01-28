@@ -19,6 +19,7 @@ from datetime import datetime
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
+from AcadSocial.settings import SYSTEM_HOST
 import hashlib
 import random
 import re
@@ -118,7 +119,7 @@ def enviar_email_ativacao(email, nome, sobrenome, chave):
 
     email_conteudo = 'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
                      'Clique no link abaixo para confirmar o seu e-mail e utilizar nossa rede!' \
-                     '\nhttp://127.0.0.1:8000/conta/ativar/%s' % (nome, sobrenome, chave)
+                     '\nhttp://%s/conta/ativar/%s' % (nome, sobrenome, SYSTEM_HOST, chave)
 
     email_msg = EmailMessage(email_assunto, email_conteudo, to=[email])
     email_msg.send()
@@ -137,7 +138,7 @@ def enviar_email_senha_reset(token, usuario, email):
     email_conteudo = 'Fora solicitado um pedido de redefinição da senha de sua conta no AcadSocial.' \
                      ' Caso você não tenha pedido a redefinição de senha, por favor ignore este e-mail.\n\n' \
                      'Caso contrário, acesse o link abaixo para redefinir sua senha: \n ' \
-                     'http://127.0.0.1:8000/conta/senha/%s/%s' % (usuario.uid, token.token)
+                     'http://%s/conta/senha/%s/%s' % (SYSTEM_HOST, usuario.uid, token.token)
 
     email_msg = EmailMessage(email_assunto, email_conteudo, to=[email])
     email_msg.send()

@@ -34,6 +34,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
+SYSTEM_HOST = '127.0.0.1:8000'
+
 LANGUAGE_CODE = 'pt-br'
 
 LANGUAGES = (
