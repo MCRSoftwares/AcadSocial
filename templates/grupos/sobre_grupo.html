@@ -126,7 +126,7 @@
                     <div class="panel panel-default panel-bordeless">
                         <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
                             <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla_campus u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
-                                <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
+                                <img style="border-right:3px solid #e7e7e7;" src="{{ MEDIA_URL }}{{ membro_foto.thumbnail }}">
                                 &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
                             </a></li>
                         </ul>

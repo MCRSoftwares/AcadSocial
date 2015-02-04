@@ -60,7 +60,7 @@
                     @ {{ pag_perfil.perfil_link }}
                 </div>
                 <div class="panel-body text-center truncate-line border-sides">
-                    <img src="/media/{{ pag_foto.thumbnail_perfil }}" class="profile-image-big">
+                    <img src="{{ MEDIA_URL }}{{ pag_foto.thumbnail_perfil }}" class="profile-image-big">
                     <br>
                     <a href="" class="feed-link"><span class="fa fa-user"></span> {{ usuario.full_name }}</a>
                 </div>
@@ -176,7 +176,7 @@
                         {% for amigo, amigo_foto in amigos.iteritems|slice:':5' %}
                             <li>
                                 <a href="{% url 'perfil' amigo.amigo.universidade.sigla_campus amigo.amigo.perfil_link %}" style="padding-left: 0;">
-                                    <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
+                                    <img style="border-right:3px solid #e7e7e7;" src="{{ MEDIA_URL }}{{ amigo_foto.thumbnail }}">
                                     &nbsp&nbsp{{ amigo.amigo.usuario.full_name }}
                                 </a>
                             </li>
@@ -265,7 +265,7 @@
                                         <div class="panel-body comment-start" style="padding:10px;">
                                             <div class="col-xs-1" style="padding:0;">
                                                 <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
-                                                    <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}"
+                                                    <img src="{{ MEDIA_URL }}{{ fotos_comentarios|item:comentario.criado_por }}"
                                                          class="profile-image">
                                                 </a>
                                             </div>
@@ -323,7 +323,7 @@
                                 <div class="panel-body text-center truncate">
                                     <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}"
                                        class="feed-link">
-                                        <img src="/media/{{ fotos_postagens|item:postagem.criado_por }}" class="profile-image">
+                                        <img src="{{ MEDIA_URL }}{{ fotos_postagens|item:postagem.criado_por }}" class="profile-image">
                                         <br>
                                         {{ postagem.criado_por.full_name }}
                                     </a>

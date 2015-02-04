@@ -2,3 +2,5 @@ django
 pillow
 whitenoise
 bcrypt
+boto
+django-storages

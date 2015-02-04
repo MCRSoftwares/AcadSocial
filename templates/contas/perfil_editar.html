@@ -82,7 +82,7 @@
                     @ {{ perfil.perfil_link }}
                 </div>
                 <div class="panel-body text-center truncate-line border-sides">
-                    <img src="/media/{{ foto.thumbnail_perfil }}" class="profile-image-big">
+                    <img src="{{ MEDIA_URL }}{{ foto.thumbnail_perfil }}" class="profile-image-big">
                     <br>
                     <a href="{% url 'perfil' perfil.universidade.sigla_campus perfil.perfil_link %}" class="feed-link"><span class="fa fa-user"></span> {{ user.full_name }}</a>
                 </div>

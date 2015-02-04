@@ -18,7 +18,9 @@ Descrição:
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import ssl
 
+ssl._create_default_https_context = ssl._create_unverified_context
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -32,7 +34,7 @@ SECRET_KEY = 'p00wlkr%hi55$beo%x*m2ut$@)3mtiq98kbxe_a568$*iq4q=5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# ALLOWED_HOSTS = []
 
 SYSTEM_HOST = '127.0.0.1:8000'
 
@@ -52,6 +54,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'mainAcad',
     'contas',
     'grupos',
@@ -96,13 +99,13 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Recife'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static & Media files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -119,6 +122,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+AWS_S3_SECURE_URLS = False       # use http instead of https
+AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
+AWS_S3_ACCESS_KEY_ID = '<keyid>'     # enter your access key id
+AWS_S3_SECRET_ACCESS_KEY = '<secretkey>' # enter your secret access key
+AWS_STORAGE_BUCKET_NAME = 'acadsocial'
+AWS_S3_CUSTOM_DOMAIN = 's3-sa-east-1.amazonaws.com/%s' % AWS_STORAGE_BUCKET_NAME
+STATIC_URL = "http://%s/" % AWS_S3_CUSTOM_DOMAIN
+MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 # Templates
 
@@ -140,7 +155,3 @@ EMAIL_HOST_PASSWORD = 'aaedv2015'
 EMAIL_PORT = 587
 SERVER_EMAIL = 'AcadSocial <AcadSocial@gmail.com>'
 DEFAULT_FROM_EMAIL = 'AcadSocial <AcadSocial@gmail.com>'
-
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'

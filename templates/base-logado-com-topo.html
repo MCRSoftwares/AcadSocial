@@ -50,7 +50,7 @@
                         {% block -navbar-left %} {% endblock %}
                         <li class="info-topo-nome">
                             <a href="{% url 'perfil' perfil.universidade.sigla_campus perfil.perfil_link %}">
-                                <img src="/media/{{ foto.thumbnail_home }}" width="68" height="68" class="profile-image">
+                                <img src="{{ MEDIA_URL }}{{ foto.thumbnail_home }}" width="68" height="68" class="profile-image">
                                 {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
                             </a>
                         </li>

@@ -17,7 +17,7 @@ Descrição:
 
 MAX_IMAGE_SIZE = 2*1024*1024
 
-DEFAULT_PICTURE = 'imagens/perfil/default.jpg'
-DEFAULT_PICTURE_THUMBNAIL = 'imagens/perfil/default_thumbnail45.jpg'
-DEFAULT_PICTURE_THUMBNAIL_HOME = 'imagens/perfil/default_thumbnail68.jpg'
-DEFAULT_PICTURE_THUMBNAIL_PERFIL = 'imagens/perfil/default_thumbnail120.jpg'
+DEFAULT_PICTURE = 'media/default.jpg'
+DEFAULT_PICTURE_THUMBNAIL = 'media/default_thumbnail45.jpg'
+DEFAULT_PICTURE_THUMBNAIL_HOME = 'media/default_thumbnail68.jpg'
+DEFAULT_PICTURE_THUMBNAIL_PERFIL = 'media/default_thumbnail120.jpg'

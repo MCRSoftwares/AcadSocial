@@ -26,7 +26,7 @@
                     @ {{ pag_perfil.perfil_link }}
                 </div>
                 <div class="panel-body text-center truncate-line border-sides">
-                    <img src="/media/{{ pag_foto.thumbnail_perfil }}" class="profile-image-big">
+                    <img src="{{ MEDIA_URL }}{{ pag_foto.thumbnail_perfil }}" class="profile-image-big">
                     <br>
                     <a href="" class="feed-link"><span class="fa fa-user"></span> {{ usuario.full_name }}</a>
                 </div>
@@ -118,7 +118,7 @@
                         <div class="panel panel-default panel-bordeless">
                             <ul class="panel-list panel-list-friends" style="margin-bottom:0;">
                                <li><a href="{% url 'perfil' amizade.amigo.universidade.sigla_campus amizade.amigo.perfil_link %}" style="padding-left:0;">
-                                   <img style="border-right:3px solid #e7e7e7;" src="/media/{{ amigo_foto.thumbnail }}">
+                                   <img style="border-right:3px solid #e7e7e7;" src="{{ MEDIA_URL }}{{ amigo_foto.thumbnail }}">
                                    &nbsp;&nbsp;{{ amizade.amigo.usuario.full_name|capfirst }}
                                </a></li>
                             </ul>

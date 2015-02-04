@@ -428,7 +428,7 @@ def view_lista_grupos(request):
                 if data not in processed_data:
 
                     try:
-                        query = GrupoModel.objects.filter(nome__icontains=data)
+                        query = GrupoModel.objects.filter(nome__icontains=data, ativo=True)
                         grupos = grupos + list(query)
 
                         if query:

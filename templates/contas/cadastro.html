@@ -1,11 +1,15 @@
 {% extends 'base-sem-cadastro.html' %}
 {% load staticfiles %}
+{% load contas_tags %}
 
 {% block title %}Cadastro - AcadSocial{% endblock %}
 
 {% block head %}
     <script type="text/javascript">
         $(document).ready(function(){
+
+            var univid = $('#univID');
+
             $('input[id=imageID]').change(function() {
                 $('#imageName').val($(this).val());
             });
@@ -16,6 +20,20 @@
                 success: function (data) {
                     $('#termosCondicoes').html(data);
                 }
+            });
+
+            univid[0].selectedIndex = 0;
+
+            univid.on('change', function() {
+                var univ_id = univid.val();
+
+                $.ajax({
+                    url: '{% url 'cadastro' %}?u=' + univ_id,
+                    success: function(data) {
+                        var cursos = $('#cursoInput', data).html();
+                        $('#cursoInput').html(cursos);
+                    }
+                });
             });
 
             $('#nomeInput').on('keypress click', function() {

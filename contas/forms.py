@@ -60,6 +60,7 @@ class UsuarioCadastroForm(forms.ModelForm):
     first_name_attrs = {'placeholder': 'Nome', 'class': 'form-control', 'id': 'nomeID'}
     last_name_attrs = {'placeholder': 'Sobrenome', 'class': 'form-control', 'id': 'sobrenomeID'}
     email_attrs = {'placeholder': 'E-mail', 'class': 'form-control', 'id': 'emailID'}
+    email_back_attrs = {'placeholder': 'E-mail', 'class': 'form-control', 'id': 'emailHID'}
     password_attrs = {'placeholder': 'Senha', 'class': 'form-control'}
     password_conf_attrs = {'placeholder': 'Confirme a senha', 'class': 'form-control'}
 
@@ -74,7 +75,7 @@ class UsuarioCadastroForm(forms.ModelForm):
                                 label='sobrenome')
     email_front = forms.CharField(min_length=2, max_length=128, widget=forms.TextInput(attrs=email_attrs),
                                   label='e-mail')
-    email_back = forms.ChoiceField(choices=email_list, widget=forms.Select(attrs=email_attrs))
+    email_back = forms.ChoiceField(choices=email_list, widget=forms.Select(attrs=email_back_attrs))
     email = forms.EmailField(widget=forms.HiddenInput(), required=False)
     password = forms.CharField(min_length=6, max_length=20, widget=forms.PasswordInput(attrs=password_attrs),
                                label='senha')
@@ -168,7 +169,8 @@ class PerfilCadastroForm(forms.ModelForm):
     universidade = forms.ModelChoiceField(queryset=UniversidadeModel.objects.order_by('nome'),
                                           empty_label='Universidade', label='universidade',
                                           widget=forms.Select(attrs=universidade_attrs))
-    curso = forms.ModelChoiceField(queryset=CursoModel.objects.order_by('nome'), empty_label='Curso', label='curso',
+    curso = forms.ModelChoiceField(queryset=CursoModel.objects.filter(universidade=None),
+                                   empty_label='Selecione uma Universidade', label='curso',
                                    widget=forms.Select(attrs=curso_attrs))
 
     termos_condicoes = forms.BooleanField(widget=forms.CheckboxInput())

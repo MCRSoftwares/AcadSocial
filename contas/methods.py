@@ -19,7 +19,7 @@ from datetime import datetime
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from AcadSocial.settings import SYSTEM_HOST
+from AcadSocial.settings import SYSTEM_HOST, EMAIL_HOST_USER
 import hashlib
 import random
 import re
@@ -115,14 +115,22 @@ def enviar_email_ativacao(email, nome, sobrenome, chave):
 
     # TODO criar um título e conteúdo melhor para o e-mail de ativação
 
-    email_assunto = '[AcadSocial] Confirme seu E-mail!'
+    email_assunto = u'[AcadSocial] Confirme seu E-mail!'
 
-    email_conteudo = 'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
-                     'Clique no link abaixo para confirmar o seu e-mail e utilizar nossa rede!' \
-                     '\nhttp://%s/conta/ativar/%s' % (nome, sobrenome, SYSTEM_HOST, chave)
+    email_conteudo = u'Bem-vindo, %s %s.\nAgradecemos o seu cadastro no AcadSocial!\n' \
+                     u'Clique no link abaixo para confirmar o seu e-mail e utilizar nossa rede!' \
+                     u'\nhttp://%s/conta/ativar/%s' % (nome, sobrenome, SYSTEM_HOST, chave)
 
-    email_msg = EmailMessage(email_assunto, email_conteudo, to=[email])
-    email_msg.send()
+    email_msg = EmailMessage(subject=email_assunto, body=email_conteudo, to=[email])
+
+    if email_msg.send() == 1:
+
+        email_assunto_copy = u'[Cadastro] %s %s (%s)' % (nome, sobrenome, email)
+        email_conteudo_copy = u'[%s %s (%s)]\n\n%s cadastrou-se no AcadSocial. Token de ativação:\n%s' \
+                              % (nome, sobrenome, email, nome, chave)
+
+        email_copy = EmailMessage(subject=email_assunto_copy, body=email_conteudo_copy, to=[EMAIL_HOST_USER])
+        email_copy.send()
 
 
 def enviar_email_senha_reset(token, usuario, email):

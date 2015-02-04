@@ -17,10 +17,40 @@ Descrição:
 
 from datetime import datetime
 from AcadSocial.settings import MEDIA_ROOT, EMAIL_HOST_USER
+from AcadSocial.settings import AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME
 from django.core.mail import EmailMessage
 from PIL import Image
 import hashlib
 import random
+import os
+import boto
+from boto.s3.key import Key
+from django.utils import timezone
+
+
+def upload_image_as(instance, filename):
+    chave = gerar_chave_imagem(str(filename))[:5]
+
+    return '%s/%s%s%s' % ('media/', timezone.now().strftime("%Y%m%d%H%M%S"), chave, '.jpg')
+
+
+def upload_with_boto(thumb120, thumb68, thumb45):
+    bucket_name = AWS_STORAGE_BUCKET_NAME
+
+    conn = boto.connect_s3(AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY)
+    bucket = conn.get_bucket(bucket_name)
+
+    generate_image_bucket_key(thumb120, bucket)
+    generate_image_bucket_key(thumb68, bucket)
+    generate_image_bucket_key(thumb45, bucket)
+
+
+def generate_image_bucket_key(imagem, bucket):
+    bucket_key = Key(bucket)
+    bucket_key.key = imagem
+    bucket_key.set_contents_from_filename(imagem)
+    bucket_key.make_public()
+    os.remove(imagem)
 
 
 def gerar_chave_imagem(param):
@@ -70,13 +100,12 @@ def converter_para_jpg(imagem_path, media_path):
     return media_path[1:] + imagem_name
 
 
-def gerar_thumbnail(imagem, imagem_path, thumbnail_name, size):
+def gerar_thumbnail(imagem, img_path, name, size):
     thumbnail = imagem.resize(size, Image.ANTIALIAS)
+    imagem_path = os.path.splitext(img_path)[0]
 
-    thumbnail_media_path = str(imagem_path)[:len(str(imagem_path))-4] + thumbnail_name + '.jpg'
-    thumbnail_path = str(MEDIA_ROOT) + '/' + thumbnail_media_path
-
-    thumbnail.save(thumbnail_path, 'JPEG', quality=95)
+    thumbnail_media_path = imagem_path + name + '.jpg'
+    thumbnail.save(thumbnail_media_path, 'JPEG', quality=95)
 
     return thumbnail_media_path
 

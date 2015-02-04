@@ -19,7 +19,7 @@ from django.db import models
 from contas.models import PerfilModel
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from mainAcad.methods import converter_para_jpg, gerar_thumbnail
+from mainAcad.methods import gerar_thumbnail, upload_image_as, upload_with_boto
 from mainAcad.constants import DEFAULT_PICTURE, DEFAULT_PICTURE_THUMBNAIL
 from mainAcad.constants import DEFAULT_PICTURE_THUMBNAIL_HOME, DEFAULT_PICTURE_THUMBNAIL_PERFIL
 from PIL import Image
@@ -33,13 +33,11 @@ class ImagemModel(models.Model):
     profile_help_text = _('Designates whether this image should be treated as a profile picture. '
                           'Unselect this instead of deleting the profile image.')
 
-    imagem = models.ImageField(_('Image'), upload_to='imagens', default=DEFAULT_PICTURE)
-    thumbnail_perfil = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/',
-                                         default=DEFAULT_PICTURE_THUMBNAIL_PERFIL)
-    thumbnail_home = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/',
-                                       default=DEFAULT_PICTURE_THUMBNAIL_HOME)
-    thumbnail = models.ImageField(_('Thumbnail'), upload_to='imagens/thumbnails/',
-                                  default=DEFAULT_PICTURE_THUMBNAIL)
+    imagem = models.ImageField(_('Image'), upload_to=upload_image_as, default=DEFAULT_PICTURE)
+    thumbnail_perfil = models.ImageField(_('Thumbnail120'), default=DEFAULT_PICTURE_THUMBNAIL_PERFIL)
+    thumbnail_home = models.ImageField(_('Thumbnail68'), default=DEFAULT_PICTURE_THUMBNAIL_HOME)
+    thumbnail = models.ImageField(_('Thumbnail45'), default=DEFAULT_PICTURE_THUMBNAIL)
+
     perfil = models.ForeignKey(PerfilModel)
     data_envio = models.DateTimeField(default=timezone.now())
     is_active = models.BooleanField(default=True, help_text=active_help_text)
@@ -49,18 +47,14 @@ class ImagemModel(models.Model):
         return str(self.imagem)
 
     def save(self, *args, **kwargs):
+        super(ImagemModel, self).save(*args, **kwargs)
+        temp_imagem = Image.open(self.imagem)
 
-        imagem_path = '/imagens/'
+        self.thumbnail_perfil = gerar_thumbnail(temp_imagem, self.imagem.name, '-120', (120, 120))
+        self.thumbnail_home = gerar_thumbnail(temp_imagem, self.imagem.name, '-68', (68, 68))
+        self.thumbnail = gerar_thumbnail(temp_imagem, self.imagem.name, '-45', (45, 45))
 
-        if self.imagem.name != DEFAULT_PICTURE:
-            self.imagem = converter_para_jpg(self.imagem, imagem_path)
-            temp_imagem = self.imagem
-
-            imagem = Image.open(temp_imagem)
-            self.thumbnail_perfil = gerar_thumbnail(imagem, temp_imagem, '_thumbnail120', (120, 120))
-            self.thumbnail_home = gerar_thumbnail(imagem, temp_imagem, '_thumbnail68', (68, 68))
-            self.thumbnail = gerar_thumbnail(imagem, temp_imagem, '_thumbnail45', (45, 45))
-
+        upload_with_boto(self.thumbnail_perfil.name, self.thumbnail_home.name, self.thumbnail.name)
         super(ImagemModel, self).save(*args, **kwargs)
 
     class Meta:

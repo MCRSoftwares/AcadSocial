@@ -124,7 +124,7 @@
                 <ul class="panel-list panel-list-friends">
                     {% for u_membro, membro_foto in usuarios.items|slice:':5' %}
                         <li><a href="{% url 'perfil' u_membro.perfilmodel.universidade.sigla_campus u_membro.perfilmodel.perfil_link %}" style="padding-left:0;">
-                            <img style="border-right:3px solid #e7e7e7;" src="/media/{{ membro_foto.thumbnail }}">
+                            <img style="border-right:3px solid #e7e7e7;" src="{{ MEDIA_URL }}{{ membro_foto.thumbnail }}">
                             &nbsp;&nbsp;{{ u_membro.full_name|capfirst }}
                         </a></li>
                     {% endfor %}
@@ -159,18 +159,20 @@
             </div>
         </div>
         <div class="col-xs-8">
-            <div class="panel panel-default panel-bordeless">
-                <div class="panel-heading text-center">
-                    {{ grupo.nome }}
-                </div>
-                <div class="panel-body text-center" style="padding:15px;">
-                    {% if postagens|length == 0 %}
-                        <span class="fa fa-user"></span> Não há postagens neste grupo
-                    {% elif postagens|length == 1 %}
-                        <span class="glyphicon glyphicon-edit"></span>&nbsp; 1 postagem
-                    {% else %}
-                        <span class="fa fa-user"></span>&nbsp; {{ postagens|length }} postagens
-                    {% endif %}
+            <div class="col-xs-12 no-left-padding">
+                <div class="panel panel-default panel-bordeless">
+                    <div class="panel-heading text-center">
+                        {{ grupo.nome }}
+                    </div>
+                    <div class="panel-body text-center" style="padding:15px;">
+                        {% if postagens|length == 0 %}
+                            <span class="fa fa-user"></span> Não há postagens neste grupo
+                        {% elif postagens|length == 1 %}
+                            <span class="glyphicon glyphicon-edit"></span>&nbsp; 1 postagem
+                        {% else %}
+                            <span class="fa fa-user"></span>&nbsp; {{ postagens|length }} postagens
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% if membro %}
@@ -205,7 +207,7 @@
                         <div class="panel-body text-center truncate">
                             <a href="{% url 'perfil' perfil.universidade.sigla_campus perfil.perfil_link %}"
                                class="feed-link">
-                                <img src="/media/{{ foto.thumbnail_home }}" class="profile-image">
+                                <img src="{{ MEDIA_URL }}{{ foto.thumbnail_home }}" class="profile-image">
                                 <br>
                                 {{ user.full_name }}
                             </a>
@@ -267,7 +269,7 @@
                                             <div class="panel-body comment-start" style="padding:10px;">
                                                 <div class="col-xs-1" style="padding:0;">
                                                     <a href="{% url 'perfil' perfis_comentarios|univ_sigla:comentario.criado_por perfis_comentarios|perfil_link:comentario.criado_por %}">
-                                                        <img src="/media/{{ fotos_comentarios|item:comentario.criado_por }}"
+                                                        <img src="{{ MEDIA_URL }}{{ fotos_comentarios|item:comentario.criado_por }}"
                                                              class="profile-image"></a>
                                                 </div>
                                                 <div class="col-xs-10 comment-user no-padding" style="padding-left:20px;">
@@ -323,7 +325,7 @@
                                 <div class="panel-body text-center truncate">
                                     <a href="{% url 'perfil' perfis_postagens|univ_sigla:postagem.criado_por perfis_postagens|perfil_link:postagem.criado_por %}"
                                        class="feed-link">
-                                        <img src="/media/{{ fotos_postagens|item:postagem.criado_por }}"
+                                        <img src="{{ MEDIA_URL }}{{ fotos_postagens|item:postagem.criado_por }}"
                                              class="profile-image">
                                         <br>
                                         {{ postagem.criado_por.full_name }}

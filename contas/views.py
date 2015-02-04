@@ -19,7 +19,7 @@ Descrição:
 
 from contas.forms import UsuarioCadastroForm, PerfilCadastroForm, UsuarioLoginForm, PerfilEditForm, UsuarioEditForm
 from contas.forms import EnviarTokenForm, SenhaResetForm
-from universidades.models import UniversidadeModel
+from universidades.models import UniversidadeModel, CursoModel
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
@@ -60,6 +60,7 @@ def view_cadastrar_usuario(request):
     if request.method == 'POST' and 'cadastroForm' in request.POST:
         usuario_form = UsuarioCadastroForm(data=request.POST)
         perfil_form = PerfilCadastroForm(data=request.POST)
+        perfil_form.fields['curso'].queryset = CursoModel.objects.all()
         foto_form = ImagemUploadForm(files=request.FILES)
 
         if usuario_form.is_valid() and perfil_form.is_valid() and foto_form.is_valid():
@@ -118,8 +119,20 @@ def view_cadastrar_usuario(request):
             return render(request, 'contas/cadastro_sucesso.html', args)
     else:
         usuario_form = UsuarioCadastroForm()
-        perfil_form = PerfilCadastroForm()
         foto_form = ImagemUploadForm()
+        perfil_form = PerfilCadastroForm()
+
+        if 'u' in request.GET:
+            univ_id = request.GET.get('u')
+
+            if univ_id == '':
+                perfil_form.fields['curso'].queryset = CursoModel.objects.filter(universidade=None)
+                perfil_form.fields['curso'].empty_label = 'Selecione uma Universidade'
+
+            else:
+                perfil_form.fields['curso'].queryset = \
+                    CursoModel.objects.filter(universidade__id=univ_id).order_by('nome')
+                perfil_form.fields['curso'].empty_label = None
 
         args['usuario'] = None
 
@@ -156,12 +169,7 @@ def view_pagina_inicial_login(request):
 
         if login_form.is_valid():
             login(request, login_form.get_usuario())
-
-            # Se o usuário for um superuser, este será redirecionado para a página de admin.
-
-            if request.user.is_superuser:
-                return HttpResponseRedirect('/admin')
-
+			
             # Se for um usuário normal, ele será mandado para a view da página principal.
 
             return HttpResponseRedirect(reverse('index', args=[]))
@@ -177,9 +185,6 @@ def view_pagina_inicial_login(request):
 
 def view_pagina_inicial_logada(request):
     args = {}
-
-    if request.user.is_superuser:
-        return HttpResponseRedirect(reverse('admin', args=[]))
 
     perfil = PerfilModel.objects.get(usuario=request.user)
     foto = ImagemModel.objects.get(perfil=perfil, is_profile_image=True, is_active=True)
@@ -323,11 +328,6 @@ def view_login_usuario(request):
 
         if login_form.is_valid():
             login(request, login_form.get_usuario())
-
-            # Se o usuário for um superuser, este será redirecionado para a página de admin.
-
-            if request.user.is_superuser:
-                return HttpResponseRedirect('/admin')
 
             # Se for um usuário normal, ele será mandado para a view da página principal.
 
