@@ -1,7 +1,7 @@
 AcadSocial
 ==========
 
-Desenvolvimento de uma Rede Social Acadêmica (inicialmente para a UFPE).
+Desenvolvimento de uma Rede Social Acadêmica (inicialmente para a UFPE) para a cadeira de Engenharia de Softwares, do 4º período do curso de Sistemas de Informação, UFPE. Empresa (MCRSoftwares) Fictícia.
 
 Requisitos para o debug do sistema:
 - Python 2.7 (https://www.python.org/downloads/).
